@@ -104,29 +104,6 @@ public class WeatherOps implements ConfigurableOps {
             private String mLocation;
 
             /**
-             * Keeps track of state that needs to live across runtime
-             * configuration changes.
-             */
-            private RetainedFragmentManager RFM;
-
-            /**
-             * Called before an operation executing in the background
-             * completes.
-             */
-            @Override
-		protected void onPreExecute() {
-
-                // Obtain a pointer to the fragment manager that will
-                // handle orientation changes
-                RFM = mActivity.get().getRetainedFragmentManager();
-
-                // Guarantee that firstTimeIn() has been called, to
-                // initialize the RetainedFragmentManager.
-
-                Log.d(TAG, "in onPreExecute()");
-            }
-
-            /**
              * Retrieve the expanded weather results via a synchronous
              * two-way method call, which runs in a background thread to
              * avoid blocking the UI thread.
@@ -159,9 +136,6 @@ public class WeatherOps implements ConfigurableOps {
                     mCache.put(mLocation,
                                weatherData);
                 }
-
-                // Place the result in the fragment manager
-                RFM.put(RFM_KEY, weatherData);
                 return weatherData;
             }
 
@@ -169,14 +143,9 @@ public class WeatherOps implements ConfigurableOps {
              * Display the results in the UI Thread.
              */
             protected void onPostExecute(WeatherData weatherData) {
-                // If the weatherData object is null, check to see if
-                // the result was stored in the retained fragment
-                // manager. If it wasn't, show a message explaining
-                // that nothing was found for the given location.
-                if (weatherData == null
-                    && (weatherData = (WeatherData) RFM.get(RFM_KEY)) == null) {
+                if (weatherData == null)
                     Utils.showToast(mActivity.get(),
-                                    "no expansions for "
+                                    "no weather for "
                                     + mLocation
                                     + " found");
                 } else {

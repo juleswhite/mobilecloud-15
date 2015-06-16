@@ -8,10 +8,8 @@ import vandy.mooc.provider.cache.WeatherTimeoutCache;
 import vandy.mooc.retrofitWeather.WeatherData;
 import vandy.mooc.retrofitWeather.WeatherWebServiceProxy;
 import vandy.mooc.utils.ConfigurableOps;
-import vandy.mooc.utils.RetainedFragmentManager;
 import vandy.mooc.utils.Utils;
 import android.app.Activity;
-import android.os.AsyncTask;
 import android.util.Log;
 
 /**
@@ -32,7 +30,7 @@ public class WeatherOps implements ConfigurableOps {
     protected WeakReference<WeatherActivity> mActivity;
 
     /**
-     * Cache
+     * Cache for the WeatherData.
      */
     private WeatherTimeoutCache mCache;
 
@@ -54,6 +52,12 @@ public class WeatherOps implements ConfigurableOps {
      * re-populate the UI after a runtime configuration change.
      */
     private WeatherData mCurrentWeatherData;
+
+    /**
+     * The AsyncTask used to get the current weather from the Weather
+     * Service.
+     */
+    private GetWeatherAsyncTask mAsyncTask;
 
     /**
      * Default constructor that's needed by the GenericActivity
@@ -97,68 +101,68 @@ public class WeatherOps implements ConfigurableOps {
      * the "Get Weather" button.
      */
     public void getCurrentWeather(String location) {
-        new AsyncTask<String, Void, WeatherData>() {
-            /**
-             * Location we're trying to get current weather for.
-             */
-            private String mLocation;
-
-            /**
-             * Retrieve the expanded weather results via a synchronous
-             * two-way method call, which runs in a background thread to
-             * avoid blocking the UI thread.
-             */
-            protected WeatherData doInBackground(String... locations) {
-                mLocation = locations[0];
-                Log.v(TAG,
-                      "Checking Cache");
-
-                // First the cache is checked for the location's
-                // weather data.
-                WeatherData weatherData = mCache.get(mLocation);
-
-                // If the location's data wasn't in the cache or
-                // was stale, fetch it from the server.
-                if (weatherData == null) {
-                    Log.v(TAG, mLocation + ": not in cache");
-
-                    // Get the weather from the Weather Service.
-                    weatherData = 
-                        mWeatherWebServiceProxy.getWeatherData(mLocation);
-
-                    // Check to make sure the call to the server
-                    // succeeded by testing the "name" member to make
-                    // sure it was initialized
-                    if (weatherData.getName() == null)
-                        return null;
-
-                    // Add to cache.
-                    mCache.put(mLocation,
-                               weatherData);
-                }
-                return weatherData;
-            }
-
-            /**
-             * Display the results in the UI Thread.
-             */
-            protected void onPostExecute(WeatherData weatherData) {
-                if (weatherData == null)
-                    Utils.showToast(mActivity.get(),
-                                    "no weather for "
-                                    + mLocation
-                                    + " found");
-                } else {
-                    // Store the weather data in anticipation of
-                    // runtime configuration changes.
-                    mCurrentWeatherData = weatherData;
-
-                    // If the object was found, display the results.
-                    mActivity.get().displayResults(weatherData);
-                }
-            }
+        if (mAsyncTask != null)
+            // Cancel an ongoing operation to avoid having two
+            // requests run concurrently.
+            mAsyncTask.cancel(true);
+        else 
             // Execute the AsyncTask to expand the weather without
             // blocking the caller.
-        }.execute(location);
+            mAsyncTask = new GetWeatherAsyncTask(this);
+            mAsyncTask.execute(location);
+    }
+
+    /**
+     * Display the results in the UI Thread.
+     */
+    public void displayResults(WeatherData weatherData,
+                               String location) {
+        if (weatherData == null)
+            Utils.showToast(mActivity.get(),
+                            "no weather for "
+                            + location
+                            + " found");
+        else {
+            // Store the weather data in anticipation of runtime
+            // configuration changes.
+            mCurrentWeatherData = weatherData;
+
+            // If the object was found, display the results.
+            mActivity.get().displayResults(weatherData);
+        
+            // Indicate the AsyncTask is done.
+            mAsyncTask = null;
+        }
+    }
+
+    /**
+     * Get the current weather either from the ContentProvider cache
+     * or from the Weather Service web service.
+     */
+    public WeatherData getWeather(String location) {
+        // First the cache is checked for the location's
+        // weather data.
+        WeatherData weatherData = mCache.get(location);
+
+        // If the location's data wasn't in the cache or
+        // was stale, fetch it from the server.
+        if (weatherData == null) {
+            Log.v(TAG, location + ": not in cache");
+
+            // Get the weather from the Weather Service.
+            weatherData = 
+                mWeatherWebServiceProxy.getWeatherData(location);
+
+            // Check to make sure the call to the server
+            // succeeded by testing the "name" member to make
+            // sure it was initialized
+            if (weatherData.getName() == null)
+                return null;
+
+            // Add to cache.
+            mCache.put(location,
+                       weatherData);
+        }
+        return weatherData;
     }
 }

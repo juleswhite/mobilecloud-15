@@ -48,6 +48,27 @@ public class InsertContactsOps
         mAsyncTask.execute(contactsIter);
     }
 
+    /** 
+     * Run in a background Thread to avoid blocking the UI Thread.
+     */
+    @Override
+    public Integer doInBackground(Iterator<String> contactsIter) {
+        // Insert all the contacts designated by the Iterator.
+        return insertAllContacts(contactsIter);
+    }
+
+    /**
+     * A count of the number of results in the query are displayed in
+     * the UI Thread.
+     */
+    @Override
+    public void onPostExecute(Integer count,
+                              Iterator<String> contactsIter) {
+        Utils.showToast(mOps.getActivity(),
+                        count
+                        + " contact(s) inserted");
+    }
+
     /**
      * Synchronously insert a contact with the designated @name into
      * the ContactsContentProvider.
@@ -107,27 +128,6 @@ public class InsertContactsOps
             e.printStackTrace();
         }
         return 0;
-    }
-
-    /** 
-     * Run in a background Thread to avoid blocking the UI Thread.
-     */
-    @Override
-    public Integer doInBackground(Iterator<String> contactsIter) {
-        // Insert all the contacts designated by the Iterator.
-        return insertAllContacts(contactsIter);
-    }
-
-    /**
-     * A count of the number of results in the query are displayed in
-     * the UI Thread.
-     */
-    @Override
-    public void onPostExecute(Integer count,
-                              Iterator<String> contactsIter) {
-        Utils.showToast(mOps.getActivity(),
-                        count
-                        + " contact(s) inserted");
     }
 }
 

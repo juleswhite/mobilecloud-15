@@ -39,6 +39,27 @@ public class DeleteContactsOps
     }
 
     /**
+     * Run in a background Thread to avoid blocking the UI Thread.
+     */
+    @Override
+    public Integer doInBackground(Iterator<String> contactsIter) {
+        // Delete all the contacts named by the iterator.
+        return deleteAllContacts(contactsIter);
+    }
+
+    /**
+     * Run in the UI Thread and displays a toast indicating how
+     * many contacts were deleted.
+     */
+    @Override
+    public void onPostExecute(Integer totalContactsDeleted,
+                              Iterator<String> contactsIter) {
+        Utils.showToast(mOps.getActivity(),
+                        totalContactsDeleted 
+                        + " contact(s) deleted");
+    }
+
+    /**
      * Delete the contact with the designated @a name.
      */
     private int deleteContact(String name) {
@@ -61,26 +82,5 @@ public class DeleteContactsOps
             totalContactsDeleted += deleteContact(contactsIter.next());
 
         return totalContactsDeleted;
-    }
-
-    /**
-     * Run in a background Thread to avoid blocking the UI Thread.
-     */
-    @Override
-    public Integer doInBackground(Iterator<String> contactsIter) {
-        // Delete all the contacts named by the iterator.
-        return deleteAllContacts(contactsIter);
-    }
-
-    /**
-     * Run in the UI Thread and displays a toast indicating how
-     * many contacts were deleted.
-     */
-    @Override
-    public void onPostExecute(Integer totalContactsDeleted,
-                              Iterator<String> contactsIter) {
-        Utils.showToast(mOps.getActivity(),
-                        totalContactsDeleted 
-                        + " contact(s) deleted");
     }
 }

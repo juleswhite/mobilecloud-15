@@ -53,21 +53,6 @@ public class QueryContactsOps
     }
 
     /**
-     * Synchronously query for contacts in the Contacts
-     * ContentProvider.
-     */
-    public Cursor queryAllContacts(ContentResolver cr) {
-        // Perform a synchronous (blocking) query on the
-        // ContactsContentProvider.
-        return cr.query(ContactsContract.Contacts.CONTENT_URI, 
-                        sColumnsToQuery, 
-                        sSelect,
-                        null, 
-                        ContactsContract.Contacts._ID 
-                        + " ASC");
-    }
-
-    /**
      * Run in a background Thread to avoid blocking the UI Thread.
      */
     @Override
@@ -92,6 +77,21 @@ public class QueryContactsOps
             mOps.setCursor(cursor);
             mOps.getActivity().displayCursor(cursor);
         }
+    }
+
+    /**
+     * Synchronously query for contacts in the Contacts
+     * ContentProvider.
+     */
+    public Cursor queryAllContacts(ContentResolver cr) {
+        // Perform a synchronous (blocking) query on the
+        // ContactsContentProvider.
+        return cr.query(ContactsContract.Contacts.CONTENT_URI, 
+                        sColumnsToQuery, 
+                        sSelect,
+                        null, 
+                        ContactsContract.Contacts._ID 
+                        + " ASC");
     }
 }
 

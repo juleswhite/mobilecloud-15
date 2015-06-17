@@ -76,7 +76,7 @@ public class WeatherActivity extends GenericActivity<WeatherOps> {
         // consistent with what we get back from the Weather Service
         // web service.
         final String location =
-            mEditText.getText().toString().toUpperCase(Locale.ENGLISH);
+            mEditText.getText().toString();
 
 	if (location.isEmpty())
 	    // No location provided.

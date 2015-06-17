@@ -103,7 +103,8 @@ public class InsertContactsOps
 
     /**
      * Synchronously insert a contact with the designated @name into
-     * the ContactsContentProvider.
+     * the ContactsContentProvider.  This code is explained at
+     * http://developer.android.com/reference/android/provider/ContactsContract.RawContacts.html.
      */
     private void addContact(String name,
                             List<ContentProviderOperation> cpops) {

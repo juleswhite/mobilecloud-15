@@ -123,36 +123,37 @@ public class WeatherOps
      */
     public WeatherData doInBackground(String location) {
         try {
-        // First the cache is checked for the location's
-        // weather data.
-        WeatherData weatherData = mCache.get(location);
+            // First the cache is checked for the location's
+            // weather data.
+            WeatherData weatherData = mCache.get(location);
 
-        // If data is in cache return it.
-        if (weatherData != null
-            && weatherData.isEmpty())
-            return weatherData;
+            // If data is in cache return it.
+            if (weatherData != null)
+                return weatherData;
 
-        // If the location's data wasn't in the cache or was stale,
-        // use Retrofit to fetch it from the Weather Service web
-        // service.
-        else {
-            Log.v(TAG,
-                  location 
-                  + ": not in cache");
+            // If the location's data wasn't in the cache or was stale,
+            // use Retrofit to fetch it from the Weather Service web
+            // service.
+            else {
+                Log.v(TAG,
+                      location 
+                      + ": not in cache");
 
-            // Get the weather from the Weather Service.
-            weatherData = 
-                mWeatherWebServiceProxy.getWeatherData(location);
+                // Get the weather from the Weather Service.
+                weatherData = 
+                    mWeatherWebServiceProxy.getWeatherData(location);
 
-            // Check to make sure the call to the server succeeded by
-            // testing the "name" member to make sure it was
-            // initialized.
-            if (weatherData.getName() == null)
-                return null;
+                // Check to make sure the call to the server succeeded by
+                // testing the "name" member to make sure it was
+                // initialized.
+                if (weatherData.getName() == null)
+                    return null;
 
-            // Add to cache.
-            mCache.put(location,
-                       weatherData);
+                // Add to cache.
+                mCache.put(location,
+                           weatherData);
+                return weatherData;
+            } 
         } catch (Exception e) {
             Log.v(TAG,
                   "doInBackground() "

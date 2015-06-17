@@ -1,5 +1,7 @@
 package vandy.mooc.activities;
 
+import java.util.Locale;
+
 import vandy.mooc.R;
 import vandy.mooc.operations.WeatherOps;
 import vandy.mooc.retrofitWeather.WeatherData;
@@ -70,9 +72,11 @@ public class WeatherActivity extends GenericActivity<WeatherOps> {
     	Utils.hideKeyboard(this,
                 mEditText.getWindowToken());
         
-        // Get the user's input.
+        // Get the user's input and convert it to upper case so it's
+        // consistent with what we get back from the Weather Service
+        // web service.
         final String location =
-            mEditText.getText().toString();
+            mEditText.getText().toString().toUpperCase(Locale.ENGLISH);
 
 	if (location.isEmpty())
 	    // No location provided.

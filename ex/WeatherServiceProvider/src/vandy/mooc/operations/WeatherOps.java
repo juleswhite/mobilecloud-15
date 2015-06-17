@@ -8,6 +8,8 @@ import vandy.mooc.provider.cache.WeatherTimeoutCache;
 import vandy.mooc.retrofitWeather.WeatherData;
 import vandy.mooc.retrofitWeather.WeatherWebServiceProxy;
 import vandy.mooc.utils.ConfigurableOps;
+import vandy.mooc.utils.GenericAsyncTask;
+import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
 import android.app.Activity;
 import android.util.Log;
@@ -16,7 +18,9 @@ import android.util.Log;
  * This class implements all the weather-related operations defined in the
  * WeatherOps interface.
  */
-public class WeatherOps implements ConfigurableOps {
+public class WeatherOps 
+       implements ConfigurableOps,
+                  GenericAsyncTaskOps<String, Void, WeatherData> {
     protected static final String RFM_KEY = "doInBackgroundResult";
 
     /**
@@ -54,10 +58,10 @@ public class WeatherOps implements ConfigurableOps {
     private WeatherData mCurrentWeatherData;
 
     /**
-     * The AsyncTask used to get the current weather from the Weather
-     * Service.
+     * The GenericAsyncTask used to get the current weather from the
+     * Weather Service.
      */
-    private GetWeatherAsyncTask mAsyncTask;
+    private GenericAsyncTask<String, Void, WeatherData, WeatherOps> mAsyncTask;
 
     /**
      * Default constructor that's needed by the GenericActivity
@@ -108,38 +112,16 @@ public class WeatherOps implements ConfigurableOps {
         else 
             // Execute the AsyncTask to expand the weather without
             // blocking the caller.
-            mAsyncTask = new GetWeatherAsyncTask(this);
+            mAsyncTask = 
+                new GenericAsyncTask<String, Void, WeatherData, WeatherOps>(this);
             mAsyncTask.execute(location);
-    }
-
-    /**
-     * Display the results in the UI Thread.
-     */
-    public void displayResults(WeatherData weatherData,
-                               String location) {
-        if (weatherData == null)
-            Utils.showToast(mActivity.get(),
-                            "no weather for "
-                            + location
-                            + " found");
-        else {
-            // Store the weather data in anticipation of runtime
-            // configuration changes.
-            mCurrentWeatherData = weatherData;
-
-            // If the object was found, display the results.
-            mActivity.get().displayResults(weatherData);
-        
-            // Indicate the AsyncTask is done.
-            mAsyncTask = null;
-        }
     }
 
     /**
      * Get the current weather either from the ContentProvider cache
      * or from the Weather Service web service.
      */
-    public WeatherData getWeather(String location) {
+    public WeatherData doInBackground(String location) {
         // First the cache is checked for the location's
         // weather data.
         WeatherData weatherData = mCache.get(location);
@@ -164,5 +146,28 @@ public class WeatherOps implements ConfigurableOps {
                        weatherData);
         }
         return weatherData;
+    }
+
+    /**
+     * Display the results in the UI Thread.
+     */
+    public void onPostExecute(WeatherData weatherData,
+                              String location) {
+        if (weatherData == null)
+            Utils.showToast(mActivity.get(),
+                            "no weather for "
+                            + location
+                            + " found");
+        else {
+            // Store the weather data in anticipation of runtime
+            // configuration changes.
+            mCurrentWeatherData = weatherData;
+
+            // If the object was found, display the results.
+            mActivity.get().displayResults(weatherData);
+        
+            // Indicate the AsyncTask is done.
+            mAsyncTask = null;
+        }
     }
 }

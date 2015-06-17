@@ -21,11 +21,6 @@ public class GenericActivity<OpsType extends ConfigurableOps>
                                       TAG);
  
     /**
-     * Class type of the operations ("Ops") type.
-     */
-    private Class<OpsType> mOpsType;
-
-    /**
      * Instance of the operations ("Ops") type.
      */
     private OpsType mOpsInstance;

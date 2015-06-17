@@ -59,7 +59,7 @@ public class WeatherOps
 
     /**
      * The GenericAsyncTask used to get the current weather from the
-     * Weather Service.
+     * Weather Service web service.
      */
     private GenericAsyncTask<String, Void, WeatherData, WeatherOps> mAsyncTask;
 
@@ -110,7 +110,7 @@ public class WeatherOps
             // requests run concurrently.
             mAsyncTask.cancel(true);
         else 
-            // Execute the AsyncTask to expand the weather without
+            // Execute the AsyncTask to get the weather without
             // blocking the caller.
             mAsyncTask = 
                 new GenericAsyncTask<String, Void, WeatherData, WeatherOps>(this);
@@ -122,39 +122,43 @@ public class WeatherOps
      * or from the Weather Service web service.
      */
     public WeatherData doInBackground(String location) {
+        try {
         // First the cache is checked for the location's
         // weather data.
         WeatherData weatherData = mCache.get(location);
 
+        // If data is in cache return it.
+        if (weatherData != null
+            && weatherData.isEmpty())
+            return weatherData;
+
         // If the location's data wasn't in the cache or was stale,
-        // fetch it from the server.
-        if (weatherData == null) {
+        // use Retrofit to fetch it from the Weather Service web
+        // service.
+        else {
             Log.v(TAG,
                   location 
                   + ": not in cache");
 
-            try {
-                // Get the weather from the Weather Service.
-                weatherData = 
-                    mWeatherWebServiceProxy.getWeatherData(location);
-            } catch (Exception e) {
-                Log.v(TAG,
-                      "getWeatherData() "
-                      + e);
-                return null;
-            }
+            // Get the weather from the Weather Service.
+            weatherData = 
+                mWeatherWebServiceProxy.getWeatherData(location);
 
             // Check to make sure the call to the server succeeded by
             // testing the "name" member to make sure it was
-            // initialized
+            // initialized.
             if (weatherData.getName() == null)
                 return null;
 
             // Add to cache.
             mCache.put(location,
                        weatherData);
+        } catch (Exception e) {
+            Log.v(TAG,
+                  "doInBackground() "
+                  + e);
+            return null;
         }
-        return weatherData;
     }
 
     /**

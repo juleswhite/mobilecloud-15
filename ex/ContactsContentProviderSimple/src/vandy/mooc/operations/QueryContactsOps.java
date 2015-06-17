@@ -43,7 +43,11 @@ public class QueryContactsOps
      * Constructor initializes the fields.
      */
     public QueryContactsOps(ContactsOps ops) {
+        // Store the ContactOps.
         mOps = ops;
+
+        // Create and execute a GenericAsyncTask to query the contacts
+        // off the UI Thread.
         mAsyncTask = new GenericAsyncTask<>(this);
         mAsyncTask.execute((Void) null);
     }

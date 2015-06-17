@@ -39,7 +39,11 @@ public class InsertContactsOps
     @SuppressWarnings("unchecked")
     public InsertContactsOps(ContactsOps ops,
                              Iterator<String> contactsIter) {
+        // Store the ContactOps.
         mOps = ops;
+
+        // Create and execute a GenericAsyncTask to insert the
+        // contacts off the UI Thread.
         mAsyncTask = new GenericAsyncTask<>(this);
         mAsyncTask.execute(contactsIter);
     }

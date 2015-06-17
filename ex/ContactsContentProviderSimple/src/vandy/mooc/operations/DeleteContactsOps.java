@@ -29,7 +29,11 @@ public class DeleteContactsOps
     @SuppressWarnings("unchecked")
     public DeleteContactsOps(ContactsOps ops,
                              Iterator<String> contactsIter) {
+        // Store the ContactOps.
         mOps = ops;
+
+        // Create and execute a GenericAsyncTask to delete the
+        // contacts off the UI Thread.
         mAsyncTask = new GenericAsyncTask<>(this);
         mAsyncTask.execute(contactsIter);
     }

@@ -59,17 +59,6 @@ public class DeleteContactsOps
                         + " contact(s) deleted");
     }
 
-    /**
-     * Delete the contact with the designated @a name.
-     */
-    private int deleteContact(String name) {
-        return mOps.getActivity()
-            .getApplicationContext()
-            .getContentResolver()
-            .delete(ContactsContract.RawContacts.CONTENT_URI,
-                    ContactsContract.Contacts.DISPLAY_NAME + "=?",
-                    new String[] { name });
-    }
 
     /**
      * Synchronously delete all contacts designated by the Iterator.
@@ -82,5 +71,17 @@ public class DeleteContactsOps
             totalContactsDeleted += deleteContact(contactsIter.next());
 
         return totalContactsDeleted;
+    }
+
+    /**
+     * Delete the contact with the designated @a name.
+     */
+    private int deleteContact(String name) {
+        return mOps.getActivity()
+            .getApplicationContext()
+            .getContentResolver()
+            .delete(ContactsContract.RawContacts.CONTENT_URI,
+                    ContactsContract.Contacts.DISPLAY_NAME + "=?",
+                    new String[] { name });
     }
 }

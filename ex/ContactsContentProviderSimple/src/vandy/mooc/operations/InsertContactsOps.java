@@ -70,11 +70,43 @@ public class InsertContactsOps
     }
 
     /**
+     * Synchronously insert all contacts designated by the Iterator.
+     */
+    private Integer insertAllContacts(Iterator<String> contactsIter) {
+        // Set up a batch operation on ContactsContentProvider.
+        final ArrayList<ContentProviderOperation> batchOperation =
+            new ArrayList<ContentProviderOperation>();
+
+        // Add each contact in the Iterator into the Contacts
+        // ContentProvider.
+        while (contactsIter.hasNext())
+            addContact(contactsIter.next(),
+                       batchOperation);
+
+        try {
+            // Apply all the batched operations synchronously.
+            ContentProviderResult[] results =
+                mOps.getActivity()
+                .getApplicationContext()
+                .getContentResolver()
+                .applyBatch(ContactsContract.AUTHORITY,
+                            batchOperation);
+            // Divide by 2 since each insert required two operations.
+            return results.length / 2; 
+        } catch (RemoteException e) {
+            e.printStackTrace();
+        } catch (OperationApplicationException e) {
+            e.printStackTrace();
+        }
+        return 0;
+    }
+
+    /**
      * Synchronously insert a contact with the designated @name into
      * the ContactsContentProvider.
      */
-    private void addRecord(String name,
-                           List<ContentProviderOperation> cpops) {
+    private void addContact(String name,
+                            List<ContentProviderOperation> cpops) {
         final int position = cpops.size();
 
         // First part of operation.
@@ -96,38 +128,6 @@ public class InsertContactsOps
                   .withValue(StructuredName.DISPLAY_NAME,
                              name)
                   .build());
-    }
-
-    /**
-     * Synchronously insert all contacts designated by the Iterator.
-     */
-    private Integer insertAllContacts(Iterator<String> contactsIter) {
-        // Set up a batch operation on ContactsContentProvider.
-        final ArrayList<ContentProviderOperation> batchOperation =
-            new ArrayList<ContentProviderOperation>();
-
-        // Add each contact in the Iterator into the Contacts
-        // ContentProvider.
-        while (contactsIter.hasNext())
-            addRecord(contactsIter.next(),
-                      batchOperation);
-
-        try {
-            // Apply all the batched operations synchronously.
-            ContentProviderResult[] results =
-                mOps.getActivity()
-                .getApplicationContext()
-                .getContentResolver()
-                .applyBatch(ContactsContract.AUTHORITY,
-                            batchOperation);
-            // Divide by 2 since each insert required two operations.
-            return results.length / 2; 
-        } catch (RemoteException e) {
-            e.printStackTrace();
-        } catch (OperationApplicationException e) {
-            e.printStackTrace();
-        }
-        return 0;
     }
 }
 

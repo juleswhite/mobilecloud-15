@@ -104,33 +104,33 @@ public class ContactsOps implements ConfigurableOps {
     /**
      * Insert the contacts.
      */
-    public void executeInsertContact() {
+    public void runInsertContactCommand() {
         // Reset mCursor and reset the display to show nothing.
         mActivity.get().displayCursor(mCursor = null);
 
-        // Create an object that executes a GenericAsyncTask to
+        // Create a command that executes a GenericAsyncTask to
         // perform the insertions off the UI Thread.
-        new InsertContactsOps(this, 
-                              mContacts.iterator());
+        new InsertContactsCommand(this, 
+                                  mContacts.iterator()).run();
     }
 
     /**
      * Query the contacts.
      */
-    public void executeQueryContacts() {
-        // Create an object that executes a GenericAsyncTask to
+    public void runQueryContactsCommand() {
+        // Create a command that executes a GenericAsyncTask to
         // perform the Query off the UI Thread.
-        new QueryContactsOps(this);
+        new QueryContactsCommand(this).run();
     }
 
     /**
      * Delete the contacts.
      */
-    public void executeDeleteContact() {
-        // Create an object that executes a GenericAsyncTask to
+    public void runDeleteContactCommand() {
+        // Create a command that executes a GenericAsyncTask to
         // perform the deletions off the UI Thread.
-        new DeleteContactsOps(this,
-                              mContacts.iterator());
+        new DeleteContactsCommand(this,
+                                  mContacts.iterator()).run();
     }
 
     /**

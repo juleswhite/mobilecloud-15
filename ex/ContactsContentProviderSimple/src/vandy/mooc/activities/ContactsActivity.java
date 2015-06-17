@@ -88,7 +88,7 @@ public class ContactsActivity
      */
     public void insertContacts(View v) {
         // Insert contacts.
-        getOps().executeInsertContact();
+        getOps().runInsertContactCommand();
     }
 
     /**
@@ -97,7 +97,7 @@ public class ContactsActivity
      */
     public void queryContacts(View v) {
         // Query contacts.
-        getOps().executeQueryContacts();
+        getOps().runQueryContactsCommand();
     }
 
     /**
@@ -106,7 +106,7 @@ public class ContactsActivity
      */
     public void deleteContacts(View v) {
         // Delete contacts.
-        getOps().executeDeleteContact();
+        getOps().runDeleteContactCommand();
     }
 
     /**

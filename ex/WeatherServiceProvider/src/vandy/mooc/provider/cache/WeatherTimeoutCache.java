@@ -99,8 +99,8 @@ public class WeatherTimeoutCache implements TimeoutCache<String, WeatherData> {
      * Ctor that sets the default timeout for the cache (in seconds)
      */
     public WeatherTimeoutCache(Context context) {
-	// Set the timeout in nanoseconds
-	mDefaultTimeout = DEFAULT_TIMEOUT * 1000 * 1000 * 1000;
+	// Set the timeout in nanoseconds.
+	mDefaultTimeout = DEFAULT_TIMEOUT;
 
 	// Get the AlarmManager system service.
 	mAlarmManager = (AlarmManager) context

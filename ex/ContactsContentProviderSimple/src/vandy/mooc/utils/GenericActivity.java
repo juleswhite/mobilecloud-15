@@ -10,7 +10,7 @@ import android.util.Log;
  * also extends LifecycleLoggingActivity so that all lifecycle hook
  * method calls are automatically logged.
  */
-public class GenericActivity<OpsType extends ConfigurableOps> 
+public class GenericActivity<OpsType extends ConfigurableOps>
        extends LifecycleLoggingActivity {
     /**
      * Used to retain the OpsType state between runtime configuration
@@ -88,7 +88,7 @@ public class GenericActivity<OpsType extends ConfigurableOps>
             // This check shouldn't be necessary under normal
             // circumstances, but it's better to lose state than to
             // crash!
-            if (mOpsInstance == null) 
+            if (mOpsInstance == null)
                 // Initialize the GenericActivity fields.
                 initialize(opsType);
             else

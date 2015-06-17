@@ -74,7 +74,8 @@ public class WeatherOps
      * Called by the WeatherOps constructor and after a runtime configuration
      * change occurs to finish the initialization steps.
      */
-    public void onConfiguration(Activity activity, boolean firstTimeIn) {
+    public void onConfiguration(Activity activity,
+                                boolean firstTimeIn) {
 	// Reset the mActivity WeakReference.
 	mActivity = new WeakReference<>((WeatherActivity) activity);
 
@@ -109,11 +110,11 @@ public class WeatherOps
             // Cancel an ongoing operation to avoid having two
             // requests run concurrently.
             mAsyncTask.cancel(true);
-        else 
-            // Execute the AsyncTask to get the weather without
-            // blocking the caller.
-            mAsyncTask = new GenericAsyncTask<>(this);
-            mAsyncTask.execute(location);
+
+        // Execute the AsyncTask to get the weather without
+        // blocking the caller.
+        mAsyncTask = new GenericAsyncTask<>(this);
+        mAsyncTask.execute(location);
     }
 
     /**

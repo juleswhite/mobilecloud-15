@@ -137,7 +137,7 @@ public class ContactsOps implements ConfigurableOps {
      * Initialize the Google account.
      */
     private void initializeAccount() {
-        // Get Account information. Must have a Google account
+        // Get Account information.  Must have a Google account
         // configured on the device.
         mAccountList = 
             AccountManager.get(mActivity.get()

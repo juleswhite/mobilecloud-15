@@ -95,7 +95,8 @@ public class DeleteContactsCommand
             .getApplicationContext()
             .getContentResolver()
             .delete(ContactsContract.RawContacts.CONTENT_URI,
-                    ContactsContract.Contacts.DISPLAY_NAME + "=?",
+                    ContactsContract.Contacts.DISPLAY_NAME
+                    + "=?",
                     new String[] { name });
     }
 }

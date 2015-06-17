@@ -97,7 +97,7 @@ public class QueryContactsCommand
                         sColumnsToQuery, 
                         sSelect,
                         null, 
-                        ContactsContract.Contacts._ID 
+                        ContactsContract.Contacts._ID
                         + " ASC");
     }
 }

@@ -112,8 +112,7 @@ public class WeatherOps
         else 
             // Execute the AsyncTask to get the weather without
             // blocking the caller.
-            mAsyncTask = 
-                new GenericAsyncTask<String, Void, WeatherData, WeatherOps>(this);
+            mAsyncTask = new GenericAsyncTask<>(this);
             mAsyncTask.execute(location);
     }
 

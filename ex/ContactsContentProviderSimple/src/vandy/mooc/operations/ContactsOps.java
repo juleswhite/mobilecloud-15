@@ -102,6 +102,38 @@ public class ContactsOps implements ConfigurableOps {
     }
 
     /**
+     * Insert the contacts.
+     */
+    public void executeInsertContact() {
+        // Reset mCursor and reset the display.
+        mActivity.get().displayCursor(mCursor = null);
+
+        // Create and execute an AsyncTask to perform the insertions
+        // off the UI Thread.
+        new InsertContactsOps(this, 
+                              mContacts.iterator());
+    }
+
+    /**
+     * Query the contacts.
+     */
+    public void executeQueryContacts() {
+        // Create and execute an AsyncTask to perform the Query off
+        // the UI Thread.
+        new QueryContactsOps(this);
+    }
+
+    /**
+     * Delete the contacts.
+     */
+    public void executeDeleteContact() {
+        // Create and execute an AsyncTask to perform the deletions
+        // off the UI Thread.
+        new DeleteContactsOps(this,
+                              mContacts.iterator());
+    }
+
+    /**
      * Initialize the Google account.
      */
     private void initializeAccount() {
@@ -124,40 +156,6 @@ public class ContactsOps implements ConfigurableOps {
                       + e);
             }
         }
-    }
-
-    /**
-     * Insert the contacts.
-     */
-    @SuppressWarnings("unchecked")
-    public void executeInsertContact() {
-        // Reset mCursor and reset the display.
-        mActivity.get().displayCursor(mCursor = null);
-
-        // Create and execute an AsyncTask to perform the insertions
-        // off the UI Thread.
-        new ContactsInsertTask(this).execute
-            (mContacts.iterator());
-    }
-
-    /**
-     * Query the contacts.
-     */
-    public void executeQueryContacts() {
-        // Create and execute an AsyncTask to perform the Query off
-        // the UI Thread.
-        new ContactsQueryTask(this).execute();
-    }
-
-    /**
-     * Delete the contacts.
-     */
-    @SuppressWarnings("unchecked")
-    public void executeDeleteContact() {
-        // Create and execute an AsyncTask to perform the deletions
-        // off the UI Thread.
-        new ContactsDeleteTask(this).execute
-            (mContacts.iterator());
     }
 
     /* 

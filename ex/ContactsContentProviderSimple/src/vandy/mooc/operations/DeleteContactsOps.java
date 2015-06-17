@@ -1,28 +1,37 @@
 package vandy.mooc.operations;
 
-import java.lang.ref.WeakReference;
 import java.util.Iterator;
 
-import vandy.mooc.activities.ContactsActivity;
+import vandy.mooc.utils.GenericAsyncTask;
+import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 
 /**
  * Delete all designated contacts in a background thread.
  */
-public class ContactsDeleteTask 
-       extends AsyncTask<Iterator<String>, Void, Integer> {
+public class DeleteContactsOps
+       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer> {
     /**
      * Store a reference to the ContactsOps object.
      */
     private ContactsOps mOps;
 
     /**
-     * Constructor initializes the field.
+     * The GenericAsyncTask used to insert contacts into the
+     * ContactContentProvider.
      */
-    public ContactsDeleteTask(ContactsOps ops) {
+    private GenericAsyncTask<Iterator<String>, Void, Integer, DeleteContactsOps> mAsyncTask;
+
+    /**
+     * Constructor initializes the fields.
+     */
+    @SuppressWarnings("unchecked")
+    public DeleteContactsOps(ContactsOps ops,
+                             Iterator<String> contactsIter) {
         mOps = ops;
+        mAsyncTask = new GenericAsyncTask<>(this);
+        mAsyncTask.execute(contactsIter);
     }
 
     /**
@@ -53,11 +62,10 @@ public class ContactsDeleteTask
     /**
      * Run in a background Thread to avoid blocking the UI Thread.
      */
-    @SuppressWarnings("unchecked")
     @Override
-    public Integer doInBackground(Iterator<String>... contactsIter) {
+    public Integer doInBackground(Iterator<String> contactsIter) {
         // Delete all the contacts named by the iterator.
-        return deleteAllContacts(contactsIter[0]);
+        return deleteAllContacts(contactsIter);
     }
 
     /**
@@ -65,7 +73,8 @@ public class ContactsDeleteTask
      * many contacts were deleted.
      */
     @Override
-    public void onPostExecute(Integer totalContactsDeleted) {
+    public void onPostExecute(Integer totalContactsDeleted,
+                              Iterator<String> contactsIter) {
         Utils.showToast(mOps.getActivity(),
                         totalContactsDeleted 
                         + " contact(s) deleted");

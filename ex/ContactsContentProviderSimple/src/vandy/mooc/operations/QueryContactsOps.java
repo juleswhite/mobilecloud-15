@@ -1,14 +1,15 @@
 package vandy.mooc.operations;
 
+import vandy.mooc.utils.GenericAsyncTask;
+import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
 import android.content.ContentResolver;
 import android.database.Cursor;
-import android.os.AsyncTask;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 
-public class ContactsQueryTask
-       extends AsyncTask<Void, Void, Cursor> {
+public class QueryContactsOps
+       implements GenericAsyncTaskOps<Void, Void, Cursor> {
     /**
      * Columns to query.
      */
@@ -33,10 +34,18 @@ public class ContactsQueryTask
     private ContactsOps mOps;
 
     /**
-     * Constructor initializes the field.
+     * The GenericAsyncTask used to query contacts into the
+     * ContactContentProvider.
      */
-    public ContactsQueryTask(ContactsOps ops) {
+    private GenericAsyncTask<Void, Void, Cursor, QueryContactsOps> mAsyncTask;
+
+    /**
+     * Constructor initializes the fields.
+     */
+    public QueryContactsOps(ContactsOps ops) {
         mOps = ops;
+        mAsyncTask = new GenericAsyncTask<>(this);
+        mAsyncTask.execute((Void) null);
     }
 
     /**
@@ -58,7 +67,7 @@ public class ContactsQueryTask
      * Run in a background Thread to avoid blocking the UI Thread.
      */
     @Override
-    public Cursor doInBackground(Void... v) {
+    public Cursor doInBackground(Void v) {
         // Query the Contacts ContentProvider for the contacts and
         // return them.
         return queryAllContacts
@@ -69,7 +78,8 @@ public class ContactsQueryTask
      * The results of the query are displayed in the UI Thread.
      */
     @Override
-    public void onPostExecute(Cursor cursor) {
+    public void onPostExecute(Cursor cursor,
+                              Void v) {
         if (cursor == null
             || cursor.getCount() == 0)
             Utils.showToast(mOps.getActivity(),

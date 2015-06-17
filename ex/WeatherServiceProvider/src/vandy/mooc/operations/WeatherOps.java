@@ -126,18 +126,27 @@ public class WeatherOps
         // weather data.
         WeatherData weatherData = mCache.get(location);
 
-        // If the location's data wasn't in the cache or
-        // was stale, fetch it from the server.
+        // If the location's data wasn't in the cache or was stale,
+        // fetch it from the server.
         if (weatherData == null) {
-            Log.v(TAG, location + ": not in cache");
+            Log.v(TAG,
+                  location 
+                  + ": not in cache");
 
-            // Get the weather from the Weather Service.
-            weatherData = 
-                mWeatherWebServiceProxy.getWeatherData(location);
+            try {
+                // Get the weather from the Weather Service.
+                weatherData = 
+                    mWeatherWebServiceProxy.getWeatherData(location);
+            } catch (Exception e) {
+                Log.v(TAG,
+                      "getWeatherData() "
+                      + e);
+                return null;
+            }
 
-            // Check to make sure the call to the server
-            // succeeded by testing the "name" member to make
-            // sure it was initialized
+            // Check to make sure the call to the server succeeded by
+            // testing the "name" member to make sure it was
+            // initialized
             if (weatherData.getName() == null)
                 return null;
 
@@ -165,9 +174,9 @@ public class WeatherOps
 
             // If the object was found, display the results.
             mActivity.get().displayResults(weatherData);
-        
-            // Indicate the AsyncTask is done.
-            mAsyncTask = null;
         }
+        
+        // Indicate the AsyncTask is done.
+        mAsyncTask = null;
     }
 }

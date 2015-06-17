@@ -2,6 +2,7 @@ package vandy.mooc.provider.cache;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 
 import vandy.mooc.provider.WeatherContract;
 import vandy.mooc.provider.WeatherContract.WeatherConditionEntry;
@@ -28,13 +29,15 @@ public class WeatherTimeoutCache implements TimeoutCache<String, WeatherData> {
     /**
      * Default cache timeout in to 25 seconds (in nanoseconds).
      */
-    private static final long DEFAULT_TIMEOUT = Long.valueOf(25000000000L);
+    private static final long DEFAULT_TIMEOUT =
+        Long.valueOf(25000000000L);
 
     /**
      * Cache is to be cleaned up at regular intervals to remove expired
      * WeatherData.
      */
-    public static final long CLEANUP_SCHEDULER_TIME_INTERVAL = AlarmManager.INTERVAL_HALF_DAY;
+    public static final long CLEANUP_SCHEDULER_TIME_INTERVAL =
+        AlarmManager.INTERVAL_HALF_DAY;
 
     /**
      * AlarmManager provides access to the system alarm services. Used to
@@ -176,12 +179,16 @@ public class WeatherTimeoutCache implements TimeoutCache<String, WeatherData> {
     /**
      * Helper method that places a weather data object into the db
      */
-    private void putImpl(String key, WeatherData wd, long timeout) {
+    private void putImpl(String key,
+                         WeatherData wd,
+                         long timeout) {
 	// Enter the main WeatherData. The result Uri is used to
 	// determine the row that it was placed in.
-	final Uri uri = mContext.getContentResolver().insert(
-		WeatherContract.WeatherDataEntry.WEATHER_DATA_CONTENT_URI,
-		createWeatherDataContentValues(wd, timeout));
+	final Uri uri =
+            mContext.getContentResolver().insert
+            (WeatherContract.WeatherDataEntry.WEATHER_DATA_CONTENT_URI,
+             createWeatherDataContentValues(wd,
+                                            timeout));
 
 	final long parentId = ContentUris.parseId(uri);
 
@@ -191,14 +198,16 @@ public class WeatherTimeoutCache implements TimeoutCache<String, WeatherData> {
 
 	// Create a list of the content values to insert into the db
 	for (int i = 0; i < weathers.size(); i++) {
-	    cvArray[i] = createWeatherConditionContentValues(weathers.get(i),
-		    parentId, wd.getName());
+	    cvArray[i] = 
+                createWeatherConditionContentValues(weathers.get(i),
+                                                    parentId,
+                                                    wd.getName());
 	}
 
 	// bulk insert the rows at once into the weather condition table
 	mContext.getContentResolver()
-		.bulkInsert(
-			WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_CONTENT_URI,
+		.bulkInsert
+                    (WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_CONTENT_URI,
 			cvArray);
     }
 

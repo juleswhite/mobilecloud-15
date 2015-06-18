@@ -1,0 +1,83 @@
+<html>
+
+<title>Acronym App (P3 - Assignment 1)</title>
+
+<body text = "#000000"
+      link="#000fff"
+      vlink="#ff0f0f"
+      bgcolor="#ffffff">
+
+  <hr>
+  <h3>Acronym App (P3 - Assignment 1)</h3>
+
+  <hr width=50% align=left>
+  <h4>Overview of the Acronym App</h4>
+
+<P> 
+
+The purpose of this assignment is to give you experience using Android
+to develop an Acronym app using the Retrofit library and an Android
+Content Provider and SQLite database.  Retrofit is used to obtain
+expansions of an acronym from an Acronym web service.  This data is
+then stored in a timeout cache that uses an SQLite database-backed
+Content Provider for storage.  The user will provide an acronym as a
+String (such as "BBC") and a List of AcronymData will be returned to
+the AcronymActivity, which will display the expanded acronym data in a
+ListView.
+
+</P>
+    
+<P>
+Retrofit is covered in the following videos: 
+    <UL> 
+        <LI><A HREF=https://www.youtube.com/watch?v=yUuJJf1OFl8>Introduction to Retrofit</A> </LI>
+        <LI><A HREF=https://www.youtube.com/watch?v=q0S1QWL9Z5M>Retrofit Code Walk through</A> </LI> 
+    </UL>
+    
+Android Content Providers and SQLite will be covered in Live Lecture
+videos presented in weeks 1 and 2 of this MOOC.  There are also some
+pre-recorded videos on these topics available at
+
+    <UL> 
+        <LI><A HREF=https://www.youtube.com/watch?v=IWP2-qkhtiM&list=PLZ9NgFYEMxp50tvT8806xllaCbd31DpDy&index=24>ContentProviders parts 1 and 2</A> </LI>
+        <LI><A HREF=https://www.youtube.com/watch?v=BuODNF6Dbh8&list=PLZ9NgFYEMxp50tvT8806xllaCbd31DpDy&index=25>ContentProviders parts 3 - 5</A> </LI>
+        <LI><A HREF=https://www.youtube.com/watch?v=0fHQd-QrVwU&list=PLZ9NgFYEMxp50tvT8806xllaCbd31DpDy&index=26>ContentProviders parts 6 - 8</A> </LI>
+    </UL>
+</P>
+
+  <hr width=50% align=left>
+  <h4>Skeleton Code</h4>
+
+  <p> Skeleton code for this assignment is available <a
+    href="https://github.com/juleswhite/mobilecloud-15/tree/master/assignments/assignment1"></a>.
+    Pull the appropriate skeleton code into your repository, read it
+    carefully, and complete the "TODO" markers, which reside in the
+    following Java source files: AcronymOps.java,
+    AcronymProvider.java, DeleteCacheReceiver.java,
+    ContentProviderTimeoutCache.java.
+    
+    </p> 
+
+    <p> Note that there are no automated unit tests for this
+    assignment.  Instead, you'll know the program is working when you
+    can successfully access, store, and display the acronym expansions
+    from the Acronym web service. However, make sure your program
+    works for both valid and invalid input.  </p>
+    
+     
+
+<hr width=50% align=left>
+<h4>Concluding Remarks</h4>
+<p>
+
+This assignment is designed to deepen your understanding with the
+Retrofit library and Android's Content Providers and SQLite databases.
+It's recommended to watch the videos listed above and look at the <A
+HREF="https://github.com/juleswhite/mobilecloud-15/tree/master/ex/WeatherServiceProvider">WeatherServiceProvider
+example</A> to gain a better understanding of how to structure your
+solution.  Start early and please come to Virtual Office Hours if you
+have questions or run into problems.  </p>
+
+</body>
+</html>
+

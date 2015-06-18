@@ -15,14 +15,15 @@ import android.app.Activity;
 import android.util.Log;
 
 /**
- * This class implements all the weather-related operations defined in the
- * WeatherOps interface.
+ * This class implements the client-side operations that obtain
+ * WeatherData from the Weather Sevice web service.  Implements
+ * ConfigurableOps so an instance of this class can be managed by the
+ * GenericActivity framework.  Also implements GenericAsyncTaskOps so
+ * its doInBackground() method will run in a background thread.
  */
 public class WeatherOps 
        implements ConfigurableOps,
                   GenericAsyncTaskOps<String, Void, WeatherData> {
-    protected static final String RFM_KEY = "doInBackgroundResult";
-
     /**
      * Debugging tag used by the Android logger.
      */
@@ -34,12 +35,13 @@ public class WeatherOps
     protected WeakReference<WeatherActivity> mActivity;
 
     /**
-     * Cache for the WeatherData.
+     * Content Provider-based cache for the WeatherData.
      */
     private WeatherTimeoutCache mCache;
 
     /**
-     * URL to the weather api to use with the Retrofit service.
+     * URL to the Web Search web service to use with the Retrofit
+     * service.
      */
     private static String sWeather_Service_URL_Retro =
         "http://api.openweathermap.org/data/2.5";
@@ -71,8 +73,8 @@ public class WeatherOps
     }
 
     /**
-     * Called by the WeatherOps constructor and after a runtime configuration
-     * change occurs to finish the initialization steps.
+     * Called by the WeatherOps constructor and after a runtime
+     * configuration change occurs to finish the initialization steps.
      */
     public void onConfiguration(Activity activity,
                                 boolean firstTimeIn) {
@@ -80,7 +82,10 @@ public class WeatherOps
 	mActivity = new WeakReference<>((WeatherActivity) activity);
 
 	if (firstTimeIn) {
-            // Initialize the TimeoutCache.
+            // Initialize the WeatherTimeoutCache.  We use the
+            // Application context to avoid dependencies on the
+            // Activity context, which will change if/when a runtime
+            // configuration change occurs.
 	    mCache =
                 new WeatherTimeoutCache(activity.getApplicationContext());
 
@@ -92,13 +97,12 @@ public class WeatherOps
                 .setEndpoint(sWeather_Service_URL_Retro)
                 .build()
                 .create(WeatherWebServiceProxy.class);
-	} else {
-            // Populate the display if a WeatherData object is stored in
-            // the WeatherOps instance.
-            if (mCurrentWeatherData != null) 
-                mActivity.get().displayResults
-                    (mCurrentWeatherData);
-        }
+	} else if (mCurrentWeatherData != null) 
+            // Populate the display if a WeatherData object is stored
+            // in the WeatherOps instance.
+            mActivity.get().displayResults
+                (mCurrentWeatherData,
+                 "");
     }
 
     /**
@@ -111,8 +115,8 @@ public class WeatherOps
             // requests run concurrently.
             mAsyncTask.cancel(true);
 
-        // Execute the AsyncTask to get the weather without
-        // blocking the caller.
+        // Execute the AsyncTask to get the weather without blocking
+        // the caller.
         mAsyncTask = new GenericAsyncTask<>(this);
         mAsyncTask.execute(location);
     }
@@ -123,28 +127,30 @@ public class WeatherOps
      */
     public WeatherData doInBackground(String location) {
         try {
-            // First the cache is checked for the location's
-            // weather data.
-            WeatherData weatherData = mCache.get(location);
+            // First the cache is checked for the location's weather
+            // data.
+            WeatherData weatherData =
+                mCache.get(location);
 
             // If data is in cache return it.
             if (weatherData != null)
                 return weatherData;
 
-            // If the location's data wasn't in the cache or was stale,
-            // use Retrofit to fetch it from the Weather Service web
-            // service.
+            // If the location's data wasn't in the cache or was
+            // stale, use Retrofit to fetch it from the Weather
+            // Service web service.
             else {
                 Log.v(TAG,
                       location 
                       + ": not in cache");
 
-                // Get the weather from the Weather Service.
+                // Get the weather from the Weather Service web
+                // service.
                 weatherData = 
                     mWeatherWebServiceProxy.getWeatherData(location);
 
-                // Check to make sure the call to the server succeeded by
-                // testing the "name" member to make sure it was
+                // Check to make sure the call to the server succeeded
+                // by testing the "name" member to make sure it was
                 // initialized.
                 if (weatherData.getName() == null)
                     return null;
@@ -152,6 +158,8 @@ public class WeatherOps
                 // Add to cache.
                 mCache.put(location,
                            weatherData);
+
+                // Return the weather data.
                 return weatherData;
             } 
         } catch (Exception e) {
@@ -167,21 +175,17 @@ public class WeatherOps
      */
     public void onPostExecute(WeatherData weatherData,
                               String location) {
-        if (weatherData == null)
-            Utils.showToast(mActivity.get(),
-                            "no weather for "
-                            + location
-                            + " found");
-        else {
-            // Store the weather data in anticipation of runtime
-            // configuration changes.
-            mCurrentWeatherData = weatherData;
+        // Store the weather data in anticipation of runtime
+        // configuration changes.
+        mCurrentWeatherData = weatherData;
 
-            // If the object was found, display the results.
-            mActivity.get().displayResults(weatherData);
-        }
-        
-        // Indicate the AsyncTask is done.
+        // If the object was found, display the results.
+        mActivity.get().displayResults(weatherData,
+                                       "no weather for "
+                                       + location
+                                       + " found");
+
+        // Indicate we're done with the AsyncTask.
         mAsyncTask = null;
     }
 }

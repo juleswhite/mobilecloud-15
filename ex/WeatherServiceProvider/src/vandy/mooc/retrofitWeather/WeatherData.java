@@ -5,7 +5,6 @@ import java.util.List;
 
 import com.google.gson.annotations.SerializedName;
 
-
 /**
  * This class is a Plain Old Java Object (POJO) used for data transport within
  * the WeatherService app. It represents the response Json obtained from the
@@ -25,68 +24,36 @@ import com.google.gson.annotations.SerializedName;
  * The meaning of these Json fields is documented at
  * http://openweathermap.org/weather-data#current.
  * 
- * The Retrofit library handles automatic conversion from this Json data to this
- * object. The annotations enable this functionality.
+ * The Retrofit library handles automatic conversion from this Json
+ * data to this object.  The Java annotations enable this
+ * functionality.
  *
  */
 public class WeatherData {
     /*
-     * These data members are the local variables that will store the
-     * WeatherData's state
+     * These fields store the WeatherData's state.  We use
+     * the @SerializedName annotation to make an explicit mapping
+     * between the Json names and the fields in this class.  If we
+     * named these fields the same as the Json names we won't need to
+     * use this annotation.
      */
     @SerializedName("name")
-        private String mName;
+    private String mName;
     @SerializedName("dt")
-        private long mDate;
+    private long mDate;
     @SerializedName("cod")
-        private long mCod;
+    private long mCod;
     @SerializedName("weather")
-        private List<Weather> mWeathers = new ArrayList<Weather>();
+    private List<Weather> mWeathers = new ArrayList<Weather>();
     @SerializedName("sys")
-        private Sys mSys;
+    private Sys mSys;
     @SerializedName("main")
-        private Main mMain;
+    private Main mMain;
     @SerializedName("wind")
-        private Wind mWind;
-
-    /*
-     * End Inner classes
-     */
+    private Wind mWind;
 
     /**
-     * Constructor
-     * 
-     * @param name
-     * @param speed
-     * @param deg
-     * @param temp
-     * @param humidity
-     * @param sunrise
-     * @param sunset
-     */
-    public WeatherData(String name,
-                       double speed,
-                       double deg,
-                       double temp,
-                       long humidity,
-                       long sunrise,
-                       long sunset,
-                       String country,
-                       double pressure,
-                       long date,
-                       long cod,
-                       List<Weather> weathers) {
-	mName = name;
-	mDate = date;
-	mCod = cod;
-	mSys = new Sys(sunrise, sunset, country);
-	mMain = new Main(temp, humidity, pressure);
-	mWind = new Wind(speed, deg);
-	mWeathers = weathers;
-    }
-
-    /**
-     * Constructor
+     * Constructor that initializes the POJO.
      */
     public WeatherData(String name,
                        long date,
@@ -177,15 +144,18 @@ public class WeatherData {
      */
     public static class Weather {
 	@SerializedName("id")
-            private long mId;
+        private long mId;
 	@SerializedName("main")
-            private String mMain;
+        private String mMain;
 	@SerializedName("description")
-            private String mDescription;
+        private String mDescription;
 	@SerializedName("icon")
-            private String mIcon;
+        private String mIcon;
 
-	public Weather(long id, String main, String description, String icon) {
+	public Weather(long id,
+                       String main,
+                       String description,
+                       String icon) {
 	    mId = id;
 	    mMain = main;
 	    mDescription = description;
@@ -219,13 +189,15 @@ public class WeatherData {
      */
     public static class Sys {
 	@SerializedName("sunrise")
-            private long mSunrise;
+        private long mSunrise;
 	@SerializedName("sunset")
-            private long mSunset;
+        private long mSunset;
 	@SerializedName("country")
-            private String mCountry;
+        private String mCountry;
 
-	public Sys(long sunrise, long sunset, String country) {
+	public Sys(long sunrise,
+                   long sunset,
+                   String country) {
 	    mSunrise = sunrise;
 	    mSunset = sunset;
 	    mCountry = country;
@@ -253,13 +225,15 @@ public class WeatherData {
      */
     public static class Main {
 	@SerializedName("temp")
-            private double mTemp;
+        private double mTemp;
 	@SerializedName("humidity")
-            private long mHumidity;
+        private long mHumidity;
 	@SerializedName("pressure")
-            private double mPressure;
+        private double mPressure;
 
-	public Main(double temp, long humidity, double pressure) {
+	public Main(double temp,
+                    long humidity,
+                    double pressure) {
 	    mTemp = temp;
 	    mHumidity = humidity;
 	    mPressure = pressure;
@@ -287,11 +261,12 @@ public class WeatherData {
      */
     public static class Wind {
 	@SerializedName("speed")
-            private double mSpeed;
+        private double mSpeed;
 	@SerializedName("deg")
-            private double mDeg;
+        private double mDeg;
 
-	public Wind(double speed, double deg) {
+	public Wind(double speed,
+                    double deg) {
 	    mSpeed = speed;
 	    mDeg = deg;
 	}

@@ -26,7 +26,7 @@
         
         <provider
            android:authorities="@string/content_authority"
-           android:name="vandy.mooc.provider.WeatherProvider"
+           android:name="vandy.mooc.provider.weatherprovider"
            android:exported="false"/>
     </application>
 

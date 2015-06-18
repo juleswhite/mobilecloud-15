@@ -176,8 +176,9 @@ public class WeatherOps
                               String location) {
         // Store the weather data in anticipation of runtime
         // configuration changes.
-        mCurrentWeatherData = weatherData;
-
+        if (weatherData != null) 
+            mCurrentWeatherData = weatherData;
+            
         // If the object was found, display the results.
         mActivity.get().displayResults(weatherData,
                                        "no weather for "

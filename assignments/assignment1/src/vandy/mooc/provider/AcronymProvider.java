@@ -158,8 +158,44 @@ public class AcronymProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri,
                       ContentValues values) {
-        // This method is not needed for this assignment.
-        throw new RuntimeException("Operation is not supported");
+    	// Create and/or open a database that will be used for reading
+        // and writing. Once opened successfully, the database is
+        // cached, so you can call this method every time you need to
+        // write to the database.
+        final SQLiteDatabase db =
+            mOpenHelper.getWritableDatabase();
+
+        Uri returnUri;
+
+        // Try to match against the path in a url.  It returns the
+        // code for the matched node (added using addURI), or -1 if
+        // there is no matched node.  If there's a match insert a new
+        // row.
+        switch (sUriMatcher.match(uri)) {
+        case ACRONYMS:
+            // TODO - replace 0 with code that inserts a row in Table
+            // and returns the row id.
+            long id = 0;
+
+            // Check if a new row is inserted or not.
+            if (id > 0)
+                returnUri = 
+                    AcronymContract.AcronymEntry.buildAcronymUri(id);
+            else
+                throw new android.database.SQLException
+                    ("Failed to insert row into " 
+                     + uri);
+            break;
+        default:
+            throw new UnsupportedOperationException("Unknown uri: " 
+                                                    + uri);
+        }
+
+        // Notifies registered observers that a row was inserted and
+        // attempt to sync changes to the network.
+        getContext().getContentResolver().notifyChange(uri, 
+                                                       null);
+        return returnUri;
     }
 
     /**

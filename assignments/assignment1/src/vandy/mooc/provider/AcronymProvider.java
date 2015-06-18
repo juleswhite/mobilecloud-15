@@ -219,6 +219,8 @@ public class AcronymProvider extends ContentProvider {
             retCursor = null;
             break;
         case ACRONYM: 
+            // Selection clause that matches row id with id passed
+            // from Uri.
             final String rowId =
                 ""
                 + AcronymContract.AcronymEntry._ID

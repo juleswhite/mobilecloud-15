@@ -10,16 +10,15 @@ import vandy.mooc.retrofitWeather.WeatherWebServiceProxy;
 import vandy.mooc.utils.ConfigurableOps;
 import vandy.mooc.utils.GenericAsyncTask;
 import vandy.mooc.utils.GenericAsyncTaskOps;
-import vandy.mooc.utils.Utils;
 import android.app.Activity;
 import android.util.Log;
 
 /**
  * This class implements the client-side operations that obtain
- * WeatherData from the Weather Sevice web service.  Implements
+ * WeatherData from the Weather Sevice web service.  It implements
  * ConfigurableOps so an instance of this class can be managed by the
- * GenericActivity framework.  Also implements GenericAsyncTaskOps so
- * its doInBackground() method will run in a background thread.
+ * GenericActivity framework.  It also implements GenericAsyncTaskOps
+ * so its doInBackground() method will run in a background thread.
  */
 public class WeatherOps 
        implements ConfigurableOps,

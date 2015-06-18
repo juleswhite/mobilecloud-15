@@ -18,7 +18,7 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         "vandy_mooc_weather_db";
 
     /**
-     * Database version number.  This is updated with each schema
+     * Database version number, which is updated with each schema
      * change.
      */
     private static int DATABASE_VERSION = 1;
@@ -28,9 +28,10 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
      */
 
     /**
-     * Weather Values create table statement.
+     * SQL statement used to create the Weather Values table.
      */
-    private static final String CREATE_TABLE_WEATHER_VALUES = "CREATE TABLE "
+    private static final String CREATE_TABLE_WEATHER_VALUES =
+        "CREATE TABLE "
         + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME
         + "("
         + WeatherContract.WeatherValuesEntry._ID 
@@ -63,9 +64,10 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " REAL)";
 
     /**
-     * Weather Conditions create table statement.
+     * SQL statement used to create the Weather Conditions table.
      */
-    private static final String CREATE_TABLE_WEATHER_CONDITIONS = "CREATE TABLE "
+    private static final String CREATE_TABLE_WEATHER_CONDITIONS = 
+        "CREATE TABLE "
         + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
         + "("
         + WeatherContract.WeatherConditionsEntry._ID
@@ -78,8 +80,6 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " TEXT, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY
         + " TEXT, "
-        + WeatherContract.WeatherConditionsEntry.COLUMN_WEATHER_VALUES_PARENT_ID
-        + " REAL, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_ICON
         + " TEXT) ";
 

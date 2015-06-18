@@ -21,7 +21,7 @@ public class WeatherProvider extends ContentProvider {
      * Logcat tag.
      */
     private final String TAG = 
-        this.getCanonicalName();
+        getClass().getCanonicalName();
 
     /*
      * Constants referencing the Contract class.  Used for convenience
@@ -171,11 +171,11 @@ public class WeatherProvider extends ContentProvider {
             + " = ? AND "
             + WEATHER_VALUES_TABLE_NAME
             + "."
-            + WeatherContract.WeatherValuesEntry._ID
+            + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY
             + " = "
             + WEATHER_CONDITIONS_TABLE_NAME
             + "."
-            + WeatherContract.WeatherConditionsEntry.COLUMN_WEATHER_VALUES_PARENT_ID;
+            + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY;
 
         // Retreive the database from the helper
         final SQLiteDatabase db =
@@ -414,8 +414,9 @@ public class WeatherProvider extends ContentProvider {
         final SQLiteDatabase db = 
             mDatabaseHelper.getWritableDatabase();
 
-        // Update the appropriate rows. If the URI includes a specific
-        // row to update, add that row to the where statement.
+        // Update the appropriate rows.  If the URI includes a
+        // specific row to update, add that row to the where
+        // statement.
         switch (sUriMatcher.match(uri)) {
         case WEATHER_VALUES_ITEMS:
             rowsUpdated =
@@ -457,7 +458,8 @@ public class WeatherProvider extends ContentProvider {
         }
 
         // Register to watch a content URI for changes.
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri,
+                                                       null);
 
         return rowsUpdated;
     }
@@ -478,10 +480,12 @@ public class WeatherProvider extends ContentProvider {
         // table in which table to insert the values.
     	switch(sUriMatcher.match(uri)) {
     	case WEATHER_VALUES_ITEMS:
-            dbName = WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
+            dbName =
+                WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
             break;
     	case WEATHER_CONDITIONS_ITEMS:
-            dbName = WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
+            dbName =
+                WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
             break;
     	default:
             throw new IllegalArgumentException("Unknown URI " 

@@ -7,15 +7,20 @@ import android.provider.BaseColumns;
 /**
  * This contract defines the metadata for the Weather Content
  * Provider, including the provider's access URIs and its database
- * constants.  There are two tables 
- * @@ Geoff, can you please fill this in and briefly explain what these tables do and why we have two of them:
- * 1. Weather Values --
+ * constants.  The following two tables are managed by the Weather
+ * Content Provider:
  *
- * 2. Weather Conditions --
+ * 1. Weather Values -- This table stores the weather information that
+ *    has a one-to-one relationship with a given location.
+ *
+ * 2. Weather Conditions -- This table stores each location's various
+ *    weather conditions (such as "broken clouds" or "sky is clear").
+ *    This table is separate from the Weather Values table because
+ *    each location can have multiple Weather Conditions.
  */
 public class WeatherContract {
     /**
-     * The WeatherProvider's unique identifier.
+     * The WeatherProvider's unique authority identifier.
      */
     public static final String AUTHORITY =
         "vandy.mooc.weatherprovider";
@@ -41,8 +46,8 @@ public class WeatherContract {
         "vnd.android.cursor.item/";
 
     /**
-     * Path that accesses all data for a given location, which is used
-     * to join both tables over the location.
+     * Path that accesses all the WeatherData for a given location,
+     * which is used to join both tables over the location.
      */
     public static final String ACCESS_ALL_DATA_FOR_LOCATION_PATH =
         "access_all_for_location";
@@ -69,7 +74,8 @@ public class WeatherContract {
     /**
      * Inner class defining the contents of the Weather Values table.
      */
-    public static final class WeatherValuesEntry implements BaseColumns {
+    public static final class WeatherValuesEntry 
+                        implements BaseColumns {
         /**
          * Weather Values's Table name.
          */
@@ -136,7 +142,8 @@ public class WeatherContract {
      * Inner class defining the contents of the Weather Conditions
      * table.
      */
-    public static final class WeatherConditionsEntry implements BaseColumns {
+    public static final class WeatherConditionsEntry 
+                        implements BaseColumns {
         /**
          * Weather Conditions's Table name.
          */
@@ -180,8 +187,6 @@ public class WeatherContract {
             "icon";
         public static final String COLUMN_LOCATION_KEY =
             "loc_key_sub";
-        public static final String COLUMN_WEATHER_VALUES_PARENT_ID =
-            "wd_id";
 
         /**
          * Return a URI that points to the row containing the given ID.

@@ -1,5 +1,6 @@
 package vandy.mooc.provider;
 
+import android.content.ContentProvider;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -7,19 +8,28 @@ import android.net.Uri;
 /**
  * Content Provider used to store information about Hobbit characters.
  */
-public class HobbitContentProvider {
+public class HobbitContentProvider extends ContentProvider {
     /**
      * Debugging tag used by the Android logger.
      */
     protected final static String TAG =
         HobbitContentProvider.class.getSimpleName();
-    
+
+    public enum ContentProviderType {
+        HASH_MAP,
+        SQLITE
+    }
+
+    private ContentProviderType mContentProviderType =
+        ContentProviderType.HASH_MAP;
+
     private HobbitContentProviderImpl mImpl;
 
     /**
      * Method called to handle type requests from client applications.
      * It returns the MIME type of the data associated with each URI.
      */
+    @Override
     public String getType(Uri uri) {
         return mImpl.getType(uri);
     }
@@ -28,6 +38,7 @@ public class HobbitContentProvider {
      * Method called to handle insert requests from client
      * applications.
      */
+    @Override
     public Uri insert(Uri uri,
                       ContentValues cvs) {
         return mImpl.insert(uri, cvs);
@@ -36,6 +47,7 @@ public class HobbitContentProvider {
     /**
      * Method that handles bulk insert requests.
      */
+    @Override
     public int bulkInsert(Uri uri,
                           ContentValues[] cvsArray) {
         return mImpl.bulkInsert(uri, cvsArray);
@@ -45,6 +57,7 @@ public class HobbitContentProvider {
      * Method called to handle query requests from client
      * applications.
      */
+    @Override
     public Cursor query(Uri uri,
                         String[] projection,
                         String selection,
@@ -61,6 +74,7 @@ public class HobbitContentProvider {
      * Method called to handle update requests from client
      * applications.
      */
+    @Override
     public int update(Uri uri,
                       ContentValues cvs,
                       String selection,
@@ -75,6 +89,7 @@ public class HobbitContentProvider {
      * Method called to handle delete requests from client
      * applications.
      */
+    @Override
     public int delete(Uri uri,
                       String selection,
                       String[] selectionArgs) {
@@ -86,7 +101,18 @@ public class HobbitContentProvider {
     /**
      * Return true if successfully started.
      */
+    @Override
     public boolean onCreate() {
+        switch(mContentProviderType) {
+        case HASH_MAP:
+            mImpl =
+                new HobbitContentProviderHashMap(getContext());
+            break;
+        case SQLITE:
+            mImpl = null;
+            break;
+        }
+
         return mImpl.onCreate();
     }
 }

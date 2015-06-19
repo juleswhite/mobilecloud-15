@@ -203,7 +203,7 @@ public class WeatherTimeoutCache
 	ContentValues[] cvsArray =
             new ContentValues[wd.getWeathers().size()];
 
-        // Index into cvArray.
+        // Index into cvsArray.
         int i = 0;
 
         // Insert each weather object into the ContentValues array.

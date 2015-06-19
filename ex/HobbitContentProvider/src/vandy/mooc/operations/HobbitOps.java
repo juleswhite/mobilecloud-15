@@ -6,9 +6,10 @@ import android.net.Uri;
 import android.os.RemoteException;
 
 /**
- * Class that implements the operations for inserting, querying,
- * updating, and deleting characters from the HobbitContentProvider.
- * It implements ConfigurableOps so it can be managed by the
+ * Class that defines operations for inserting, querying, updating,
+ * and deleting characters from the HobbitContentProvider.  This class
+ * plays the role of the "Abstraction" in the Bridge pattern.  It
+ * implements ConfigurableOps so it can be managed by the
  * GenericActivity framework.
  */
 public class HobbitOps implements ConfigurableOps {

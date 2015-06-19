@@ -19,10 +19,10 @@ import android.net.Uri;
  */
 public class HobbitContentProvider extends ContentProvider {
     /**
-     * The URI Matcher used by this content provider.
+     * Debugging tag used by the Android logger.
      */
-    private static final UriMatcher sUriMatcher =
-        buildUriMatcher();
+    protected final static String TAG =
+        HobbitContentProvider.class.getSimpleName();
 
     /**
      * The code that is returned when a URI for more than 1 items is
@@ -35,6 +35,12 @@ public class HobbitContentProvider extends ContentProvider {
      * matched against the given components.  Must be positive.
      */
     private static final int CHARACTER = 101;
+
+    /**
+     * The URI Matcher used by this content provider.
+     */
+    private static final UriMatcher sUriMatcher =
+        buildUriMatcher();
 
     /**
      * Helper method to match each URI to the ACRONYM integers
@@ -50,20 +56,12 @@ public class HobbitContentProvider extends ContentProvider {
         final UriMatcher matcher = 
             new UriMatcher(UriMatcher.NO_MATCH);
 
-        // The "Content authority" is a name for the entire content
-        // provider, similar to the relationship between a domain name
-        // and its website.  A convenient string to use for the
-        // content authority is the package name for the app, which is
-        // guaranteed to be unique on the device.
-        final String authority =
-            CharacterContract.CONTENT_AUTHORITY;
-
         // For each type of URI that is added, a corresponding code is
         // created.
-        matcher.addURI(authority,
+        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
                        CharacterContract.PATH_CHARACTER,
                        CHARACTERS);
-        matcher.addURI(authority,
+        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
                        CharacterContract.PATH_CHARACTER
                        + "/#",
                        CHARACTER);

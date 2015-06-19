@@ -16,8 +16,9 @@ import android.widget.SimpleCursorAdapter;
 /**
  * Class that implements the operations for inserting, querying,
  * updating, and deleting characters from the HobbitContentProvider.
- * It implements ConfigurableOps so it can be managed by the
- * GenericActivity framework.
+ * This class plays the role of the "Implementor" in the Bridge
+ * pattern and the "Abstract Class" in the TemplateMethod pattern.
+ * It's also an example of the "External Polymorphism" pattern.
  */
 public abstract class HobbitOpsImpl {
     /**
@@ -65,11 +66,13 @@ public abstract class HobbitOpsImpl {
     * Release resources to prevent leaks.
     */
     public void close() {
+        // No-op.
     }
 
     /**
      * Insert a Hobbit @a character of a particular @a race into the
-     * HobbitContentProvider.
+     * HobbitContentProvider.  Plays the role of a "template method"
+     * in the Template Method pattern.
      */
     public Uri insert(String character,
                       String race) throws RemoteException {
@@ -80,13 +83,16 @@ public abstract class HobbitOpsImpl {
                 character);
         cvs.put(CharacterContract.CharacterEntry.COLUMN_RACE,
                 race);
+
+        // Call to the hook method.
         return insert(CharacterContract.CharacterEntry.CONTENT_URI,
                       cvs);
     }
 
     /**
      * Insert @a ContentValues into the HobbitContentProvider at
-     * the @a uri.
+     * the @a uri.  Plays the role of an "abstract hook method" in the
+     * Template Method pattern.
      */
     protected abstract Uri insert(Uri uri,
                                   ContentValues cvs)
@@ -94,7 +100,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Insert an array of Hobbit @a characters of a particular @a race
-     * into the HobbitContentProvider.
+     * into the HobbitContentProvider.  Plays the role of a "template
+     * method" in the Template Method pattern.
      */
     public int bulkInsert(String[] characters,
                           String race) throws RemoteException {
@@ -122,7 +129,8 @@ public abstract class HobbitOpsImpl {
     
     /**
      * Insert an array of @a ContentValues into the
-     * HobbitContentProvider at the @a uri.
+     * HobbitContentProvider at the @a uri.  Plays the role of an
+     * "abstract hook method" in the Template Method pattern.
      */
     protected abstract int bulkInsert(Uri uri,
                                       ContentValues[] cvsArray)
@@ -130,7 +138,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Return a Cursor from a query on the HobbitContentProvider at
-     * the @a uri.
+     * the @a uri.  Plays the role of an "abstract hook method" in the
+     * Template Method pattern.
      */
     public abstract Cursor query(Uri uri,
                                  String[] projection,
@@ -141,7 +150,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Update the @a name and @a race of a Hobbit character at a
-     * designated @a uri from the HobbitContentProvider.
+     * designated @a uri from the HobbitContentProvider.  Plays the
+     * role of a "template method" in the Template Method pattern.
      */
     public int updateByUri(Uri uri,
                            String name,
@@ -159,7 +169,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Update the @a name and @a race of a Hobbit character at a designated 
-     * @a uri from the HobbitContentProvider.
+     * @a uri from the HobbitContentProvider.  Plays the role of a
+     * "template method" in the Template Method pattern.
      */
     public int updateByName(String name,
                             String race) throws RemoteException {
@@ -177,6 +188,8 @@ public abstract class HobbitOpsImpl {
     /**
      * Delete the @a selection and @a selectionArgs with the @a
      * ContentValues in the HobbitContentProvider at the @a uri.
+     * Plays the role of an "abstract hook method" in the Template
+     * Method pattern.
      */
     public abstract int update(Uri uri,
                                ContentValues cvs,
@@ -186,7 +199,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Delete an array of Hobbit @a characterNames from the
-     * HobbitContentProvider.
+     * HobbitContentProvider.  Plays the role of a "template method"
+     * in the Template Method pattern.
      */
     public int deleteByName(String[] characterNames)
         throws RemoteException {
@@ -201,7 +215,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Delete an array of Hobbit @a characterRaces from the
-     * HobbitContentProvider.
+     * HobbitContentProvider.  Plays the role of a "template method"
+     * in the Template Method pattern.
      */
     public int deleteByRace(String[] characterRaces)
         throws RemoteException {
@@ -216,7 +231,8 @@ public abstract class HobbitOpsImpl {
 
     /**
      * Delete the @a selection and @a selectionArgs from the
-     * HobbitContentProvider at the @a uri.
+     * HobbitContentProvider at the @a uri.  Plays the role of an
+     * "abstract hook method" in the Template Method pattern.
      */
     protected abstract int delete(Uri uri,
                                   String selection,

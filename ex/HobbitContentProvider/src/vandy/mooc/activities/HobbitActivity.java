@@ -15,14 +15,10 @@ import android.widget.SimpleCursorAdapter;
 /**
  * This Activity illustrates how to use the HobbitContentProvider to
  * perform various "CRUD" (i.e., insert, query, update, and delete)
- * operations using characters from Tolkien's Hobbit book.
+ * operations using characters from Tolkien's classic book "The
+ * Hobbit."
  */
 public class HobbitActivity extends GenericActivity<HobbitOps> {
-    /**
-     * Debugging tag used by the Android logger.
-     */
-    protected final String TAG = getClass().getSimpleName();
-
     /**
      * ListView displays the Contacts List.
      */
@@ -79,32 +75,33 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
             getOps().insert("Smaug",
                             "Dragon");
 
+            // Insert Beorn.
+            getOps().insert("Beorn",
+                            "Man");
+
             // Insert another antagonist.
             Uri necromancerUri = 
                 getOps().insert("Necromancer",
                                 "Maia");
 
-            // Insert Beorn.
-            getOps().insert("Beorn",
-                            "Man");
+            // Update Beorn's race since he's a skinchanger.
+            getOps().updateByName("Beorn",
+                                  "Skinchanger");
 
             // The Necromancer is really Sauron the Deceiver.
             getOps().updateByUri(necromancerUri,
                                  "Sauron",
                                  "Maia");
 
-            // Update Beorn's race since he's a skinchanger.
-            getOps().updateByName("Beorn",
-                                  "Skinchanger");
-
-            // Delete dwarves who get killed.
+            // Delete dwarves who get killed in the Battle of Five
+            // Armies.
             getOps().deleteByName(new String[] { 
                     "Thorin",
                     "Kili",
                     "Fili" 
                 });
 
-            // Delete Smaug since he gets killed.
+            // Delete Smaug since he gets killed by Bard the Bowman.
             getOps().deleteByRace(new String[] { "Dragon" });
 
             // Display the results.

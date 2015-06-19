@@ -275,11 +275,7 @@ public class AcronymProvider extends ContentProvider {
             // TODO -- replace "0" with a call to the SQLite database
             // to update the row(s) in the database based on the
             // parameters passed into this method.
-            rowsUpdated =
-                db.update(AcronymContract.AcronymEntry.TABLE_NAME,
-                          values,
-                          selection,
-                          selectionArgs);
+            rowsUpdated = 0;
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 

@@ -36,10 +36,10 @@ public class CharacterContract {
      * with "givemeroot".
      */
     public static final String PATH_CHARACTER =
-        CharacterEntry.MAP_NAME;
+        CharacterEntry.TABLE_NAME;
 
     /**
-     * Inner class that defines the table contents of the Acronym
+     * Inner class that defines the table contents of the Hobbit
      * table.
      */
     public static final class CharacterEntry implements BaseColumns {
@@ -55,7 +55,7 @@ public class CharacterContract {
          * When the Cursor returned for a given URI by the
          * ContentProvider contains 0..x items.
          */
-        public static final String CONTENT_TYPE =
+        public static final String CONTENT_ITEMS_TYPE =
             "vnd.android.cursor.dir/"
             + CONTENT_AUTHORITY
             + "/" 
@@ -74,8 +74,8 @@ public class CharacterContract {
         /**
          * Name of the database table.
          */
-        public static final String MAP_NAME =
-            "character_map";
+        public static final String TABLE_NAME =
+            "character_table";
 
         /**
          * Selection clause to find rows with given acronym.

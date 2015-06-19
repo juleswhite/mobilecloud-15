@@ -20,7 +20,7 @@ import android.widget.SimpleCursorAdapter;
  */
 public class HobbitActivity extends GenericActivity<HobbitOps> {
     /**
-     * ListView displays the Contacts List.
+     * ListView displays the Hobbit character information.
      */
     private ListView mListView;
 
@@ -33,7 +33,7 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
      *            object that contains saved state information.
      */
     @Override
-        public void onCreate(Bundle savedInstanceState) {
+    public void onCreate(Bundle savedInstanceState) {
         // Set the content view for this Activity.
         setContentView(R.layout.hobbit_activity);
 
@@ -86,7 +86,7 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
 
             // Update Beorn's race since he's a skinchanger.
             getOps().updateByName("Beorn",
-                                  "Skinchanger");
+                                  "Bear");
 
             // The Necromancer is really Sauron the Deceiver.
             getOps().updateByUri(necromancerUri,
@@ -110,7 +110,7 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
                                  "Dwarf",
                                  "Maia",
                                  "Hobbit",
-                                 "Skinchanger" 
+                                 "Bear" 
                              });
         } catch (RemoteException e) {
             Log.d(TAG, 

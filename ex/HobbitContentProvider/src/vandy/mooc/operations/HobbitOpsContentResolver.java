@@ -44,7 +44,8 @@ public class HobbitOpsContentResolver
     @Override
     public void onConfiguration(Activity activity,
                                 boolean firstTimeIn) {
-        super.onConfiguration(activity, firstTimeIn);
+        super.onConfiguration(activity,
+                              firstTimeIn);
         
         if (firstTimeIn) 
             // Store the Application context's ContentResolver.

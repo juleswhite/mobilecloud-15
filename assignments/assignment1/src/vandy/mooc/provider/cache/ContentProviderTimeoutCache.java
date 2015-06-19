@@ -13,8 +13,8 @@ import android.os.SystemClock;
 
 /**
  * Timeout cache that uses Content Providers to cache data and uses
- * AlarmManager and Broadcast Receiver to remove expired cache
- * entries periodically.
+ * AlarmManager and Broadcast Receiver to remove expired cache entries
+ * periodically.
  */
 public class ContentProviderTimeoutCache
        implements TimeoutCache<String, List<AcronymExpansion>> {
@@ -40,7 +40,7 @@ public class ContentProviderTimeoutCache
      * Used to schedule Cache cleanup at regular intervals to remove
      * expired Acronym Expansions.
      */
-    private static AlarmManager mAlarmManager;
+    private AlarmManager mAlarmManager;
 
     /**
      * This constructor sets the default timeout to the designated @a
@@ -198,7 +198,8 @@ public class ContentProviderTimeoutCache
                           List<AcronymExpansion> longForms,
                           long timeout) {
         // Check if the List is not null or empty.
-        if (longForms.isEmpty() || longForms == null) 
+        if (longForms.isEmpty() 
+            || longForms == null) 
             return -1;
 
         // Calculate the Expiration time.
@@ -231,6 +232,11 @@ public class ContentProviderTimeoutCache
      * @param acronym
      */
     public void remove(String acronym) {
+        // Selection clause to find rows with given acronym.
+        final String SELECTION_ACRONYM = 
+            AcronymEntry.COLUMN_ACRONYM
+            + " = ?";
+
         // Initializes an array to contain selection arguments
         String[] selectionArgs = { acronym };
 

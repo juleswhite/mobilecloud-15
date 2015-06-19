@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference;
 import vandy.mooc.R;
 import vandy.mooc.activities.HobbitActivity;
 import vandy.mooc.provider.CharacterContract;
-import vandy.mooc.provider.HobbitContentProvider;
+import vandy.mooc.provider.HobbitContentProviderImpl;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -17,7 +17,7 @@ import android.widget.SimpleCursorAdapter;
  * Class that implements the operations for inserting, querying,
  * updating, and deleting characters from the HobbitContentProvider.
  * This class plays the role of the "Implementor" in the Bridge
- * pattern and the "Abstract Class" in the TemplateMethod pattern.
+ * pattern and the "Abstract Class" in the Template Method pattern.
  * It's also an example of the "External Polymorphism" pattern.
  */
 public abstract class HobbitOpsImpl {
@@ -120,7 +120,7 @@ public abstract class HobbitOpsImpl {
             cvs.put(CharacterContract.CharacterEntry.COLUMN_RACE,
                    race);
             cvsArray[i] = cvs;            
-          }
+        }
 
         return bulkInsert
             (CharacterContract.CharacterEntry.CONTENT_URI,
@@ -264,8 +264,8 @@ public abstract class HobbitOpsImpl {
             (mActivity.get(),
              R.layout.list_layout,
              mCursor,
-             HobbitContentProvider.sCOLUMNS,
-             HobbitContentProvider.sCOLUMNS_TYPES,
+             HobbitContentProviderImpl.sCOLUMNS,
+             HobbitContentProviderImpl.sCOLUMNS_TYPES,
              1);
     }
 }

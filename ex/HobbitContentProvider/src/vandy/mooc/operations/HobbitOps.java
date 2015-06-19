@@ -60,7 +60,7 @@ public class HobbitOps implements ConfigurableOps {
      */
     @Override
     public void onConfiguration(Activity activity,
-                                    boolean firstTimeIn) {
+                                boolean firstTimeIn) {
         mHobbitOpsImpl.onConfiguration(activity,
                                        firstTimeIn);
     }

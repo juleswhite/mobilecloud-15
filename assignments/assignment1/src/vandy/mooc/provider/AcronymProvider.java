@@ -15,7 +15,8 @@ public class AcronymProvider extends ContentProvider {
     /**
      * Debugging tag used by the Android logger.
      */
-    private static final String TAG = AcronymProvider.class.getSimpleName();
+    private static final String TAG =
+        AcronymProvider.class.getSimpleName();
 
     /**
      * Use AcronymDatabaseHelper to manage database creation and version
@@ -102,51 +103,6 @@ public class AcronymProvider extends ContentProvider {
         }
     }
 
-    // Hook method to handle requests to insert a set of new rows, or
-    // the default implementation will iterate over the values and
-    // call insert on each of them. As a courtesy, call notifyChange()
-    // after inserting.
-    @Override
-    public int bulkInsert(Uri uri,
-                          ContentValues[] contentValues) {
-        // Create and/or open a database that will be used for reading
-        // and writing. Once opened successfully, the database is
-        // cached, so you can call this method every time you need to
-        // write to the database.
-        final SQLiteDatabase db =
-            mOpenHelper.getWritableDatabase();
-		
-        // Try to match against the path in a uri.  It returns the
-        // code for the matched node (added using addURI), or -1 if
-        // there is no matched node.  If a match occurs update the
-        // appropriate rows.
-        switch (sUriMatcher.match(uri)) {
-        case ACRONYMS:
-            // Begins a transaction in EXCLUSIVE mode. 
-            db.beginTransaction();
-            int returnCount = 0;
-
-            try {
-                // TODO -- write the code that inserts all the
-                // contentValues into the SQLite database.
-
-                // Marks the current transaction as successful.
-                db.setTransactionSuccessful();
-            } finally {
-                // End a transaction.
-                db.endTransaction();
-            }
-			   
-            // Notifies registered observers that rows were updated.
-            getContext().getContentResolver().notifyChange(uri,
-                                                           null);
-            return returnCount;
-        default:
-            return super.bulkInsert(uri,
-                                    contentValues);
-        }
-    }
-
     /**
      * Hook method called to handle requests to insert a new row.  As
      * a courtesy, notifyChange() is called after inserting.
@@ -191,6 +147,51 @@ public class AcronymProvider extends ContentProvider {
         getContext().getContentResolver().notifyChange(uri, 
                                                        null);
         return returnUri;
+    }
+
+    // Hook method to handle requests to insert a set of new rows, or
+    // the default implementation will iterate over the values and
+    // call insert on each of them. As a courtesy, call notifyChange()
+    // after inserting.
+    @Override
+    public int bulkInsert(Uri uri,
+                          ContentValues[] contentValues) {
+        // Create and/or open a database that will be used for reading
+        // and writing. Once opened successfully, the database is
+        // cached, so you can call this method every time you need to
+        // write to the database.
+        final SQLiteDatabase db =
+            mOpenHelper.getWritableDatabase();
+		
+        // Try to match against the path in a uri.  It returns the
+        // code for the matched node (added using addURI), or -1 if
+        // there is no matched node.  If a match occurs update the
+        // appropriate rows.
+        switch (sUriMatcher.match(uri)) {
+        case ACRONYMS:
+            // Begins a transaction in EXCLUSIVE mode. 
+            db.beginTransaction();
+            int returnCount = 0;
+
+            try {
+                // TODO -- write the code that inserts all the
+                // contentValues into the SQLite database.
+
+                // Marks the current transaction as successful.
+                db.setTransactionSuccessful();
+            } finally {
+                // End a transaction.
+                db.endTransaction();
+            }
+			   
+            // Notifies registered observers that rows were updated.
+            getContext().getContentResolver().notifyChange(uri,
+                                                           null);
+            return returnCount;
+        default:
+            return super.bulkInsert(uri,
+                                    contentValues);
+        }
     }
 
     /**

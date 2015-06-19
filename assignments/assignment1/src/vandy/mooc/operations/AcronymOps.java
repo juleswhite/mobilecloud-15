@@ -87,8 +87,8 @@ public class AcronymOps
                 new ContentProviderTimeoutCache
                 (activity.getApplicationContext());
 
-            // Create a proxy to access the Acronym Service web service.
-            // TODO -- you fill in here, replacing "null" with the
+            // Create a proxy to access the Acronym web service.  TODO
+            // -- you fill in here, replacing "null" with the
             // appropriate initialization of the proxy.
             mAcronymWebServiceProxy = null;
         } else

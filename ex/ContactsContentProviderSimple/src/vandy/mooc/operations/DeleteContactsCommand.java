@@ -11,8 +11,7 @@ import android.provider.ContactsContract;
  * Delete all designated contacts in a background thread.
  */
 public class DeleteContactsCommand
-       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer>,
-                  Runnable {
+       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer> {
     /**
      * Store a reference to the ContactsOps object.
      */

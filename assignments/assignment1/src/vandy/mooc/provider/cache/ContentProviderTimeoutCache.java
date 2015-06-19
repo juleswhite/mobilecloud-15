@@ -14,19 +14,19 @@ import android.os.SystemClock;
 /**
  * Timeout cache that uses Content Providers to cache data and uses
  * AlarmManager and Broadcast Receiver to remove expired cache
- * entries.
+ * entries periodically.
  */
 public class ContentProviderTimeoutCache
        implements TimeoutCache<String, List<AcronymExpansion>> {
     /**
-     * Cache is to be cleaned up at regular intervals to remove
-     * expired acronyms.
+     * Cache is cleaned up twice a day to remove expired acronyms.
      */
     public static final long CLEANUP_SCHEDULER_TIME_INTERVAL = 
         AlarmManager.INTERVAL_HALF_DAY;
    
     /**
-     * It allows access to application-specific resources and classes.
+     * Store the context to allow access to application-specific
+     * resources and classes.
      */
     private Context mContext;
 
@@ -66,38 +66,6 @@ public class ContentProviderTimeoutCache
     }
     
     /**
-     * Helper method that uses AlarmManager to schedule Cache Cleanup
-     * at regular intervals.
-     * 
-     * @param context
-     */
-    private void scheduleCacheCleanup(Context context) {
-        // Only schedule the Alarm if it's not already scheduled. 	
-        if (!isAlarmActive(context)) {
-            // Schedule an alarm after a certain timeout to start a
-            // service to delete expired data from Database.
-            mAlarmManager.setInexactRepeating
-                (AlarmManager.ELAPSED_REALTIME_WAKEUP,
-                 SystemClock.elapsedRealtime()
-                 + CLEANUP_SCHEDULER_TIME_INTERVAL,
-                 CLEANUP_SCHEDULER_TIME_INTERVAL,
-                 DeleteCacheReceiver.makeReceiverPendingIntent(context));
-        }
-    }
-
-    /**
-     * Helper method to check whether the Alarm is already active or
-     * not.
-     * 
-     * @param context
-     * @return boolean, whether the Alarm is already active or not
-     */
-    private boolean isAlarmActive(Context context) {        
-    	return DeleteCacheReceiver.makeCheckAlarmPendingIntent
-            (context) != null;
-    }
-
-    /**
      * Gets the @a List of Acronym Expansions from the cache having
      * given @a acronym. Remove it if expired.
      * 
@@ -105,6 +73,11 @@ public class ContentProviderTimeoutCache
      * @return List of Acronym Data
      */
     public List<AcronymExpansion> get(final String acronym) {
+        // Selection clause to find rows with given acronym.
+        final String SELECTION_ACRONYM = 
+            AcronymEntry.COLUMN_ACRONYM
+            + " = ?";
+    	
         // Initializes an array to contain selection arguments.
         String[] selectionArgs = { acronym };
        
@@ -114,7 +87,7 @@ public class ContentProviderTimeoutCache
              mContext.getContentResolver().query
              (AcronymEntry.CONTENT_URI,
               null,
-              AcronymEntry.SELECTION_ACRONYM,
+              SELECTION_ACRONYM,
               selectionArgs,
               null)) {
             // If there are not matches in the database return false. 
@@ -180,6 +153,38 @@ public class ContentProviderTimeoutCache
     }
 
     /**
+     * Put the @a longForms into the cache at the designated @a
+     * acronym with the default timeout.
+     * 
+     * @param acronym
+     * @param longForms
+     */
+    public void put(String acronym,
+                    List<AcronymExpansion> longForms) {
+        putValues(acronym,
+                  longForms,
+                  mDefaultTimeout);
+    }
+
+    /**
+     * Put the @a longForms into the Database at the designated @a
+     * acronym with a certain timeout after which the cached data will
+     * expire.
+     * 
+     * @param acronym
+     * @param longForms
+     * @param timeout
+     */
+    public void put(String acronym,
+                    List<AcronymExpansion> longForms,
+                    int timeout) {
+        putValues(acronym,
+                  longForms,
+                  // Represent the timeout in nanoseconds.
+                  timeout * 1000 * 1000 * 1000);
+    }
+
+    /**
      * Helper method that puts a @a List of Acronym Expansions into
      * the cache at the designated @a acronym with a certain timeout,
      * after which the cached data expires.
@@ -221,38 +226,6 @@ public class ContentProviderTimeoutCache
     }
     
     /**
-     * Put the @a longForms into the cache at the designated @a
-     * acronym with the default timeout.
-     * 
-     * @param acronym
-     * @param longForms
-     */
-    public void put(String acronym,
-                    List<AcronymExpansion> longForms) {
-        putValues(acronym,
-                  longForms,
-                  mDefaultTimeout);
-    }
-
-    /**
-     * Put the @a longForms into the Database at the designated @a
-     * acronym with a certain timeout after which the cached data will
-     * expire.
-     * 
-     * @param acronym
-     * @param longForms
-     * @param timeout
-     */
-    public void put(String acronym,
-                    List<AcronymExpansion> longForms,
-                    int timeout) {
-        putValues(acronym,
-                  longForms,
-                  // Represent the timeout in nanoseconds.
-                  timeout * 1000 * 1000 * 1000);
-    }
-
-    /**
      * Removes each expansion associated with the designated @a acronym.
      * 
      * @param acronym
@@ -287,10 +260,48 @@ public class ContentProviderTimeoutCache
      * Remove the expired Acronyms from Database.
      */
     public void removeExpiredAcronyms() {
+        // Selection clause to delete acronym expansions that have
+        // expired.
+        final String SELECTION_EXPIRATION = 
+            AcronymEntry.COLUMN_EXPIRATION_TIME
+            + " <= ?";
+
         String[] selectionArgs = { 
             String.valueOf(System.nanoTime()) 
         };
 
         // TODO -- delete expired acronym expansions.
+    }
+
+    /**
+     * Helper method that uses AlarmManager to schedule Cache Cleanup
+     * at regular intervals.
+     * 
+     * @param context
+     */
+    private void scheduleCacheCleanup(Context context) {
+        // Only schedule the Alarm if it's not already scheduled. 	
+        if (!isAlarmActive(context)) {
+            // Schedule an alarm after a certain timeout to start a
+            // service to delete expired data from Database.
+            mAlarmManager.setInexactRepeating
+                (AlarmManager.ELAPSED_REALTIME_WAKEUP,
+                 SystemClock.elapsedRealtime()
+                 + CLEANUP_SCHEDULER_TIME_INTERVAL,
+                 CLEANUP_SCHEDULER_TIME_INTERVAL,
+                 DeleteCacheReceiver.makeReceiverPendingIntent(context));
+        }
+    }
+
+    /**
+     * Helper method to check whether the Alarm is already active or
+     * not.
+     * 
+     * @param context
+     * @return boolean, whether the Alarm is already active or not
+     */
+    private boolean isAlarmActive(Context context) {        
+    	return DeleteCacheReceiver.makeCheckAlarmPendingIntent
+            (context) != null;
     }
 }

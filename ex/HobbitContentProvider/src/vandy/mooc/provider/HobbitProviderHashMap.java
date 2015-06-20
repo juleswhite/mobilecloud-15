@@ -21,6 +21,9 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     private static final HashMap<Long, CharacterRecord> mCharacterMap =
         new HashMap<>();
 
+    /**
+     * Constructor initializes the super class.
+     */
     public HobbitProviderHashMap(Context context) {
         super(context);
     }

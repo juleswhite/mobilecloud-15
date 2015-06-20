@@ -34,8 +34,8 @@ public class HobbitDatabaseHelper extends SQLiteOpenHelper {
         "CREATE TABLE "
         + CharacterContract.CharacterEntry.TABLE_NAME + " (" 
         + CharacterContract.CharacterEntry._ID + " INTEGER PRIMARY KEY, " 
-        + AcronymEntry.COLUMN_NAME + " TEXT NOT NULL, " 
-        + AcronymEntry.COLUMN_RACE + " TEXT NOT NULL "
+        + CharacterContract.CharacterEntry.COLUMN_NAME + " TEXT NOT NULL, " 
+        + CharacterContract.CharacterEntry.COLUMN_RACE + " TEXT NOT NULL "
         + " );";
 
      /**

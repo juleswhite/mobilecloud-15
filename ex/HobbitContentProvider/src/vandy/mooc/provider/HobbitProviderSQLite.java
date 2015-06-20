@@ -1,13 +1,11 @@
 package vandy.mooc.provider;
 
-import java.util.HashMap;
-
-import vandy.mooc.provider.CharacterContract.CharacterEntry;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
 import android.database.MatrixCursor;
+import android.database.sqlite.SQLiteDatabase;
 import android.net.Uri;
 
 /**
@@ -20,7 +18,10 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
      */
     private HobbitDatabaseHelper mOpenHelper;
 
-    public HobbitProviderHashMap(Context context) {
+    /**
+     * Constructor initializes the super class.
+     */
+    public HobbitProviderSQLite(Context context) {
         super(context);
     }
 
@@ -44,13 +45,13 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
             mOpenHelper.getWritableDatabase();
 
         long id =
-            db.insert(HobbitContract.HobbitEntry.TABLE_NAME,
+            db.insert(CharacterContract.CharacterEntry.TABLE_NAME,
                       null,
-                      values);
+                      cvs);
 
         // Check if a new row is inserted or not.
         if (id > 0)
-            return HobbitContract.HobbitEntry.buildAcronymUri(id);
+            return CharacterContract.CharacterEntry.buildUri(id);
         else
             throw new android.database.SQLException
                 ("Failed to insert row into " 
@@ -74,10 +75,10 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
             // Begins a transaction in EXCLUSIVE mode. 
             db.beginTransaction();
-
-                for (ContentValues cvs : contentValues) {
+            try {
+                for (ContentValues cvs : cvsArray) {
                     final long id =
-                        db.insert(AcronymContract.AcronymEntry.TABLE_NAME,
+                        db.insert(CharacterContract.CharacterEntry.TABLE_NAME,
                                   null,
                                   cvs);
                     if (id != -1)
@@ -106,14 +107,6 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
         final MatrixCursor cursor =
             new MatrixCursor(sCOLUMNS);
 
-        synchronized (this) {
-            // Implement a simple query mechanism for the table.
-            for (CharacterRecord cr : mCharacterMap.values())
-                buildCursorConditionally(cursor,
-                                         cr,
-                                         selection,
-                                         selectionArgs);
-        }
         return cursor;
     }
 
@@ -133,39 +126,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
         // Just return a single item from the database.
         long requestId = ContentUris.parseId(uri);
 
-        synchronized (this) {
-            CharacterRecord cr = 
-                mCharacterMap.get(requestId);
-            if (cr != null) {
-                buildCursorConditionally(cursor,
-                                         cr,
-                                         selection,
-                                         selectionArgs);
-            }
-        }
         return cursor;
         // throw new UnsupportedOperationException("Unknown uri: " + uri);
-    }
-
-    /**
-     * Build a MatrixCursor that matches the parameters.
-     */
-    private void buildCursorConditionally(MatrixCursor cursor,
-                                          CharacterRecord cr,
-                                          String selection,
-                                          String[] selectionArgs) {
-        for (String item : selectionArgs) {
-            if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && item.equals(cr.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && item.equals(cr.getRace()))) {
-                cursor.addRow(new Object[] { 
-                        cr.getId(), 
-                        cr.getName(),
-                        cr.getRace()
-                    });
-            }
-        }
     }
 
     /**
@@ -178,19 +140,6 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                 String selection,
                                 String[] selectionArgs) {
         int recsUpdated = 0;
-
-        synchronized (this) {
-            // Implement a simple update mechanism for the table.
-            for (CharacterRecord cr : 
-                     mCharacterMap.values().toArray
-                     // @@ 
-                     (new CharacterRecord[mCharacterMap.values().size()]))
-                recsUpdated += 
-                    updateEntryConditionally(cr,
-                                             cvs,
-                                             selection,
-                                             selectionArgs);
-        }
 
         return recsUpdated;
     }
@@ -206,46 +155,6 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                String[] selectionArgs) {
         // Just update a single item in the database.
         final long requestId = ContentUris.parseId(uri);
-        synchronized (this) {
-            CharacterRecord cr = mCharacterMap.get(requestId);
-            if (cr != null) 
-                return updateEntryConditionally(cr,
-                                                cvs,
-                                                selection,
-                                                selectionArgs);
-            else
-                return 0;
-        }
-    }
-
-    /**
-     * Update @a rec in the HashMap with the contents of the @a
-     * ContentValues if it matches the @a selection criteria.
-     */
-    private int updateEntryConditionally(CharacterRecord rec,
-                                         ContentValues cvs,
-                                         String selection,
-                                         String[] selectionArgs) {
-        if (selectionArgs == null)
-            selectionArgs = new String[] { "" };
-
-        for (String character : selectionArgs) 
-            if (selection == null
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && character.equals(rec.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && character.equals(rec.getRace()))) {
-                final CharacterRecord updatedRec = 
-                    new CharacterRecord(rec.getId(),
-                                        cvs.getAsString
-                                        (CharacterEntry.COLUMN_NAME),
-                                        cvs.getAsString
-                                        (CharacterEntry.COLUMN_RACE));
-                mCharacterMap.put(updatedRec.getId(), 
-                                  updatedRec);
-                return 1;
-            }
-
         return 0;
     }
 
@@ -259,18 +168,9 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                 String[] selectionArgs) {
         int recsDeleted = 0;
         
-        // Implement a simple delete mechanism for the table.
-        synchronized (this) {
-            for (CharacterRecord cr : 
-                     mCharacterMap.values().toArray
-                     (new CharacterRecord[mCharacterMap.values().size()]))
-                recsDeleted += 
-                    deleteEntryConditionally(cr,
-                                             selection,
-                                             selectionArgs);
-        }
         return recsDeleted;
     }
+
     /**
      * Method called to handle delete requests from client
      * applications.
@@ -281,32 +181,6 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                String[] selectionArgs) {
         // Just delete a single item in the database.
         final long requestId = ContentUris.parseId(uri);
-        synchronized (this) {
-            CharacterRecord rec = mCharacterMap.get(requestId);
-            if (rec != null) 
-                return deleteEntryConditionally(rec,
-                                                selection,
-                                                selectionArgs);
-            else
-                return 0;
-        }
-    }
-
-    /**
-     * Delete @a rec from the HashMap if it matches the @a selection
-     * criteria.
-     */
-    private int deleteEntryConditionally(CharacterRecord rec,
-                                         String selection,
-                                         String[] selectionArgs) {
-        for (String character : selectionArgs) 
-            if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && character.equals(rec.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && character.equals(rec.getRace()))) {
-                mCharacterMap.remove(rec.getId());
-                return 1;
-            }
         return 0;
     }
 }

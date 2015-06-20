@@ -1,20 +1,11 @@
 package vandy.mooc.operations;
 
-import java.lang.ref.WeakReference;
-
-import vandy.mooc.R;
-import vandy.mooc.activities.HobbitActivity;
-import vandy.mooc.provider.CharacterContract;
-import vandy.mooc.provider.HobbitContentProvider;
-import vandy.mooc.utils.ConfigurableOps;
 import android.app.Activity;
-import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
-import android.widget.SimpleCursorAdapter;
 
 /**
  * Class that uses a ContentResolver to insert, query, update, and

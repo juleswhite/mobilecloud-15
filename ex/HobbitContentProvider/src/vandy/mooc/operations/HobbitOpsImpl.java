@@ -5,7 +5,7 @@ import java.lang.ref.WeakReference;
 import vandy.mooc.R;
 import vandy.mooc.activities.HobbitActivity;
 import vandy.mooc.provider.CharacterContract;
-import vandy.mooc.provider.HobbitContentProviderImpl;
+import vandy.mooc.provider.HobbitProviderImpl;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -264,8 +264,8 @@ public abstract class HobbitOpsImpl {
             (mActivity.get(),
              R.layout.list_layout,
              mCursor,
-             HobbitContentProviderImpl.sCOLUMNS,
-             HobbitContentProviderImpl.sCOLUMNS_TYPES,
+             HobbitProviderImpl.sCOLUMNS,
+             HobbitProviderImpl.sCOLUMNS_TYPES,
              1);
     }
 }

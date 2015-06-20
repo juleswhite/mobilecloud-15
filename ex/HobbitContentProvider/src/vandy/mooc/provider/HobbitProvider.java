@@ -8,12 +8,12 @@ import android.net.Uri;
 /**
  * Content Provider used to store information about Hobbit characters.
  */
-public class HobbitContentProvider extends ContentProvider {
+public class HobbitProvider extends ContentProvider {
     /**
      * Debugging tag used by the Android logger.
      */
     protected final static String TAG =
-        HobbitContentProvider.class.getSimpleName();
+        HobbitProvider.class.getSimpleName();
 
     public enum ContentProviderType {
         HASH_MAP,
@@ -23,7 +23,7 @@ public class HobbitContentProvider extends ContentProvider {
     private ContentProviderType mContentProviderType =
         ContentProviderType.HASH_MAP;
 
-    private HobbitContentProviderImpl mImpl;
+    private HobbitProviderImpl mImpl;
 
     /**
      * Method called to handle type requests from client applications.
@@ -106,7 +106,7 @@ public class HobbitContentProvider extends ContentProvider {
         switch(mContentProviderType) {
         case HASH_MAP:
             mImpl =
-                new HobbitContentProviderHashMap(getContext());
+                new HobbitProviderHashMap(getContext());
             break;
         case SQLITE:
             mImpl = null;

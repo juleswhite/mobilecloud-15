@@ -20,7 +20,7 @@
       </intent-filter>
     </activity>
 
-    <provider android:name=".provider.HobbitContentProvider"
+    <provider android:name=".provider.HobbitProvider"
               android:authorities="vandy.mooc.hobbitcontentprovider"
               android:exported="false">
     </provider>

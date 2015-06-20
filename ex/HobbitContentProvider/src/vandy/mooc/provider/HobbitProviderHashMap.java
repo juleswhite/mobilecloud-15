@@ -13,7 +13,7 @@ import android.net.Uri;
 /**
  * Content Provider used to store information about Hobbit characters.
  */
-public class HobbitContentProviderHashMap extends HobbitContentProviderImpl  {
+public class HobbitProviderHashMap extends HobbitProviderImpl  {
     /**
      * This implementation uses a simple HashMap to map IDs to
      * CharacterRecords.
@@ -21,7 +21,7 @@ public class HobbitContentProviderHashMap extends HobbitContentProviderImpl  {
     private static final HashMap<Long, CharacterRecord> mCharacterMap =
         new HashMap<>();
 
-    public HobbitContentProviderHashMap(Context context) {
+    public HobbitProviderHashMap(Context context) {
         super(context);
     }
 

@@ -12,12 +12,12 @@ import android.net.Uri;
 /**
  * Content Provider used to store information about Hobbit characters.
  */
-public abstract class HobbitContentProviderImpl {
+public abstract class HobbitProviderImpl {
     /**
      * Debugging tag used by the Android logger.
      */
     protected final static String TAG =
-        HobbitContentProvider.class.getSimpleName();
+        HobbitProvider.class.getSimpleName();
 
     protected Context mContext;
 
@@ -39,7 +39,7 @@ public abstract class HobbitContentProviderImpl {
     protected static final UriMatcher sUriMatcher =
         buildUriMatcher();
 
-    public HobbitContentProviderImpl(Context context) {
+    public HobbitProviderImpl(Context context) {
         mContext = context;
     }
 

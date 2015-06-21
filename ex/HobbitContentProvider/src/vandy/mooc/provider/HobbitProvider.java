@@ -21,7 +21,8 @@ public class HobbitProvider extends ContentProvider {
     }
 
     private ContentProviderType mContentProviderType =
-        ContentProviderType.HASH_MAP;
+        ContentProviderType.SQLITE;
+    // ContentProviderType.HASH_MAP;
 
     private HobbitProviderImpl mImpl;
 
@@ -109,7 +110,7 @@ public class HobbitProvider extends ContentProvider {
                 new HobbitProviderHashMap(getContext());
             break;
         case SQLITE:
-            mImpl = null;
+            mImpl = new HobbitProviderSQLite(getContext());
             break;
         }
 

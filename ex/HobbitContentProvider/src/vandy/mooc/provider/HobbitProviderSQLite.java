@@ -4,9 +4,10 @@ import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.database.sqlite.SQLiteDatabase;
+import android.text.TextUtils;
 import android.net.Uri;
+import android.util.Log;
 
 /**
  * Content Provider used to store information about Hobbit characters.
@@ -104,10 +105,17 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                   String selection,
                                   String[] selectionArgs,
                                   String sortOrder) {
-        final MatrixCursor cursor =
-            new MatrixCursor(sCOLUMNS);
-
-        return cursor;
+        selection = addSelectionArgs(selection, 
+                                     selectionArgs,
+                                     "OR");
+        return mOpenHelper.getReadableDatabase().query
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             projection,
+             selection,
+             selectionArgs,
+             null,
+             null,
+             sortOrder);
     }
 
     /**
@@ -120,14 +128,25 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                  String selection,
                                  String[] selectionArgs,
                                  String sortOrder) {
-        final MatrixCursor cursor =
-            new MatrixCursor(sCOLUMNS);
+        // Selection clause that matches row id with id passed
+        // from Uri.
+        final String rowId =
+            ""
+            + CharacterContract.CharacterEntry._ID
+            + " = '"
+            + ContentUris.parseId(uri)
+            + "'";
 
-        // Just return a single item from the database.
-        long requestId = ContentUris.parseId(uri);
-
-        return cursor;
-        // throw new UnsupportedOperationException("Unknown uri: " + uri);
+        // Query the SQLite database for the particular rowId based on
+        // (a subset of) the parameters passed into the method.
+        return mOpenHelper.getReadableDatabase().query
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             projection,
+             rowId,
+             null,
+             null,
+             null,
+             sortOrder);
     }
 
     /**
@@ -139,9 +158,14 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                 ContentValues cvs,
                                 String selection,
                                 String[] selectionArgs) {
-        int recsUpdated = 0;
-
-        return recsUpdated;
+        selection = addSelectionArgs(selection, 
+                                     selectionArgs,
+                                     " OR ");
+        return mOpenHelper.getWritableDatabase().update
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             cvs,
+             selection,
+             selectionArgs);
     }
 
     /**
@@ -153,9 +177,15 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                ContentValues cvs,
                                String selection,
                                String[] selectionArgs) {
-        // Just update a single item in the database.
-        final long requestId = ContentUris.parseId(uri);
-        return 0;
+        selection = addSelectionArgs(selection,
+                                     selectionArgs,
+                                     " OR ");
+        return mOpenHelper.getWritableDatabase().update
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             cvs,
+             addKeyIdCheckToWhereStatement(selection,
+                                           ContentUris.parseId(uri)),
+             selectionArgs);
     }
 
     /**
@@ -166,9 +196,13 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     public int deleteCharacters(Uri uri,
                                 String selection,
                                 String[] selectionArgs) {
-        int recsDeleted = 0;
-        
-        return recsDeleted;
+        selection = addSelectionArgs(selection, 
+                                     selectionArgs,
+                                     " OR ");
+        return mOpenHelper.getWritableDatabase().delete
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             selection,
+             selectionArgs);
     }
 
     /**
@@ -180,7 +214,60 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                String selection,
                                String[] selectionArgs) {
         // Just delete a single item in the database.
-        final long requestId = ContentUris.parseId(uri);
-        return 0;
+        selection = addSelectionArgs(selection, 
+                                     selectionArgs,
+                                     " OR ");
+        return mOpenHelper.getWritableDatabase().delete
+            (CharacterContract.CharacterEntry.TABLE_NAME,
+             addKeyIdCheckToWhereStatement(selection,
+                                           ContentUris.parseId(uri)),
+             selectionArgs);
+    }
+
+    /**
+     * Return a selection string that concatenates all the selectionArgs.
+     */
+    private String addSelectionArgs(String selection,
+                                    String [] selectionArgs,
+                                    String operation) {
+        if (selection == null
+            || selectionArgs == null)
+            return null;
+        String result = "";
+        for (int i = 0;
+             i < selectionArgs.length - 1;
+             ++i)
+            result += (selection + " = ? " + operation + " ");
+        result += (selection + " = ?");
+
+        Log.d(TAG,
+              "selection = "
+              + result
+              + " selectionArgs = ");
+        for (String args : selectionArgs)
+            Log.d(TAG,
+                  args
+                  + " ");
+
+        return result;
+    }        
+
+    /**
+     * Helper method that appends a given key id to the end of the
+     * WHERE statement parameter.
+     */
+    private static String addKeyIdCheckToWhereStatement(String whereStatement,
+                                                        long id) {
+        String newWhereStatement;
+        if (TextUtils.isEmpty(whereStatement)) 
+            newWhereStatement = "";
+        else 
+            newWhereStatement = whereStatement + " AND ";
+
+        return newWhereStatement 
+            + CharacterContract.CharacterEntry._ID
+            + " = '"
+            + id 
+            + "'";
     }
 }

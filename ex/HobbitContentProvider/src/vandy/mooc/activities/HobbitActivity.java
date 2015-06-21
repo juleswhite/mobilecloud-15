@@ -54,6 +54,20 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
      */
     public void run(View v) {
         try {
+            // Clear out the database.
+            getOps().deleteByName(new String[] {
+                    "Bilbo",
+                    "Gandalf",
+                    "Thorin", "Kili", "Fili",
+                    "Balin", "Dwalin", "Oin", "Gloin",
+                    "Dori", "Nori", "Ori",
+                    "Bifur", "Bofur", "Bombur",
+                    "Smaug",
+                    "Beorn",
+                    "Sauron",
+                    "Necromancer"
+                });
+
             // Insert the main protagonist.
             getOps().insert("Bilbo",
                             "Hobbit");
@@ -79,14 +93,13 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
             getOps().insert("Beorn",
                             "Man");
 
+            // Update Beorn's race since he's a skinchanger.
+            getOps().updateByName("Beorn",
+                                  "Bear");
             // Insert another antagonist.
             Uri necromancerUri = 
                 getOps().insert("Necromancer",
                                 "Maia");
-
-            // Update Beorn's race since he's a skinchanger.
-            getOps().updateByName("Beorn",
-                                  "Bear");
 
             // The Necromancer is really Sauron the Deceiver.
             getOps().updateByUri(necromancerUri,
@@ -109,8 +122,7 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
                              new String[] { 
                                  "Dwarf",
                                  "Maia",
-                                 "Hobbit",
-                                 "Bear" 
+                                 "Hobbit" 
                              });
         } catch (RemoteException e) {
             Log.d(TAG, 

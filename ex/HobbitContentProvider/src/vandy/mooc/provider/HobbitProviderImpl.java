@@ -6,7 +6,6 @@ import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
 import android.database.Cursor;
-import android.database.MatrixCursor;
 import android.net.Uri;
 
 /**
@@ -73,7 +72,7 @@ public abstract class HobbitProviderImpl {
      * Columns in the "table".
      */
     public static final String[] sCOLUMNS =
-        new String[] { "_ID",
+        new String[] { CharacterEntry._ID,
                        CharacterEntry.COLUMN_NAME,
                        CharacterEntry.COLUMN_RACE };
 
@@ -169,17 +168,16 @@ public abstract class HobbitProviderImpl {
                         String selection,
                         String[] selectionArgs,
                         String sortOrder) {
-        MatrixCursor cursor =
-            new MatrixCursor(sCOLUMNS);
+        Cursor cursor;
 
         // Match the id returned by UriMatcher to query appropriate
         // rows.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            cursor = (MatrixCursor) queryCharacters(uri, projection, selection, selectionArgs, sortOrder);
+            cursor = queryCharacters(uri, projection, selection, selectionArgs, sortOrder);
             break;
         case CHARACTER:
-            cursor = (MatrixCursor) queryCharacter(uri, projection, selection, selectionArgs, sortOrder);
+            cursor = queryCharacter(uri, projection, selection, selectionArgs, sortOrder);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 

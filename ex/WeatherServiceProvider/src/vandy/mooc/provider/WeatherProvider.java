@@ -128,7 +128,7 @@ public class WeatherProvider extends ContentProvider {
 
     /**
      * Helper method that appends a given key id to the end of the
-     * passed WHERE statement.
+     * WHERE statement parameter.
      */
     private static String addKeyIdCheckToWhereStatement(String whereStatement,
                                                         long id) {

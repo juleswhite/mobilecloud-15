@@ -24,8 +24,8 @@ public class AcronymDatabaseHelper extends SQLiteOpenHelper {
         "acronym.db";
 
     /**
-     * Constructor for AcronymDatabaseHelper.Cache the Database
-     * so that Android can remove it if memory is low.
+     * Constructor for AcronymDatabaseHelper.  Store the database in
+     * the cache directory so Android can remove it if memory is low.
      * 
      * @param context
      */
@@ -45,7 +45,8 @@ public class AcronymDatabaseHelper extends SQLiteOpenHelper {
     public void onCreate(SQLiteDatabase db) {
         // Define an SQL string that creates a table to hold Acronyms.
         // Each Acronym has a list of LongForms in Json.
-        final String SQL_CREATE_ACRONYM_TABLE = "CREATE TABLE "
+        final String SQL_CREATE_ACRONYM_TABLE =
+            "CREATE TABLE "
             + AcronymEntry.TABLE_NAME + " (" 
             + AcronymEntry._ID + " INTEGER PRIMARY KEY, " 
             + AcronymEntry.COLUMN_ACRONYM + " TEXT NOT NULL, " 

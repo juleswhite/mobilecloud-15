@@ -9,6 +9,7 @@ import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
+import android.content.Context;
 import android.content.OperationApplicationException;
 import android.os.RemoteException;
 import android.provider.ContactsContract;
@@ -33,6 +34,11 @@ public class InsertContactsCommand
     private Iterator<String> mContactsIter;
     
     /**
+     * Store a reference to the Application context. 
+     */
+    private Context mApplicationContext;
+
+    /**
      * The GenericAsyncTask used to insert contacts into the
      * ContactContentProvider.
      */
@@ -43,9 +49,11 @@ public class InsertContactsCommand
      */
     public InsertContactsCommand(ContactsOps ops,
                                  Iterator<String> contactsIter) {
-        // Store the ContactOps and Iterator.
+        // Store the ContactOps, Iterator, and Application context.
         mOps = ops;
         mContactsIter = contactsIter;
+        mApplicationContext =
+            ops.getActivity().getApplicationContext();
 
         // Create a GenericAsyncTask to insert the contacts off the UI
         // Thread.
@@ -99,8 +107,7 @@ public class InsertContactsCommand
         try {
             // Apply all the batched operations synchronously.
             ContentProviderResult[] results =
-                mOps.getActivity()
-                .getApplicationContext()
+                mApplicationContext
                 .getContentResolver()
                 .applyBatch(ContactsContract.AUTHORITY,
                             batchOperation);

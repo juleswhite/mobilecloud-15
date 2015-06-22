@@ -69,22 +69,6 @@ public abstract class HobbitProviderImpl {
     }
 
     /**
-     * Columns in the "table".
-     */
-    public static final String[] sCOLUMNS =
-        new String[] { CharacterEntry._ID,
-                       CharacterEntry.COLUMN_NAME,
-                       CharacterEntry.COLUMN_RACE };
-
-    /**
-     * Types of the columns in the "table".
-     */
-    public static final int[] sCOLUMNS_TYPES =
-        new int[] { R.id.idString,
-                    R.id.name,
-                    R.id.race };
-
-    /**
      * Method called to handle type requests from client applications.
      * It returns the MIME type of the data associated with each URI.
      */
@@ -174,10 +158,18 @@ public abstract class HobbitProviderImpl {
         // rows.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            cursor = queryCharacters(uri, projection, selection, selectionArgs, sortOrder);
+            cursor = queryCharacters(uri,
+                                     projection,
+                                     selection,
+                                     selectionArgs,
+                                     sortOrder);
             break;
         case CHARACTER:
-            cursor = queryCharacter(uri, projection, selection, selectionArgs, sortOrder);
+            cursor = queryCharacter(uri,
+                                    projection,
+                                    selection,
+                                    selectionArgs,
+                                    sortOrder);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
@@ -216,10 +208,16 @@ public abstract class HobbitProviderImpl {
         // rows.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            recsUpdated = updateCharacters(uri, cvs, selection, selectionArgs);
+            recsUpdated = updateCharacters(uri,
+                                           cvs,
+                                           selection,
+                                           selectionArgs);
             break;
         case CHARACTER:
-            recsUpdated = updateCharacter(uri, cvs, selection, selectionArgs);
+            recsUpdated = updateCharacter(uri,
+                                          cvs,
+                                          selection,
+                                          selectionArgs);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
@@ -256,10 +254,14 @@ public abstract class HobbitProviderImpl {
         // appropriate rows.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            recsDeleted = deleteCharacters(uri, selection, selectionArgs);
+            recsDeleted = deleteCharacters(uri,
+                                           selection,
+                                           selectionArgs);
             break;
         case CHARACTER:
-            recsDeleted = deleteCharacter(uri, selection, selectionArgs);
+            recsDeleted = deleteCharacter(uri,
+                                          selection,
+                                          selectionArgs);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 

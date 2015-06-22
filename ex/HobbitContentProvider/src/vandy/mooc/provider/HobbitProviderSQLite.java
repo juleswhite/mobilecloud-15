@@ -128,8 +128,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                  String selection,
                                  String[] selectionArgs,
                                  String sortOrder) {
-        // Selection clause that matches row id with id passed
-        // from Uri.
+        // Selection clause that matches the row id with the id passed
+        // via the Uri.
         final String rowId =
             ""
             + CharacterContract.CharacterEntry._ID
@@ -225,7 +225,9 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     }
 
     /**
-     * Return a selection string that concatenates all the selectionArgs.
+     * Return a selection string that concatenates all the
+     * @a selectionArgs for a given @a selection using the given @a
+     * operation.
      */
     private String addSelectionArgs(String selection,
                                     String [] selectionArgs,

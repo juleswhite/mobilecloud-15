@@ -108,10 +108,10 @@ public class HobbitOps implements ConfigurableOps {
      * Update the @a race of a Hobbit character with the given @a
      * name.
      */
-    public int updateByName(String name,
-                            String race) throws RemoteException {
-        return mHobbitOpsImpl.updateByName(name,
-                                           race);
+    public int updateRaceByName(String name,
+                                String race) throws RemoteException {
+        return mHobbitOpsImpl.updateRaceByName(name,
+                                               race);
     }
 
     /**
@@ -133,12 +133,18 @@ public class HobbitOps implements ConfigurableOps {
     }
 
     /**
+     * Delete all characters in the HobbitContentProvider.
+     */
+    public int deleteAll()
+        throws RemoteException {
+        return mHobbitOpsImpl.deleteAll();
+    }
+
+    /**
      * Display the current contents of the HobbitContentProvider.
      */
-    public void display(String selection,
-                        String[] selectionArgs)
+    public void displayAll()
         throws RemoteException {
-        mHobbitOpsImpl.display(selection,
-                               selectionArgs);
+        mHobbitOpsImpl.displayAll();
     }
 }

@@ -28,8 +28,7 @@ public class HobbitProvider extends ContentProvider {
 
     /**
      * Method called to handle type requests from client applications.
-     * It returns the MIME type of the data associated with each URI.
-     */
+     * It returns the MIME type of the data associated with each URI.     */
     @Override
     public String getType(Uri uri) {
         return mImpl.getType(uri);

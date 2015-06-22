@@ -89,7 +89,7 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                   String[] selectionArgs,
                                   String sortOrder) {
         final MatrixCursor cursor =
-            new MatrixCursor(sCOLUMNS);
+            new MatrixCursor(CharacterContract.CharacterEntry.sColumnsToDisplay);
 
         synchronized (this) {
             // Implement a simple query mechanism for the table.
@@ -99,6 +99,7 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                          selection,
                                          selectionArgs);
         }
+
         return cursor;
     }
 
@@ -113,7 +114,7 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                  String[] selectionArgs,
                                  String sortOrder) {
         final MatrixCursor cursor =
-            new MatrixCursor(sCOLUMNS);
+            new MatrixCursor(CharacterContract.CharacterEntry.sColumnsToDisplay);
 
         // Just return a single item from the database.
         long requestId = ContentUris.parseId(uri);
@@ -128,8 +129,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                          selectionArgs);
             }
         }
+
         return cursor;
-        // throw new UnsupportedOperationException("Unknown uri: " + uri);
     }
 
     /**
@@ -139,18 +140,24 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                           CharacterRecord cr,
                                           String selection,
                                           String[] selectionArgs) {
-        for (String item : selectionArgs) {
-            if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && item.equals(cr.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && item.equals(cr.getRace()))) {
-                cursor.addRow(new Object[] { 
-                        cr.getId(), 
-                        cr.getName(),
-                        cr.getRace()
-                    });
-            }
-        }
+        if (selectionArgs == null)
+            cursor.addRow(new Object[] { 
+                    cr.getId(), 
+                    cr.getName(),
+                    cr.getRace()
+                });
+        else
+            for (String item : selectionArgs) 
+                if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
+                     && item.equals(cr.getName()))
+                    || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
+                        && item.equals(cr.getRace()))) {
+                    cursor.addRow(new Object[] { 
+                            cr.getId(), 
+                            cr.getName(),
+                            cr.getRace()
+                        });
+                }
     }
 
     /**
@@ -168,7 +175,6 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
             // Implement a simple update mechanism for the table.
             for (CharacterRecord cr : 
                      mCharacterMap.values().toArray
-                     // @@ 
                      (new CharacterRecord[mCharacterMap.values().size()]))
                 recsUpdated += 
                     updateEntryConditionally(cr,
@@ -211,25 +217,33 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
                                          ContentValues cvs,
                                          String selection,
                                          String[] selectionArgs) {
-        if (selectionArgs == null)
-            selectionArgs = new String[] { "" };
+        if (selectionArgs == null) {
+            final CharacterRecord updatedRec = 
+                new CharacterRecord(rec.getId(),
+                                    cvs.getAsString
+                                    (CharacterEntry.COLUMN_NAME),
+                                    cvs.getAsString
+                                    (CharacterEntry.COLUMN_RACE));
+            mCharacterMap.put(updatedRec.getId(), 
+                              updatedRec);
+            return 1;
+        } else
+            for (String character : selectionArgs) 
+                if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
+                     && character.equals(rec.getName()))
+                    || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
+                        && character.equals(rec.getRace()))) {
 
-        for (String character : selectionArgs) 
-            if (selection == null
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && character.equals(rec.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && character.equals(rec.getRace()))) {
-                final CharacterRecord updatedRec = 
-                    new CharacterRecord(rec.getId(),
-                                        cvs.getAsString
-                                        (CharacterEntry.COLUMN_NAME),
-                                        cvs.getAsString
-                                        (CharacterEntry.COLUMN_RACE));
-                mCharacterMap.put(updatedRec.getId(), 
-                                  updatedRec);
-                return 1;
-            }
+                    final CharacterRecord updatedRec = 
+                        new CharacterRecord(rec.getId(),
+                                            cvs.getAsString
+                                            (CharacterEntry.COLUMN_NAME),
+                                            cvs.getAsString
+                                            (CharacterEntry.COLUMN_RACE));
+                    mCharacterMap.put(updatedRec.getId(), 
+                                      updatedRec);
+                    return 1;
+                }
 
         return 0;
     }
@@ -284,14 +298,19 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     private int deleteEntryConditionally(CharacterRecord rec,
                                          String selection,
                                          String[] selectionArgs) {
-        for (String character : selectionArgs) 
-            if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
-                 && character.equals(rec.getName()))
-                || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
-                    && character.equals(rec.getRace()))) {
-                mCharacterMap.remove(rec.getId());
-                return 1;
-            }
+        if (selectionArgs == null) {
+            mCharacterMap.remove(rec.getId());
+            return 1;    
+        }
+        else
+            for (String character : selectionArgs)
+                if ((selection.equals(CharacterContract.CharacterEntry.COLUMN_NAME) 
+                     && character.equals(rec.getName()))
+                    || (selection.equals(CharacterContract.CharacterEntry.COLUMN_RACE)
+                        && character.equals(rec.getRace()))) {
+                    mCharacterMap.remove(rec.getId());
+                    return 1;
+                }
         return 0;
     }
 }

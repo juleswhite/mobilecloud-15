@@ -91,6 +91,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                 if (id != -1)
                     returnCount++;
             }
+
             // Marks the current transaction as successful.
             db.setTransactionSuccessful();
         } finally {
@@ -136,22 +137,14 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                  String selection,
                                  String[] selectionArgs,
                                  String sortOrder) {
-        // Selection clause that matches the row id with the id passed
-        // via the Uri.
-        final String rowId =
-            ""
-            + CharacterContract.CharacterEntry._ID
-            + " = '"
-            + ContentUris.parseId(uri)
-            + "'";
-
         // Query the SQLite database for the particular rowId based on
         // (a subset of) the parameters passed into the method.
         return mOpenHelper.getReadableDatabase().query
             (CharacterContract.CharacterEntry.TABLE_NAME,
              projection,
-             rowId,
-             null,
+             addKeyIdCheckToWhereStatement(selection,
+                                           ContentUris.parseId(uri)),
+             selectionArgs,
              null,
              null,
              sortOrder);
@@ -167,6 +160,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                 ContentValues cvs,
                                 String selection,
                                 String[] selectionArgs) {
+        // Expand the selection if necessary.
         selection = addSelectionArgs(selection, 
                                      selectionArgs,
                                      " OR ");
@@ -187,9 +181,11 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                ContentValues cvs,
                                String selection,
                                String[] selectionArgs) {
+        // Expand the selection if necessary.
         selection = addSelectionArgs(selection,
                                      selectionArgs,
                                      " OR ");
+        // Just update a single row in the database.
         return mOpenHelper.getWritableDatabase().update
             (CharacterContract.CharacterEntry.TABLE_NAME,
              cvs,
@@ -207,6 +203,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     public int deleteCharacters(Uri uri,
                                 String selection,
                                 String[] selectionArgs) {
+        // Expand the selection if necessary.
         selection = addSelectionArgs(selection, 
                                      selectionArgs,
                                      " OR ");
@@ -225,10 +222,11 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     public int deleteCharacter(Uri uri,
                                String selection,
                                String[] selectionArgs) {
-        // Just delete a single item in the database.
+        // Expand the selection if necessary.
         selection = addSelectionArgs(selection, 
                                      selectionArgs,
                                      " OR ");
+        // Just delete a single row in the database.
         return mOpenHelper.getWritableDatabase().delete
             (CharacterContract.CharacterEntry.TABLE_NAME,
              addKeyIdCheckToWhereStatement(selection,

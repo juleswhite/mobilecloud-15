@@ -80,7 +80,6 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
             }
         }
         return returnCount;
-        // return super.bulkInsert(uri, cvsArray);
     }
 
     /**

@@ -64,7 +64,6 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
 
         // Connect the ListView with the SimpleCursorAdapter.
         mListView.setAdapter(mAdapter);
-
     }
 
     /**

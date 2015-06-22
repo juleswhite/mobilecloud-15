@@ -42,13 +42,6 @@ public abstract class HobbitProviderImpl {
         buildUriMatcher();
 
     /**
-     * Constructor initializes the Context field.
-     */
-    public HobbitProviderImpl(Context context) {
-        mContext = context;
-    }
-
-    /**
      * Helper method to match each URI to the ACRONYM integers
      * constant defined above.
      * 
@@ -75,15 +68,20 @@ public abstract class HobbitProviderImpl {
     }
 
     /**
+     * Constructor initializes the Context field.
+     */
+    public HobbitProviderImpl(Context context) {
+        mContext = context;
+    }
+
+    /**
      * Method called to handle type requests from client applications.
      * It returns the MIME type of the data associated with each URI.
      */
-    public synchronized String getType(Uri uri) {
-        // Use Uri Matcher to determine what kind of URI this is.
-        final int match = sUriMatcher.match(uri);
+    public String getType(Uri uri) {
         // Match the id returned by UriMatcher to return appropriate
         // MIME_TYPE.
-        switch (match) {
+        switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
             return CharacterContract.CharacterEntry.CONTENT_ITEMS_TYPE;
         case CHARACTER:
@@ -143,11 +141,14 @@ public abstract class HobbitProviderImpl {
         // rows.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            int returnCount = bulkInsertCharacters(uri, cvsArray);
+            int returnCount = bulkInsertCharacters(uri,
+                                                   cvsArray);
 
-            // Notifies registered observers that rows were inserted.
-            mContext.getContentResolver().notifyChange(uri, 
-                                                       null);
+            if (returnCount > 0)
+                // Notifies registered observers that row(s) were
+                // inserted.
+                mContext.getContentResolver().notifyChange(uri, 
+                                                           null);
             return returnCount;
         default:
             throw new UnsupportedOperationException();
@@ -257,9 +258,11 @@ public abstract class HobbitProviderImpl {
                                                     + uri);
         }
 
-        // Notifies registered observers that a row was inserted.
-        mContext.getContentResolver().notifyChange(uri, 
-                                                   null);
+        if (recsUpdates > 0)
+            // Notifies registered observers that row(s) were
+            // inserted.
+            mContext.getContentResolver().notifyChange(uri, 
+                                                       null);
         return recsUpdated;
     }
 
@@ -315,8 +318,8 @@ public abstract class HobbitProviderImpl {
                                                     + uri);
         }
 
-        // Notifies registered observers that rows were deleted.
-        if (selection == null 
+        // Notifies registered observers that row(s) were deleted.
+        if (selection == null
             || recsDeleted != 0) 
             mContext.getContentResolver().notifyChange(uri,
                                                        null);

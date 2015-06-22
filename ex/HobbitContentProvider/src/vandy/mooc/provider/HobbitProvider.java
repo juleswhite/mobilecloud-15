@@ -35,6 +35,10 @@ public class HobbitProvider extends ContentProvider {
         ContentProviderType.SQLITE;
     // ContentProviderType.HASH_MAP;
 
+    /**
+     * Implementation of the HobbitProvider, which is either
+     * HobbitProviderHashMap or HobbiProviderSQLite.
+     */
     private HobbitProviderImpl mImpl;
 
     /**

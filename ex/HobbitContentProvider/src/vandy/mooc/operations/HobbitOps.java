@@ -39,6 +39,8 @@ public class HobbitOps implements ConfigurableOps {
      * class to work properly.
      */
     public HobbitOps() {
+        // Select the appropriate means of accessing the Content
+        // Provider.
         switch(mAccessMeans) {
         case CONTENT_RESOLVER:
             mHobbitOpsImpl =

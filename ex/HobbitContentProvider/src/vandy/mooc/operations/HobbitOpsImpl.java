@@ -266,9 +266,7 @@ public abstract class HobbitOpsImpl {
         throws RemoteException {
         // Query for all the characters in the HobbitContentProvider.
         mCursor = query(CharacterContract.CharacterEntry.CONTENT_URI,
-                        null,
-                        null,
-                        /* Could also do this:
+                        CharacterContract.CharacterEntry.sColumnsToDisplay,
                         CharacterContract.CharacterEntry.COLUMN_RACE,
                         new String[] { 
                                  "Dwarf",
@@ -277,9 +275,14 @@ public abstract class HobbitOpsImpl {
                                  "Dragon",
                                  "Man",
                                  "Bear"
-                             }
-                        */
+                             },
+                       /* The following three null parameters could
+                          also be this:
+
                         null,
+                        null,
+                        null,
+                        */
                         null);
         if (mCursor.getCount() == 0) {
             Toast.makeText(mActivity.get(), 

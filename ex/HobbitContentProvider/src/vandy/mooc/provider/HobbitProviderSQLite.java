@@ -98,7 +98,6 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
             db.endTransaction();
         }
         return returnCount;
-        // return super.bulkInsert(uri, cvsArray);
     }
 
     /**
@@ -112,6 +111,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
                                   String selection,
                                   String[] selectionArgs,
                                   String sortOrder) {
+        // Expand the selection if necessary.
         selection = addSelectionArgs(selection, 
                                      selectionArgs,
                                      "OR");

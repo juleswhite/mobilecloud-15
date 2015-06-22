@@ -39,13 +39,6 @@ public class WeatherOps
     private WeatherTimeoutCache mCache;
 
     /**
-     * URL to the Web Search web service to use with the Retrofit
-     * service.
-     */
-    private static String sWeather_Service_URL_Retro =
-        "http://api.openweathermap.org/data/2.5";
-
-    /**
      * Retrofit proxy that sends requests to the Weather Service web
      * service and converts the Json response to an instance of
      * AcronymData POJO class.
@@ -93,7 +86,7 @@ public class WeatherOps
 	    // the RetrofitWeatherServiceProxy.
 	    mWeatherWebServiceProxy =
                 new RestAdapter.Builder()
-                .setEndpoint(sWeather_Service_URL_Retro)
+                .setEndpoint(WeatherWebServiceProxy.sWeather_Service_URL_Retro)
                 .build()
                 .create(WeatherWebServiceProxy.class);
 	} else if (mCurrentWeatherData != null) 

@@ -17,7 +17,8 @@ import android.widget.Toast;
  * This Activity illustrates how to use the HobbitContentProvider to
  * perform various "CRUD" (i.e., insert, query, update, and delete)
  * operations using characters from Tolkien's classic book "The
- * Hobbit."
+ * Hobbit."  It plays the role of the "View" in the
+ * Model-View-Presenter pattern.
  */
 public class HobbitActivity extends GenericActivity<HobbitOps> {
     /**

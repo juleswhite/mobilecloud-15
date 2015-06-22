@@ -11,7 +11,9 @@ import android.widget.SimpleCursorAdapter;
  * and deleting characters from the HobbitContentProvider.  This class
  * plays the role of the "Abstraction" in the Bridge pattern.  It
  * implements ConfigurableOps so it can be managed by the
- * GenericActivity framework.
+ * GenericActivity framework.  This class and the hierarchy it
+ * abstracts play the role of the "Presenter" in the
+ * Model-View-Presenter pattern.
  */
 public class HobbitOps implements ConfigurableOps {
     public enum ContentProviderAccessMeans {

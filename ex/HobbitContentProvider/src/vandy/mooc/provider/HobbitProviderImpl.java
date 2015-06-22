@@ -7,7 +7,9 @@ import android.database.Cursor;
 import android.net.Uri;
 
 /**
- * Content Provider used to store information about Hobbit characters.
+ * Content Provider implementation used to manage Hobbit characters.
+ * This class plays the role of the "Implementor" in the Bridge
+ * pattern and the "Abstract Class" in the Template Method pattern.
  */
 public abstract class HobbitProviderImpl {
     /**
@@ -16,6 +18,9 @@ public abstract class HobbitProviderImpl {
     protected final static String TAG =
         HobbitProvider.class.getSimpleName();
 
+    /**
+     * Context used for various ContentResolver activities.
+     */
     protected Context mContext;
 
     /**
@@ -36,6 +41,9 @@ public abstract class HobbitProviderImpl {
     protected static final UriMatcher sUriMatcher =
         buildUriMatcher();
 
+    /**
+     * Constructor initializes the Context field.
+     */
     public HobbitProviderImpl(Context context) {
         mContext = context;
     }
@@ -148,8 +156,8 @@ public abstract class HobbitProviderImpl {
 
     /** 
      * Inserts an array of @a ContentValues into the table.  This
-     * method plays the role of the "abstract hook method" in the Template
-     * Method pattern.
+     * method plays the role of the "abstract hook method" in the
+     * Template Method pattern.
      */   
     public abstract int bulkInsertCharacters(Uri uri,
                                              ContentValues[] cvsArray);
@@ -196,8 +204,8 @@ public abstract class HobbitProviderImpl {
     
     /** 
      * Queries for a @a selection in the entire table, relative to
-     * the @a selectionArgs.  This method plays the role of the "abstract hook
-     * method" in the Template Method pattern.
+     * the @a selectionArgs.  This method plays the role of the
+     * "abstract hook method" in the Template Method pattern.
      */   
     public abstract Cursor queryCharacters
         (Uri uri,
@@ -317,8 +325,8 @@ public abstract class HobbitProviderImpl {
     
     /** 
      * Delete a @a selection in the entire table, relative to the @a
-     * selectionArgs.  This method plays the role of the "abstract hook method"
-     * in the Template Method pattern.
+     * selectionArgs.  This method plays the role of the "abstract
+     * hook method" in the Template Method pattern.
      */   
     public abstract int deleteCharacters(Uri uri,
                 String selection,

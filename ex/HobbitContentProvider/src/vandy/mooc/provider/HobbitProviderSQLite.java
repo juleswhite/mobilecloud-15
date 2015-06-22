@@ -10,7 +10,10 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * Content Provider used to store information about Hobbit characters.
+ * Content Provider implementation that uses SQLite to manage Hobbit
+ * characters.  This class plays the role of the "Concrete
+ * Implementor" in the Bridge pattern and the "Concrete Class" in the
+ * TemplateMethod pattern.
  */
 public class HobbitProviderSQLite extends HobbitProviderImpl  {
     /**
@@ -30,6 +33,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
      * Return true if successfully started.
      */
     public boolean onCreate() {
+        // Create the HobbitDatabaseHelper.
         mOpenHelper =
             new HobbitDatabaseHelper(mContext);
         return true;
@@ -76,23 +80,23 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
         int returnCount = 0;
 
-            // Begins a transaction in EXCLUSIVE mode. 
-            db.beginTransaction();
-            try {
-                for (ContentValues cvs : cvsArray) {
-                    final long id =
-                        db.insert(CharacterContract.CharacterEntry.TABLE_NAME,
-                                  null,
-                                  cvs);
-                    if (id != -1)
-                        returnCount++;
-                }
-                // Marks the current transaction as successful.
-                db.setTransactionSuccessful();
-            } finally {
-                // End a transaction.
-                db.endTransaction();
+        // Begins a transaction in EXCLUSIVE mode. 
+        db.beginTransaction();
+        try {
+            for (ContentValues cvs : cvsArray) {
+                final long id =
+                    db.insert(CharacterContract.CharacterEntry.TABLE_NAME,
+                              null,
+                              cvs);
+                if (id != -1)
+                    returnCount++;
             }
+            // Marks the current transaction as successful.
+            db.setTransactionSuccessful();
+        } finally {
+            // End a transaction.
+            db.endTransaction();
+        }
         return returnCount;
         // return super.bulkInsert(uri, cvsArray);
     }
@@ -240,26 +244,38 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     private String addSelectionArgs(String selection,
                                     String [] selectionArgs,
                                     String operation) {
+        // Handle the "null" case.
         if (selection == null
             || selectionArgs == null)
             return null;
-        String result = "";
-        for (int i = 0;
-             i < selectionArgs.length - 1;
-             ++i)
-            result += (selection + " = ? " + operation + " ");
-        result += (selection + " = ?");
+        else {
+            String selectionResult = "";
 
-        Log.d(TAG,
-              "selection = "
-              + result
-              + " selectionArgs = ");
-        for (String args : selectionArgs)
+            // Properly add the selection args to the selectionResult.
+            for (int i = 0;
+                 i < selectionArgs.length - 1;
+                 ++i)
+                selectionResult += (selection 
+                           + " = ? " 
+                           + operation 
+                           + " ");
+            
+            // Handle the final selection case.
+            selectionResult += (selection
+                       + " = ?");
+
+            // Output the selectionResults to Logcat.
             Log.d(TAG,
-                  args
-                  + " ");
+                  "selection = "
+                  + selectionResult
+                  + " selectionArgs = ");
+            for (String args : selectionArgs)
+                Log.d(TAG,
+                      args
+                      + " ");
 
-        return result;
+            return selectionResult;
+        }
     }        
 
     /**
@@ -274,6 +290,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
         else 
             newWhereStatement = whereStatement + " AND ";
 
+        // Append the key id to the end of the WHERE statement.
         return newWhereStatement 
             + CharacterContract.CharacterEntry._ID
             + " = '"

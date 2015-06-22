@@ -11,7 +11,10 @@ import android.database.MatrixCursor;
 import android.net.Uri;
 
 /**
- * Content Provider used to store information about Hobbit characters.
+ * Content Provider implementation that uses a HashMap to manage
+ * Hobbit characters.  This class plays the role of the "Concrete
+ * Implementor" in the Bridge pattern and the "Concrete Class" in the
+ * TemplateMethod pattern.
  */
 public class HobbitProviderHashMap extends HobbitProviderImpl  {
     /**

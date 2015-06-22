@@ -47,8 +47,6 @@ public class ContentProviderTimeoutCache
      * timeout parameter and initialises local variables.
      * 
      * @param context
-     * @param timeout
-     *            in seconds
      */
     public ContentProviderTimeoutCache(Context context) {
         // Store the context.

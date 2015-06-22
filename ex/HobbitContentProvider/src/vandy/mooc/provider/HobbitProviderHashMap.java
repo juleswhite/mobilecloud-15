@@ -30,7 +30,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle insert requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Uri insertCharacters(Uri uri,
@@ -52,7 +53,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     }
 
     /**
-     * Method that handles bulk insert requests.
+     * Method that handles bulk insert requests.  This plays the role
+     * of the "concrete hook method" in the Template Method pattern.
      */
     @Override
     public int bulkInsertCharacters(Uri uri,
@@ -80,7 +82,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle query requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Cursor queryCharacters(Uri uri,
@@ -105,7 +108,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle query requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Cursor queryCharacter(Uri uri,
@@ -134,7 +138,9 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     }
 
     /**
-     * Build a MatrixCursor that matches the parameters.
+     * Build a MatrixCursor that matches the parameters.  This plays
+     * the role of the "concrete hook method" in the Template Method
+     * pattern.
      */
     private void buildCursorConditionally(MatrixCursor cursor,
                                           CharacterRecord cr,
@@ -162,7 +168,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle update requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int updateCharacters(Uri uri,
@@ -188,7 +195,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle update requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int updateCharacter(Uri uri,
@@ -250,7 +258,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
 
     /**
      * Method called to handle delete requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int deleteCharacters(Uri uri,
@@ -272,7 +281,8 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     }
     /**
      * Method called to handle delete requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int deleteCharacter(Uri uri,

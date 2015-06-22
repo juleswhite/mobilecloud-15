@@ -1,7 +1,5 @@
 package vandy.mooc.provider;
 
-import vandy.mooc.R;
-import vandy.mooc.provider.CharacterContract.CharacterEntry;
 import android.content.ContentValues;
 import android.content.Context;
 import android.content.UriMatcher;
@@ -90,7 +88,8 @@ public abstract class HobbitProviderImpl {
 
     /**
      * Method called to handle insert requests from client
-     * applications.
+     * applications.  This method plays the role of the "template
+     * method" in the Template Method pattern.
      */
     public Uri insert(Uri uri,
                       ContentValues cvs) {
@@ -102,7 +101,8 @@ public abstract class HobbitProviderImpl {
         // row.
         switch (sUriMatcher.match(uri)) {
         case CHARACTERS:
-            returnUri = insertCharacters(uri, cvs);
+            returnUri = insertCharacters(uri,
+                                         cvs);
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
@@ -114,12 +114,18 @@ public abstract class HobbitProviderImpl {
                                                    null);
         return returnUri;
     }
-    
+
+    /** 
+     * Inserts @a ContentValues into the table.  This method plays the
+     * role of the "abstract hook method" in the Template Method pattern.
+     */   
     protected abstract Uri insertCharacters(Uri uri,
                                             ContentValues cvs);
 
     /**
-     * Method that handles bulk insert requests.
+     * Method that handles bulk insert requests.  This method plays
+     * the role of the "template method" in the Template Method
+     * pattern.
      */
     public int bulkInsert(Uri uri,
                           ContentValues[] cvsArray) {
@@ -140,12 +146,18 @@ public abstract class HobbitProviderImpl {
         }
     }
 
+    /** 
+     * Inserts an array of @a ContentValues into the table.  This
+     * method plays the role of the "abstract hook method" in the Template
+     * Method pattern.
+     */   
     public abstract int bulkInsertCharacters(Uri uri,
                                              ContentValues[] cvsArray);
     
     /**
      * Method called to handle query requests from client
-     * applications.
+     * applications.  This method plays the role of the "template
+     * method" in the Template Method pattern.
      */
     public Cursor query(Uri uri,
                         String[] projection,
@@ -182,21 +194,34 @@ public abstract class HobbitProviderImpl {
         return cursor;
     }
     
-    public abstract Cursor queryCharacters(Uri uri,
-                String[] projection,
-                String selection,
-                String[] selectionArgs,
-                String sortOrder);
+    /** 
+     * Queries for a @a selection in the entire table, relative to
+     * the @a selectionArgs.  This method plays the role of the "abstract hook
+     * method" in the Template Method pattern.
+     */   
+    public abstract Cursor queryCharacters
+        (Uri uri,
+         String[] projection,
+         String selection,
+         String[] selectionArgs,
+         String sortOrder);
     
-    public abstract Cursor queryCharacter(Uri uri,
-                String[] projection,
-                String selection,
-                String[] selectionArgs,
-                String sortOrder);
+    /** 
+     * Queries for a @a selection in a particular row of the table,
+     * relative to the @a selectionArgs.  This method plays the role
+     * of the "abstract hook method" in the Template Method pattern.
+     */   
+    public abstract Cursor queryCharacter
+        (Uri uri,
+         String[] projection,
+         String selection,
+         String[] selectionArgs,
+         String sortOrder);
 
     /**
      * Method called to handle update requests from client
-     * applications.
+     * applications.  This method plays the role of the "template
+     * method" in the Template Method pattern.
      */
     public int update(Uri uri,
                       ContentValues cvs,
@@ -230,18 +255,32 @@ public abstract class HobbitProviderImpl {
         return recsUpdated;
     }
 
-    public abstract int updateCharacters(Uri uri,
-                ContentValues cvs,
-                String selection,
-                String[] selectionArgs);
+    /** 
+     * Update a @a selection in the entire table, relative to the @a
+     * selectionArgs.  This method plays the role of the "abstract hook method"
+     * in the Template Method pattern.
+     */   
+    public abstract int updateCharacters
+        (Uri uri,
+         ContentValues cvs,
+         String selection,
+         String[] selectionArgs);
     
-    public abstract int updateCharacter(Uri uri,
-                ContentValues cvs,
-                String selection,
-                String[] selectionArgs);
+    /** 
+     * Update a @a selection in a particular row of the table,
+     * relative to the @a selectionArgs.  This method plays the role
+     * of the "abstract hook method" in the Template Method pattern.
+     */   
+    public abstract int updateCharacter
+        (Uri uri,
+         ContentValues cvs,
+         String selection,
+         String[] selectionArgs);
+
     /**
      * Method called to handle delete requests from client
-     * applications.
+     * applications.  This method plays the role of the "template
+     * method" in the Template Method pattern.
      */
     public int delete(Uri uri,
                       String selection,
@@ -276,10 +315,20 @@ public abstract class HobbitProviderImpl {
         return recsDeleted;
     }
     
+    /** 
+     * Delete a @a selection in the entire table, relative to the @a
+     * selectionArgs.  This method plays the role of the "abstract hook method"
+     * in the Template Method pattern.
+     */   
     public abstract int deleteCharacters(Uri uri,
                 String selection,
                 String[] selectionArgs);
     
+    /** 
+     * Delete a @a selection in a particular row of the table,
+     * relative to the @a selectionArgs.  This method plays the role
+     * of the "abstract hook method" in the Template Method pattern.
+     */   
     public abstract int deleteCharacter(Uri uri,
                 String selection,
                 String[] selectionArgs);

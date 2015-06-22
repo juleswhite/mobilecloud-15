@@ -2,7 +2,6 @@ package vandy.mooc.activities;
 
 import vandy.mooc.R;
 import vandy.mooc.operations.HobbitOps;
-import vandy.mooc.provider.CharacterContract;
 import vandy.mooc.utils.GenericActivity;
 import android.database.Cursor;
 import android.net.Uri;
@@ -53,22 +52,18 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);
 
-        // Initialize the SimpleCursorAdapter.
-        mAdapter = new SimpleCursorAdapter(this,
-                                           R.layout.list_layout, 
-                                           null,
-                                           CharacterContract.CharacterEntry.sColumnsToDisplay,
-                                           CharacterContract.CharacterEntry.sColumnResIds,
-                                           1);
-
-        // Connect the ListView with the SimpleCursorAdapter.
-        mListView.setAdapter(mAdapter);
-
         // Call up to the special onCreate() method in
         // GenericActivity, passing in the HobbitOps class to
         // instantiate and manage.
         super.onCreate(savedInstanceState,
                        HobbitOps.class);
+
+        // Initialize the SimpleCursorAdapter.
+        mAdapter = getOps().makeCursorAdapter();
+
+        // Connect the ListView with the SimpleCursorAdapter.
+        mListView.setAdapter(mAdapter);
+
     }
 
     /**

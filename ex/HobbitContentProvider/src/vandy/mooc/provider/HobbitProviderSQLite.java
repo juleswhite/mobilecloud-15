@@ -37,7 +37,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle insert requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Uri insertCharacters(Uri uri,
@@ -60,7 +61,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     }
 
     /**
-     * Method that handles bulk insert requests.
+     * Method that handles bulk insert requests.  This plays the role
+     * of the "concrete hook method" in the Template Method pattern.
      */
     @Override
     public int bulkInsertCharacters(Uri uri,
@@ -97,7 +99,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle query requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Cursor queryCharacters(Uri uri,
@@ -120,7 +123,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle query requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public Cursor queryCharacter(Uri uri,
@@ -151,7 +155,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle update requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int updateCharacters(Uri uri,
@@ -170,7 +175,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle update requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int updateCharacter(Uri uri,
@@ -190,7 +196,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle delete requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int deleteCharacters(Uri uri,
@@ -207,7 +214,8 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
 
     /**
      * Method called to handle delete requests from client
-     * applications.
+     * applications.  This plays the role of the "concrete hook
+     * method" in the Template Method pattern.
      */
     @Override
     public int deleteCharacter(Uri uri,

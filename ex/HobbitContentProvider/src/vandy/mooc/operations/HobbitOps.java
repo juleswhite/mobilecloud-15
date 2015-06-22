@@ -4,6 +4,7 @@ import vandy.mooc.utils.ConfigurableOps;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.RemoteException;
+import android.widget.SimpleCursorAdapter;
 
 /**
  * Class that defines operations for inserting, querying, updating,
@@ -70,6 +71,14 @@ public class HobbitOps implements ConfigurableOps {
      */
     public void close() {
         mHobbitOpsImpl.close();
+    }
+
+    /**
+     * Return a @a SimpleCursorAdapter that can be used to display the
+     * contents of the Hobbit ContentProvider.
+     */
+    public SimpleCursorAdapter makeCursorAdapter() {
+        return mHobbitOpsImpl.makeCursorAdapter();
     }
 
     /**

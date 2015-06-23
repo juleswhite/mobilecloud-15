@@ -258,7 +258,7 @@ public abstract class HobbitProviderImpl {
                                                     + uri);
         }
 
-        if (recsUpdates > 0)
+        if (recsUpdated > 0)
             // Notifies registered observers that row(s) were
             // inserted.
             mContext.getContentResolver().notifyChange(uri, 

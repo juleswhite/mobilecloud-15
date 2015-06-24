@@ -1,4 +1,4 @@
-# Assignment 2 Covering Weeks 2-4
+# Assignment 2 Covering Lectures in Weeks 2-3
 
 ## Running the Application
 

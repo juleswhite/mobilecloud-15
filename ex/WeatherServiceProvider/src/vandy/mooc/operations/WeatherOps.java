@@ -58,6 +58,12 @@ public class WeatherOps
     private GenericAsyncTask<String, Void, WeatherData, WeatherOps> mAsyncTask;
 
     /**
+     * Keeps track of whether a call is already in progress and
+     * ignores subsequent calls until the first call is done.
+     */
+    private boolean mCallInProgress;
+
+    /**
      * Default constructor that's needed by the GenericActivity
      * framework.
      */
@@ -100,17 +106,27 @@ public class WeatherOps
     /**
      * Initiate the synchronous weather lookup when the user presses
      * the "Get Weather" button.
+     * 
+     * @return false if a call is already in progress, else true.
      */
-    public void getCurrentWeather(String location) {
-        if (mAsyncTask != null)
-            // Cancel an ongoing operation to avoid having two
-            // requests run concurrently.
-            mAsyncTask.cancel(true);
+    public boolean getCurrentWeather(String location) {
+        if (mCallInProgress)
+            return false;
+        else {
+            // Don't allow concurrent calls to get the weather.
+            mCallInProgress = true;
 
-        // Execute the AsyncTask to get the weather without blocking
-        // the caller.
-        mAsyncTask = new GenericAsyncTask<>(this);
-        mAsyncTask.execute(location);
+            if (mAsyncTask != null)
+                // Cancel an ongoing operation to avoid having two
+                // requests run concurrently.
+                mAsyncTask.cancel(true);
+
+            // Execute the AsyncTask to get the weather without
+            // blocking the caller.
+            mAsyncTask = new GenericAsyncTask<>(this);
+            mAsyncTask.execute(location);
+            return true;
+        }
     }
 
     /**
@@ -125,8 +141,13 @@ public class WeatherOps
                 mCache.get(location);
 
             // If data is in cache return it.
-            if (weatherData != null)
+            if (weatherData != null) {
+                Log.v(TAG,
+                      location 
+                      + ": in cache");
+
                 return weatherData;
+            }
 
             // If the location's data wasn't in the cache or was
             // stale, use Retrofit to fetch it from the Weather
@@ -180,5 +201,8 @@ public class WeatherOps
 
         // Indicate we're done with the AsyncTask.
         mAsyncTask = null;
+
+        // Allow another call to proceed when this method returns.
+        mCallInProgress = false;
     }
 }

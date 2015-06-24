@@ -55,7 +55,7 @@ public class WeatherTimeoutCache
      * that has a specific id.
      */
     private static final String WEATHER_VALUES_LOCATION_KEY_SELECTION = 
-        WeatherValuesEntry.COLUMN_LOCATION_KEY 
+        WeatherValuesEntry.COLUMN_LOCATION_KEY
         + " = ?";
         
     /**
@@ -140,8 +140,8 @@ public class WeatherTimeoutCache
      * inserted into the db's WeatherConditionsEntry table from a
      * given WeatherData object.
      */
-    private ContentValues makeWeatherConditionContentValues(Weather wo,
-                                                            String locationKey) {
+    private ContentValues makeWeatherConditionsContentValues(Weather wo,
+                                                             String locationKey) {
 	ContentValues cvs = new ContentValues();
 
 	cvs.put(WeatherContract.WeatherConditionsEntry.COLUMN_WEATHER_CONDITIONS_OBJECT_ID,
@@ -209,8 +209,8 @@ public class WeatherTimeoutCache
         // Insert each weather object into the ContentValues array.
 	for (Weather weather : wd.getWeathers()) {
 	    cvsArray[i++] = 
-                makeWeatherConditionContentValues(weather,
-                                                  locationKey);
+                makeWeatherConditionsContentValues(weather,
+                                                   locationKey);
 	}
 
 	// Bulk insert the rows into the WeatherConditions table.
@@ -345,17 +345,17 @@ public class WeatherTimeoutCache
      */
     @Override
     public void remove(String locationKey) {
-	// Delete the WeatherValuesEntries.
+        // Delete expired entries from the WeatherValues table.
 	mContext.getContentResolver().delete
-            (WeatherContract.WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
+            (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
              WEATHER_VALUES_LOCATION_KEY_SELECTION,
              new String[] { locationKey });
 
-	// Delete WeatherConditionsEntries.
-	mContext.getContentResolver()
-		.delete(WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI,
-			WEATHER_CONDITIONS_LOCATION_KEY_SELECTION,
-			new String[] { locationKey });
+        // Delete expired entries from the WeatherConditions table.
+	mContext.getContentResolver().delete
+            (WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI,
+             WEATHER_CONDITIONS_LOCATION_KEY_SELECTION,
+             new String[] { locationKey });
     }
 
     /**
@@ -376,7 +376,7 @@ public class WeatherTimeoutCache
             // Return the number of rows in the table, which is equivlent
             // to the number of objects
             return cursor.getCount();
-            }
+        }
     }
 
     /**
@@ -405,24 +405,11 @@ public class WeatherTimeoutCache
                 && expiredData.moveToFirst()) {
 		do {
                     // Get the location to delete.
-		    String deleteLocation =
+		    final String deleteLocation =
                         expiredData.getString
                             (expiredData.getColumnIndex
                         	    (WeatherValuesEntry.COLUMN_LOCATION_KEY));
-
-                    // Delete the expired entries from the
-                    // WeatherValues table.
-		    mContext.getContentResolver().delete
-                        (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
-                         WEATHER_VALUES_LOCATION_KEY_SELECTION, 
-                         new String [] {deleteLocation});
-		    
-                    // Delete the expired entries from the
-                    // WeatherConditions table.
-		    mContext.getContentResolver().delete
-                        (WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI, 
-                         WEATHER_CONDITIONS_LOCATION_KEY_SELECTION, 
-                         new String [] {deleteLocation});
+                    remove(deleteLocation);
 		} while (expiredData.moveToNext());
 	    }
 	}

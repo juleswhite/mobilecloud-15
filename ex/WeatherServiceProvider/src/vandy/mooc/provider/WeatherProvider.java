@@ -1,5 +1,7 @@
 package vandy.mooc.provider;
 
+import vandy.mooc.provider.WeatherContract.WeatherConditionsEntry;
+import vandy.mooc.provider.WeatherContract.WeatherValuesEntry;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
@@ -108,7 +110,7 @@ public class WeatherProvider extends ContentProvider {
 
         // Retreive the database from the helper
         final SQLiteDatabase db =
-            mDatabaseHelper.getWritableDatabase();
+            mDatabaseHelper.getReadableDatabase();
 
         // Formulate the query statement.
         final String selectQuery = 
@@ -135,7 +137,6 @@ public class WeatherProvider extends ContentProvider {
                         String whereStatement,
                         String[] whereStatementArgs,
                         String sortOrder) {
-       
     	// Create a SQLite query builder that will be modified based
     	// on the Uri passed.
         final SQLiteQueryBuilder queryBuilder =
@@ -175,7 +176,7 @@ public class WeatherProvider extends ContentProvider {
         // Once the query builder has been initialized based on the
         // provided Uri, use it to query the database.
         final Cursor cursor =
-            queryBuilder.query(mDatabaseHelper.getWritableDatabase(),
+            queryBuilder.query(mDatabaseHelper.getReadableDatabase(),
                                projection,
                                whereStatement,
                                whereStatementArgs,
@@ -199,13 +200,13 @@ public class WeatherProvider extends ContentProvider {
     	// for and return the appropriate MIME type
         switch (WeatherContract.sUriMatcher.match(uri)) {
         case WeatherContract.WEATHER_VALUES_ITEMS:
-            return WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
         case WeatherContract.WEATHER_VALUES_ITEM:
-            return WeatherContract.WeatherValuesEntry.WEATHER_VALUES_ITEM;
+            return WeatherValuesEntry.WEATHER_VALUES_ITEM;
         case WeatherContract.WEATHER_CONDITIONS_ITEMS:
-            return WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
         case WeatherContract.WEATHER_CONDITIONS_ITEM:
-            return WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_ITEM;
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEM;
         case WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_ITEM:
             return WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION;
         default:
@@ -234,13 +235,13 @@ public class WeatherProvider extends ContentProvider {
         case WeatherContract.WEATHER_VALUES_ITEMS:
             table = WEATHER_VALUES_TABLE_NAME;
             resultUri =
-                WeatherContract.WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI;
+                WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI;
             break;
 
         case WeatherContract.WEATHER_CONDITIONS_ITEMS:
             table = WEATHER_CONDITIONS_TABLE_NAME;
             resultUri =
-                WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI;
+                WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI;
             break;
 
         default:
@@ -250,9 +251,9 @@ public class WeatherProvider extends ContentProvider {
         // Insert the data into the correct table.
         final long insertRow =
             mDatabaseHelper.getWritableDatabase().insert
-            (table,
-             "",
-             values);
+                (table,
+                 null,
+                 values);
 
         // Check to ensure that the insertion worked.
         if (insertRow > 0) {
@@ -286,11 +287,11 @@ public class WeatherProvider extends ContentProvider {
     	switch(WeatherContract.sUriMatcher.match(uri)) {
     	case WeatherContract.WEATHER_VALUES_ITEMS:
             dbName =
-                WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
+                WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
             break;
     	case WeatherContract.WEATHER_CONDITIONS_ITEMS:
             dbName =
-                WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
+                WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
             break;
     	default:
             throw new IllegalArgumentException("Unknown URI " 
@@ -351,13 +352,12 @@ public class WeatherProvider extends ContentProvider {
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_VALUES_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
             rowsUpdated =
                 db.update(WEATHER_VALUES_TABLE_NAME,
                           values,
-                          whereStatement,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_CONDITIONS_ITEMS:
@@ -368,13 +368,12 @@ public class WeatherProvider extends ContentProvider {
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_CONDITIONS_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
             rowsUpdated =
                 db.update(WEATHER_CONDITIONS_TABLE_NAME,
                           values,
-                          whereStatement,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
                           whereStatementArgs);
             break;
         default:
@@ -414,12 +413,11 @@ public class WeatherProvider extends ContentProvider {
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_VALUES_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
             rowsDeleted = 
                 db.delete(WEATHER_VALUES_TABLE_NAME,
-                          whereStatement,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_CONDITIONS_ITEMS:
@@ -429,12 +427,11 @@ public class WeatherProvider extends ContentProvider {
                           whereStatementArgs);
             break;
         case WeatherContract.WEATHER_CONDITIONS_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
             rowsDeleted =
                 db.delete(WEATHER_CONDITIONS_TABLE_NAME,
-                          whereStatement,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),                          
                           whereStatementArgs);
             break;
         default:

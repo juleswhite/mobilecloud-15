@@ -31,7 +31,7 @@ public final class WeatherContract {
      * WeatherProvider.
      */
     private static final Uri BASE_URI =
-        Uri.parse("content://" 
+        Uri.parse("content://"
                   + AUTHORITY);
 
     /**

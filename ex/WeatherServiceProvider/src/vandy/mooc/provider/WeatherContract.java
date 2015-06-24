@@ -151,7 +151,7 @@ public final class WeatherContract {
          * Weather Values's Table name.
          */
         public static String WEATHER_VALUES_TABLE_NAME =
-            "weather_data";
+            "weather_values";
 
         /**
          * Unique URI for the Weather Values table.
@@ -219,7 +219,7 @@ public final class WeatherContract {
          * Weather Conditions's Table name.
          */
         public static String WEATHER_CONDITIONS_TABLE_NAME =
-            "weather_condition";
+            "weather_conditions";
 
         /**
          * Unique URI for the Weather Conditions table.

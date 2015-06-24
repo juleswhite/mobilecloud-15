@@ -157,8 +157,9 @@ public final class WeatherContract {
          * Unique URI for the Weather Values table.
          */
         public static final Uri WEATHER_VALUES_CONTENT_URI =
-            BASE_URI.buildUpon().appendPath
-                (WEATHER_VALUES_TABLE_NAME).build();
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_VALUES_TABLE_NAME)
+                    .build();
 
         /**
          * MIME type for multiple Weather Values rows.
@@ -225,7 +226,9 @@ public final class WeatherContract {
          * Unique URI for the Weather Conditions table.
          */
         public static final Uri WEATHER_CONDITIONS_CONTENT_URI = 
-            BASE_URI.buildUpon().appendPath(WEATHER_CONDITIONS_TABLE_NAME).build();
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_CONDITIONS_TABLE_NAME)
+                    .build();
 
         /**
          * MIME type for multiple Weather Conditions rows

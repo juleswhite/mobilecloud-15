@@ -270,63 +270,59 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /**
-     * Method called to handle delete requests from client
-     * applications.
+     * Method that handles bulk insert requests.
      */
     @Override
-    public int delete(Uri uri,
-                      String whereStatement,
-                      String[] whereStatementArgs) {
-        // Number of rows deleted.
-        int rowsDeleted;
-
+    public int bulkInsert(Uri uri,
+                          ContentValues[] values) {
+    	// Fetch the db from the helper.
         final SQLiteDatabase db =
             mDatabaseHelper.getWritableDatabase();
-
-        // Delete the appropriate rows based on the Uri. If the URI 
-        // includes a specific row to delete, add that row to the 
-        // WHERE statement.
-        switch (WeatherContract.sUriMatcher.match(uri)) {
-        case WeatherContract.WEATHER_VALUES_ITEMS:
-            rowsDeleted =
-                db.delete(WEATHER_VALUES_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
+        
+        String dbName;
+        
+        // Match the Uri against the table's uris to determine the
+        // table in which table to insert the values.
+    	switch(WeatherContract.sUriMatcher.match(uri)) {
+    	case WeatherContract.WEATHER_VALUES_ITEMS:
+            dbName =
+                WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
             break;
-        case WeatherContract.WEATHER_VALUES_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
-            rowsDeleted = 
-                db.delete(WEATHER_VALUES_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
+    	case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            dbName =
+                WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
             break;
-        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
-            rowsDeleted =
-                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
-            break;
-        case WeatherContract.WEATHER_CONDITIONS_ITEM:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
-            rowsDeleted =
-                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
-            break;
-        default:
+    	default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
+    	}
+        
+    	// Insert the values into the table in one transaction by
+        // beginning a transaction in EXCLUSIVE mode.
+        db.beginTransaction();
+        int returnCount = 0;
+        try {
+            for (ContentValues value : values) {
+                final long id =
+                    db.insert(dbName,
+                              null,
+                              value);
+                if (id != -1)
+                    returnCount++;
+            }
+            // Marks the current transaction as successful.
+            db.setTransactionSuccessful();
+        } finally {
+            // End the transaction
+            db.endTransaction();
         }
-
-        // Register to watch a content URI for changes.
-        getContext().getContentResolver().notifyChange(uri, 
+        
+        // Notifies registered observers that rows were updated and
+        // attempt to sync changes to the network.
+        getContext().getContentResolver().notifyChange(uri,
                                                        null);
-        return rowsDeleted;
-    }
+        return returnCount;
+    } 
 
     /**
      * Method called to handle update requests from client
@@ -392,59 +388,63 @@ public class WeatherProvider extends ContentProvider {
 
         return rowsUpdated;
     }
-    
+
     /**
-     * Method that handles bulk insert requests.
+     * Method called to handle delete requests from client
+     * applications.
      */
     @Override
-    public int bulkInsert(Uri uri,
-                          ContentValues[] values) {
-    	// Fetch the db from the helper.
+    public int delete(Uri uri,
+                      String whereStatement,
+                      String[] whereStatementArgs) {
+        // Number of rows deleted.
+        int rowsDeleted;
+
         final SQLiteDatabase db =
             mDatabaseHelper.getWritableDatabase();
-        
-        String dbName;
-        
-        // Match the Uri against the table's uris to determine the
-        // table in which table to insert the values.
-    	switch(WeatherContract.sUriMatcher.match(uri)) {
-    	case WeatherContract.WEATHER_VALUES_ITEMS:
-            dbName =
-                WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
+
+        // Delete the appropriate rows based on the Uri. If the URI 
+        // includes a specific row to delete, add that row to the 
+        // WHERE statement.
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
+            rowsDeleted =
+                db.delete(WEATHER_VALUES_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
             break;
-    	case WeatherContract.WEATHER_CONDITIONS_ITEMS:
-            dbName =
-                WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
+        case WeatherContract.WEATHER_VALUES_ITEM:
+            whereStatement =
+                addKeyIdCheckToWhereStatement(whereStatement,
+                                              ContentUris.parseId(uri));
+            rowsDeleted = 
+                db.delete(WEATHER_VALUES_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
             break;
-    	default:
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            rowsDeleted =
+                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
+            break;
+        case WeatherContract.WEATHER_CONDITIONS_ITEM:
+            whereStatement =
+                addKeyIdCheckToWhereStatement(whereStatement,
+                                              ContentUris.parseId(uri));
+            rowsDeleted =
+                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
+            break;
+        default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
-    	}
-        
-    	// Insert the values into the table in one transaction by
-        // beginning a transaction in EXCLUSIVE mode.
-        db.beginTransaction();
-        int returnCount = 0;
-        try {
-            for (ContentValues value : values) {
-                final long id =
-                    db.insert(dbName,
-                              null,
-                              value);
-                if (id != -1)
-                    returnCount++;
-            }
-            // Marks the current transaction as successful.
-            db.setTransactionSuccessful();
-        } finally {
-            // End the transaction
-            db.endTransaction();
         }
-        
-        // Notifies registered observers that rows were updated and
-        // attempt to sync changes to the network.
-        getContext().getContentResolver().notifyChange(uri,
+
+        // Register to watch a content URI for changes.
+        getContext().getContentResolver().notifyChange(uri, 
                                                        null);
-        return returnCount;
-    } 
-}
+        return rowsDeleted;
+    }
+ }

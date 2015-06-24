@@ -1,6 +1,7 @@
 package vandy.mooc.provider;
 
 import android.content.ContentUris;
+import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -74,35 +75,43 @@ public final class WeatherContract {
     /**
      * UriMatcher code for the Weather Values table.
      */
-    private static final int WEATHER_VALUES_ITEMS = 100;
+    public static final int WEATHER_VALUES_ITEMS = 100;
 
     /**
      * UriMatcher code for a specific row in the Weather Values table.
      */
-    private static final int WEATHER_VALUES_ITEM = 110;
+    public static final int WEATHER_VALUES_ITEM = 110;
 
     /**
      * UriMatcher code for the Weather Conditions table.
      */
-    private static final int WEATHER_CONDITIONS_ITEMS = 200;
+    public static final int WEATHER_CONDITIONS_ITEMS = 200;
 
     /**
      * UriMatcher code for a specific row in the Weather Conditions
      * table.
      */
-    private static final int WEATHER_CONDITIONS_ITEM = 210;
+    public static final int WEATHER_CONDITIONS_ITEM = 210;
+
+    /**
+     * UriMatcher code for getting an entire "WeatherData" object's
+     * data from the database.  This doesn't correspond to a specific
+     * table; it corresponds to a Weather Values entry and all of its
+     * associated Weather Conditions entries.
+     */
+    public static final int ACCESS_ALL_DATA_FOR_LOCATION_ITEM = 300;
 
     /**
      * UriMatcher that is used to demultiplex the incoming URIs into
      * requests.
      */
-    private static final UriMatcher sUriMatcher =
+    public static final UriMatcher sUriMatcher =
         buildUriMatcher();
 
     /**
      * Build the UriMatcher for this Content Provider.
      */
-    private static UriMatcher buildUriMatcher() {
+    public static UriMatcher buildUriMatcher() {
         // Add default 'no match' result to matcher.
         final UriMatcher matcher =
             new UriMatcher(UriMatcher.NO_MATCH);
@@ -110,15 +119,15 @@ public final class WeatherContract {
         // Initialize the matcher with the URIs used to access each
         // table.
         matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_VALUES_TABLE_NAME,
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME,
                        WEATHER_VALUES_ITEMS);
         matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_VALUES_TABLE_NAME 
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME 
                        + "/#",
                        WEATHER_VALUES_ITEM);
 
         matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_CONDITIONS_TABLE_NAME,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME,
                        WEATHER_CONDITIONS_ITEMS);
 
         matcher.addURI(WeatherContract.AUTHORITY,
@@ -128,7 +137,7 @@ public final class WeatherContract {
 
         matcher.addURI(WeatherContract.AUTHORITY,
                        WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
-                       ACCESS_ALL_DATA_FOR_LOCATION);
+                       ACCESS_ALL_DATA_FOR_LOCATION_ITEM);
 
         return matcher;
     }

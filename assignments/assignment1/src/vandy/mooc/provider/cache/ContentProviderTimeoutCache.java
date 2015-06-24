@@ -196,8 +196,8 @@ public class ContentProviderTimeoutCache
                           List<AcronymExpansion> longForms,
                           long timeout) {
         // Check if the List is not null or empty.
-        if (longForms.isEmpty() 
-            || longForms == null) 
+        if (longForms == 
+            || longForms.isEmpty()) 
             return -1;
 
         // Calculate the Expiration time.

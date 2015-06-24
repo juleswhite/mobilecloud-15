@@ -2,6 +2,7 @@ package vandy.mooc.provider;
 
 import vandy.mooc.R;
 import android.content.ContentUris;
+import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -120,18 +121,18 @@ public final class CharacterContract {
      * The code that is returned when a URI for more than 1 items is
      * matched against the given components.  Must be positive.
      */
-    protected static final int CHARACTERS = 100;
+    public static final int CHARACTERS = 100;
 
     /**
      * The code that is returned when a URI for exactly 1 item is
      * matched against the given components.  Must be positive.
      */
-    protected static final int CHARACTER = 101;
+    public static final int CHARACTER = 101;
 
     /**
      * The URI Matcher used by this content provider.
      */
-    protected static final UriMatcher sUriMatcher =
+    public static final UriMatcher sUriMatcher =
         buildUriMatcher();
 
     /**

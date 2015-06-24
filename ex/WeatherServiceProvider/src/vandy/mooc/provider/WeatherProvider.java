@@ -41,74 +41,12 @@ public class WeatherProvider extends ContentProvider {
         WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
 
     /**
-     * UriMatcher code for the Weather Values table.
-     */
-    private static final int WEATHER_VALUES_ITEMS = 100;
-
-    /**
-     * UriMatcher code for a specific row in the Weather Values table.
-     */
-    private static final int WEATHER_VALUES_ITEM = 110;
-
-    /**
-     * UriMatcher code for the Weather Conditions table.
-     */
-    private static final int WEATHER_CONDITIONS_ITEMS = 200;
-
-    /**
-     * UriMatcher code for a specific row in the Weather Conditions
-     * table.
-     */
-    private static final int WEATHER_CONDITIONS_ITEM = 210;
-
-    /**
      * UriMatcher code for getting an entire "WeatherData" object's
      * data from the database.  This doesn't correspond to a specific
      * table; it corresponds to a Weather Values entry and all of its
      * associated Weather Conditions entries.
      */
     private static final int ACCESS_ALL_DATA_FOR_LOCATION = 300;
-
-    /**
-     * Build the UriMatcher for this Content Provider.
-     */
-    private static UriMatcher buildUriMatcher() {
-        // Add default 'no match' result to matcher.
-        final UriMatcher matcher =
-            new UriMatcher(UriMatcher.NO_MATCH);
-
-        // Initialize the matcher with the URIs used to access each
-        // table.
-        matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_VALUES_TABLE_NAME,
-                       WEATHER_VALUES_ITEMS);
-        matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_VALUES_TABLE_NAME 
-                       + "/#",
-                       WEATHER_VALUES_ITEM);
-
-        matcher.addURI(WeatherContract.AUTHORITY,
-                       WEATHER_CONDITIONS_TABLE_NAME,
-                       WEATHER_CONDITIONS_ITEMS);
-
-        matcher.addURI(WeatherContract.AUTHORITY,
-                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
-                       + "/#",
-                       WEATHER_CONDITIONS_ITEM);
-
-        matcher.addURI(WeatherContract.AUTHORITY,
-                       WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
-                       ACCESS_ALL_DATA_FOR_LOCATION);
-
-        return matcher;
-    }
-
-    /**
-     * UriMatcher that is used to demultiplex the incoming URIs into
-     * requests.
-     */
-    private static final UriMatcher sUriMatcher =
-        buildUriMatcher();
 
     /**
      * The database helper that is used to manage the providers

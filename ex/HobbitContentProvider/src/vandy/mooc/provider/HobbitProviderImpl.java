@@ -2,7 +2,6 @@ package vandy.mooc.provider;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -37,10 +36,10 @@ public abstract class HobbitProviderImpl {
     public String getType(Uri uri) {
         // Match the id returned by UriMatcher to return appropriate
         // MIME_TYPE.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             return CharacterContract.CharacterEntry.CONTENT_ITEMS_TYPE;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             return CharacterContract.CharacterEntry.CONTENT_ITEM_TYPE;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
@@ -61,8 +60,8 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI), or -1 if
         // there is no matched node.  If there's a match insert a new
         // row.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             returnUri = insertCharacters(uri,
                                          cvs);
             break;
@@ -95,8 +94,8 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI), or -1 if
         // there is no matched node.  If there's a match insert new
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             int returnCount = bulkInsertCharacters(uri,
                                                    cvsArray);
 
@@ -133,15 +132,15 @@ public abstract class HobbitProviderImpl {
 
         // Match the id returned by UriMatcher to query appropriate
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             cursor = queryCharacters(uri,
                                      projection,
                                      selection,
                                      selectionArgs,
                                      sortOrder);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             cursor = queryCharacter(uri,
                                     projection,
                                     selection,
@@ -196,14 +195,14 @@ public abstract class HobbitProviderImpl {
 
         // Match the id returned by UriMatcher to update appropriate
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             recsUpdated = updateCharacters(uri,
                                            cvs,
                                            selection,
                                            selectionArgs);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             recsUpdated = updateCharacter(uri,
                                           cvs,
                                           selection,
@@ -258,13 +257,13 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI) or -1 if
         // there is no matched node.  If a match is found delete the
         // appropriate rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             recsDeleted = deleteCharacters(uri,
                                            selection,
                                            selectionArgs);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             recsDeleted = deleteCharacter(uri,
                                           selection,
                                           selectionArgs);

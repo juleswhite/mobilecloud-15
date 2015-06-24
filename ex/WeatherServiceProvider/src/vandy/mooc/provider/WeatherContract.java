@@ -72,6 +72,68 @@ public final class WeatherContract {
         + ACCESS_ALL_DATA_FOR_LOCATION_PATH;
 
     /**
+     * UriMatcher code for the Weather Values table.
+     */
+    private static final int WEATHER_VALUES_ITEMS = 100;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Values table.
+     */
+    private static final int WEATHER_VALUES_ITEM = 110;
+
+    /**
+     * UriMatcher code for the Weather Conditions table.
+     */
+    private static final int WEATHER_CONDITIONS_ITEMS = 200;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Conditions
+     * table.
+     */
+    private static final int WEATHER_CONDITIONS_ITEM = 210;
+
+    /**
+     * UriMatcher that is used to demultiplex the incoming URIs into
+     * requests.
+     */
+    private static final UriMatcher sUriMatcher =
+        buildUriMatcher();
+
+    /**
+     * Build the UriMatcher for this Content Provider.
+     */
+    private static UriMatcher buildUriMatcher() {
+        // Add default 'no match' result to matcher.
+        final UriMatcher matcher =
+            new UriMatcher(UriMatcher.NO_MATCH);
+
+        // Initialize the matcher with the URIs used to access each
+        // table.
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WEATHER_VALUES_TABLE_NAME,
+                       WEATHER_VALUES_ITEMS);
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WEATHER_VALUES_TABLE_NAME 
+                       + "/#",
+                       WEATHER_VALUES_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WEATHER_CONDITIONS_TABLE_NAME,
+                       WEATHER_CONDITIONS_ITEMS);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
+                       + "/#",
+                       WEATHER_CONDITIONS_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
+                       ACCESS_ALL_DATA_FOR_LOCATION);
+
+        return matcher;
+    }
+
+    /**
      * Inner class defining the contents of the Weather Values table.
      */
     public static final class WeatherValuesEntry 

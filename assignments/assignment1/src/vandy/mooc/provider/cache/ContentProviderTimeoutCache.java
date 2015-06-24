@@ -196,7 +196,7 @@ public class ContentProviderTimeoutCache
                           List<AcronymExpansion> longForms,
                           long timeout) {
         // Check if the List is not null or empty.
-        if (longForms == 
+        if (longForms == null
             || longForms.isEmpty()) 
             return -1;
 

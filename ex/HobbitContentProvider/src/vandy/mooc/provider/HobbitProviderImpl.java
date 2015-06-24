@@ -24,50 +24,6 @@ public abstract class HobbitProviderImpl {
     protected Context mContext;
 
     /**
-     * The code that is returned when a URI for more than 1 items is
-     * matched against the given components.  Must be positive.
-     */
-    protected static final int CHARACTERS = 100;
-
-    /**
-     * The code that is returned when a URI for exactly 1 item is
-     * matched against the given components.  Must be positive.
-     */
-    protected static final int CHARACTER = 101;
-
-    /**
-     * The URI Matcher used by this content provider.
-     */
-    protected static final UriMatcher sUriMatcher =
-        buildUriMatcher();
-
-    /**
-     * Helper method to match each URI to the ACRONYM integers
-     * constant defined above.
-     * 
-     * @return UriMatcher
-     */
-    protected static UriMatcher buildUriMatcher() {
-        // All paths added to the UriMatcher have a corresponding code
-        // to return when a match is found.  The code passed into the
-        // constructor represents the code to return for the rootURI.
-        // It's common to use NO_MATCH as the code for this case.
-        final UriMatcher matcher = 
-            new UriMatcher(UriMatcher.NO_MATCH);
-
-        // For each type of URI that is added, a corresponding code is
-        // created.
-        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
-                       CharacterContract.PATH_CHARACTER,
-                       CHARACTERS);
-        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
-                       CharacterContract.PATH_CHARACTER
-                       + "/#",
-                       CHARACTER);
-        return matcher;
-    }
-
-    /**
      * Constructor initializes the Context field.
      */
     public HobbitProviderImpl(Context context) {

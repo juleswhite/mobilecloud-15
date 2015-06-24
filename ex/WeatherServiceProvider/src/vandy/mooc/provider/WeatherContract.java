@@ -18,7 +18,7 @@ import android.provider.BaseColumns;
  *    This table is separate from the Weather Values table because
  *    each location can have multiple Weather Conditions.
  */
-public class WeatherContract {
+public final class WeatherContract {
     /**
      * The WeatherProvider's unique authority identifier.
      */

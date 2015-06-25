@@ -7,7 +7,7 @@ import android.provider.BaseColumns;
 /**
  * Defines table and column names for the Acronym database.
  */
-public class AcronymContract {
+public final class AcronymContract {
     /**
      * The "Content authority" is a name for the entire content
      * provider, similar to the relationship between a domain name and

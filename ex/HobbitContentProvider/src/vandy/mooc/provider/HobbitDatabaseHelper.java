@@ -61,7 +61,7 @@ public class HobbitDatabaseHelper extends SQLiteOpenHelper {
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        // Create the tables.
+        // Create the table.
         db.execSQL(SQL_CREATE_HOBBIT_TABLE);
     }
 

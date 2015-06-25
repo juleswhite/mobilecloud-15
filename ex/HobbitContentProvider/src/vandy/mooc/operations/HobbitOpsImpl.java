@@ -5,7 +5,6 @@ import java.lang.ref.WeakReference;
 import vandy.mooc.R;
 import vandy.mooc.activities.HobbitActivity;
 import vandy.mooc.provider.CharacterContract;
-import vandy.mooc.provider.HobbitProviderImpl;
 import android.app.Activity;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -60,7 +59,7 @@ public abstract class HobbitOpsImpl {
             && mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
-            mActivity.get().displayCursor(makeCursorAdapter());
+            mActivity.get().displayCursor(mCursor);
     }
     
     /**
@@ -68,6 +67,20 @@ public abstract class HobbitOpsImpl {
     */
     public void close() {
         // No-op.
+    }
+
+    /**
+     * Return a @a SimpleCursorAdapter that can be used to display the
+     * contents of the Hobbit ContentProvider.
+     */
+    public SimpleCursorAdapter makeCursorAdapter() {
+        return new SimpleCursorAdapter
+            (mActivity.get(),
+             R.layout.list_layout, 
+             null,
+             CharacterContract.CharacterEntry.sColumnsToDisplay,
+             CharacterContract.CharacterEntry.sColumnResIds,
+             1);
     }
 
     /**
@@ -113,14 +126,17 @@ public abstract class HobbitOpsImpl {
         ContentValues[] cvsArray =
             new ContentValues[characters.length];
 
-        // Insert all the characters into a ContentValues array.
-        for (int i = 0; i < characters.length; i++) {
+        // Index counter.
+        int i = 0;
+
+        // Insert all the characters into the ContentValues array.
+        for (String character : characters) {
             ContentValues cvs = new ContentValues();
             cvs.put(CharacterContract.CharacterEntry.COLUMN_NAME,
-                   characters[i]);
+                    character);
             cvs.put(CharacterContract.CharacterEntry.COLUMN_RACE,
                    race);
-            cvsArray[i] = cvs;            
+            cvsArray[i++] = cvs;            
         }
 
         return bulkInsert
@@ -150,9 +166,9 @@ public abstract class HobbitOpsImpl {
         throws RemoteException;
 
     /**
-     * Update the @a name of a Hobbit character at a designated @a uri
-     * from the HobbitContentProvider.  Plays the role of a "template
-     * method" in the Template Method pattern.
+     * Update the @a name and @a race of a Hobbit character at a
+     * designated @a uri from the HobbitContentProvider.  Plays the
+     * role of a "template method" in the Template Method pattern.
      */
     public int updateByUri(Uri uri,
                            String name,
@@ -169,13 +185,15 @@ public abstract class HobbitOpsImpl {
     }
 
     /**
-     * Update the @a name and @a race of a Hobbit character at a designated 
-     * @a uri from the HobbitContentProvider.  Plays the role of a
+     * Update the @a race of a Hobbit character with a given
+     * @a name in the HobbitContentProvider.  Plays the role of a
      * "template method" in the Template Method pattern.
      */
-    public int updateByName(String name,
-                            String race) throws RemoteException {
+    public int updateRaceByName(String name,
+                                String race) throws RemoteException {
         final ContentValues cvs = new ContentValues();
+        cvs.put(CharacterContract.CharacterEntry.COLUMN_NAME,
+                name);
         cvs.put(CharacterContract.CharacterEntry.COLUMN_RACE,
                 race);
         return update(CharacterContract.CharacterEntry.CONTENT_URI,
@@ -203,13 +221,9 @@ public abstract class HobbitOpsImpl {
      */
     public int deleteByName(String[] characterNames)
         throws RemoteException {
-        final String selection =
-            CharacterContract.CharacterEntry.COLUMN_NAME;
-        final String[] selectionArgs = characterNames;
-
         return delete(CharacterContract.CharacterEntry.CONTENT_URI,
-                      selection,
-                      selectionArgs);
+                      CharacterContract.CharacterEntry.COLUMN_NAME,
+                      characterNames);
     }
 
     /**
@@ -219,13 +233,9 @@ public abstract class HobbitOpsImpl {
      */
     public int deleteByRace(String[] characterRaces)
         throws RemoteException {
-        final String selection =
-            CharacterContract.CharacterEntry.COLUMN_RACE;
-        final String[] selectionArgs = characterRaces;
-
         return delete(CharacterContract.CharacterEntry.CONTENT_URI,
-                      selection,
-                      selectionArgs);
+                      CharacterContract.CharacterEntry.COLUMN_RACE,
+                      characterRaces);
     }
 
     /**
@@ -239,37 +249,51 @@ public abstract class HobbitOpsImpl {
         throws RemoteException;
 
     /**
-     * Display the current contents of the HobbitContentProvider.
+     * Delete all characters from the HobbitContentProvider.  Plays
+     * the role of a "template method" in the Template Method pattern.
      */
-    public void display(String selection,
-                        String[] selectionArgs)
+    public int deleteAll() 
         throws RemoteException {
-        // Query for all the characters in the HobbitContentProvider.
-        mCursor = query(CharacterContract.CharacterEntry.CONTENT_URI,
-                        null,
-                        selection,
-                        selectionArgs,
-                        null);
-        if (mCursor.getCount() == 0)
-            Toast.makeText(mActivity.get(), 
-                           "no items to display",
-                           Toast.LENGTH_SHORT).show();
-        else
-            // Display the results of the query.
-            mActivity.get().displayCursor
-                (makeCursorAdapter());
+        return delete(CharacterContract.CharacterEntry.CONTENT_URI,
+                      null,
+                      null);
     }
 
     /**
-     * Factory method that returns a SimpleCursorAdapter.
+     * Display the current contents of the HobbitContentProvider.
      */
-    private SimpleCursorAdapter makeCursorAdapter() {
-        return new SimpleCursorAdapter
-            (mActivity.get(),
-             R.layout.list_layout,
-             mCursor,
-             HobbitProviderImpl.sCOLUMNS,
-             HobbitProviderImpl.sCOLUMNS_TYPES,
-             1);
+    public void displayAll()
+        throws RemoteException {
+        // Query for all the characters in the HobbitContentProvider.
+        mCursor = query(CharacterContract.CharacterEntry.CONTENT_URI,
+                        CharacterContract.CharacterEntry.sColumnsToDisplay,
+                        CharacterContract.CharacterEntry.COLUMN_RACE,
+                        new String[] { 
+                                 "Dwarf",
+                                 "Maia",
+                                 "Hobbit",
+                                 "Dragon",
+                                 "Man",
+                                 "Bear"
+                             },
+                       /* The following three null parameters could
+                          also be this:
+
+                        null,
+                        null,
+                        null,
+                        */
+                        null);
+        if (mCursor.getCount() == 0) {
+            Toast.makeText(mActivity.get(), 
+                           "No items to display",
+                           Toast.LENGTH_SHORT).show();
+            // Remove the display if there's nothing left to show.
+            mActivity.get().displayCursor
+                (mCursor = null);
+        } else
+            // Display the results of the query.
+            mActivity.get().displayCursor
+                (mCursor);
     }
 }

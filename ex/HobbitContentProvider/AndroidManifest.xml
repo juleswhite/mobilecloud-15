@@ -21,7 +21,7 @@
     </activity>
 
     <provider android:name=".provider.HobbitProvider"
-              android:authorities="vandy.mooc.hobbitcontentprovider"
+              android:authorities="vandy.mooc.hobbitprovider"
               android:exported="false">
     </provider>
     </application>

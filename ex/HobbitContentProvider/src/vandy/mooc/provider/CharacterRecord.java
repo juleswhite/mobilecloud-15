@@ -22,7 +22,7 @@ class CharacterRecord {
     /**
      * Race of the character.
      */
-    private final String mRace;
+    private String mRace;
 
     /**
      * Constructor initializes all the name and race fields.
@@ -64,5 +64,12 @@ class CharacterRecord {
      */
     String getRace() {
         return mRace;
+    }
+
+    /**
+     * Set the race of the character.
+     */
+    void setRace(String race) {
+        mRace = race;
     }
 }

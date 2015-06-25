@@ -18,61 +18,77 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         "vandy_mooc_weather_db";
 
     /**
-     * Database version number. This is updated with each schema
+     * Database version number, which is updated with each schema
      * change.
      */
-    private static int DATABASE_VERSION = 3;
+    private static int DATABASE_VERSION = 1;
 
     /*
      * SQL create table statements.
      */
 
     /**
-     * Weather Data create table statement.
+     * SQL statement used to create the Weather Values table.
      */
-    private static final String CREATE_TABLE_WEATHER_DATA = "CREATE TABLE "
-        + WeatherContract.WeatherDataEntry.WEATHER_DATA_TABLE_NAME + "("
-        + WeatherContract.WeatherDataEntry._ID + " INTEGER PRIMARY KEY, "
-        + WeatherContract.WeatherDataEntry.COLUMN_NAME + " TEXT, "
-        + WeatherContract.WeatherDataEntry.COLUMN_DATE + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_COD + " INTEGER, "
-        + WeatherContract.WeatherDataEntry.COLUMN_SUNRISE + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_SUNSET + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_TEMP + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_HUMIDITY + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_PRESSURE + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_SPEED + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_DEG + " REAL, "
-        + WeatherContract.WeatherDataEntry.COLUMN_COUNTRY + " TEXT, "
-        + WeatherContract.WeatherDataEntry.COLUMN_EXPIRATION_TIME
+    private static final String CREATE_TABLE_WEATHER_VALUES =
+        "CREATE TABLE "
+        + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME
+        + "("
+        + WeatherContract.WeatherValuesEntry._ID 
+        + " INTEGER PRIMARY KEY, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY 
+        + " TEXT, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_NAME 
+        + " TEXT, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_DATE 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_COD 
+        + " INTEGER, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_SUNRISE 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_SUNSET 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_TEMP 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_HUMIDITY 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_PRESSURE 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_SPEED 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_DEG 
+        + " REAL, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_COUNTRY 
+        + " TEXT, "
+        + WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME 
         + " REAL)";
 
     /**
-     * Weather Condition create table statement.
+     * SQL statement used to create the Weather Conditions table.
      */
-    private static final String CREATE_TABLE_WEATHER_CONDITION = "CREATE TABLE "
-        + WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_TABLE_NAME
+    private static final String CREATE_TABLE_WEATHER_CONDITIONS = 
+        "CREATE TABLE "
+        + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
         + "("
-        + WeatherContract.WeatherConditionEntry._ID
+        + WeatherContract.WeatherConditionsEntry._ID
         + " INTEGER PRIMARY KEY, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_WEATHER_CONDITION_OBJECT_ID
+        + WeatherContract.WeatherConditionsEntry.COLUMN_WEATHER_CONDITIONS_OBJECT_ID
         + " INTEGER, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_MAIN
+        + WeatherContract.WeatherConditionsEntry.COLUMN_MAIN
         + " TEXT, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_DESCRIPTION
+        + WeatherContract.WeatherConditionsEntry.COLUMN_DESCRIPTION
         + " TEXT, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_LOCATION
+        + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY
         + " TEXT, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_WEATHER_DATA_PARENT_ID
-        + " REAL, "
-        + WeatherContract.WeatherConditionEntry.COLUMN_ICON
+        + WeatherContract.WeatherConditionsEntry.COLUMN_ICON
         + " TEXT) ";
 
      /**
      * Constructor - initialize database name and version, but don't
      * actually construct the database (which is done in the
-     * onCreate() hook method). It places the db in the application's 
-     * cache directory
+     * onCreate() hook method). It places the database in the
+     * application's cache directory, which will be automatically
+     * cleaned up by Android if the device runs low on storage space.
      * 
      * @param context
      */
@@ -86,12 +102,13 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
     }
 
     /**
-     * Hook method called when the database is created
+     * Hook method called when the database is created.
      */
     @Override
     public void onCreate(SQLiteDatabase db) {
-        db.execSQL(CREATE_TABLE_WEATHER_DATA);
-        db.execSQL(CREATE_TABLE_WEATHER_CONDITION);
+        // Create the tables.
+        db.execSQL(CREATE_TABLE_WEATHER_VALUES);
+        db.execSQL(CREATE_TABLE_WEATHER_CONDITIONS);
     }
 
     /**
@@ -101,10 +118,12 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
     public void onUpgrade(SQLiteDatabase db,
                           int oldVersion,
                           int newVersion) {
+        // Delete the existing tables.
         db.execSQL("DROP TABLE IF EXISTS "
-                   + WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_TABLE_NAME);
+                   + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME);
         db.execSQL("DROP TABLE IF EXISTS "
-                   + WeatherContract.WeatherDataEntry.WEATHER_DATA_TABLE_NAME);
+                   + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME);
+        // Create the new tables.
         onCreate(db);
     }
 }

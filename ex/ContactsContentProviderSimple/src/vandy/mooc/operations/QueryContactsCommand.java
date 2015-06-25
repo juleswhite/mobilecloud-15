@@ -4,6 +4,7 @@ import vandy.mooc.utils.GenericAsyncTask;
 import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
 import android.content.ContentResolver;
+import android.content.Context;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
@@ -34,6 +35,11 @@ public class QueryContactsCommand
     private ContactsOps mOps;
 
     /**
+     * Store a reference to the Application context. 
+     */
+    private Context mApplicationContext;
+
+    /**
      * The GenericAsyncTask used to query contacts into the
      * ContactContentProvider.
      */
@@ -43,8 +49,10 @@ public class QueryContactsCommand
      * Constructor initializes the fields.
      */
     public QueryContactsCommand(ContactsOps ops) {
-        // Store the ContactOps.
+        // Store the ContactOps and Application context.
         mOps = ops;
+        mApplicationContext =
+            ops.getActivity().getApplicationContext();
 
         // Create a GenericAsyncTask to query the contacts off the UI
         // Thread.
@@ -67,7 +75,7 @@ public class QueryContactsCommand
         // Query the Contacts ContentProvider for the contacts and
         // return them.
         return queryAllContacts
-            (mOps.getActivity().getApplicationContext().getContentResolver());
+            (mApplicationContext.getContentResolver());
     }
 
     /**

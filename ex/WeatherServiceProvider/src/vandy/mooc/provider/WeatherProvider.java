@@ -1,9 +1,10 @@
 package vandy.mooc.provider;
 
+import vandy.mooc.provider.WeatherContract.WeatherConditionsEntry;
+import vandy.mooc.provider.WeatherContract.WeatherValuesEntry;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
@@ -13,129 +14,52 @@ import android.text.TextUtils;
 import android.util.Log;
 
 /**
- * Content Provider used to store Weather Data.
+ * Content Provider used to store information about weather data
+ * returned from the Weather Service web service.
  */
 public class WeatherProvider extends ContentProvider {
     /**
      * Logcat tag.
      */
-    private static final String TAG =
-        WeatherProvider.class.getCanonicalName();
+    private final String TAG = 
+        getClass().getCanonicalName();
 
     /*
-     * Constants referencing the Contract class. Used for convenience.
+     * Constants referencing the Contract class.  Used for convenience
+     * to avoid having to retype long constant names.
      */
 
     /**
-     * Constant for the Weather Data table's name.
+     * Constant for the Weather Values table's name.
      */
-    private static final String WEATHER_DATA_TABLE_NAME =
-        WeatherContract.WeatherDataEntry.WEATHER_DATA_TABLE_NAME;
+    private static final String WEATHER_VALUES_TABLE_NAME =
+        WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
 
     /**
-     * Constant for the Weather Condition table's name
+     * Constant for the Weather Conditions table's name.
      */
-    private static final String WEATHER_CONDITION_TABLE_NAME =
-        WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_TABLE_NAME;
+    private static final String WEATHER_CONDITIONS_TABLE_NAME =
+        WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
 
     /**
-     * UriMatcher code for the Weather Data table
+     * The database helper that is used to manage the providers
+     * database.
      */
-    private static final int WEATHER_DATA_MATCHER_ID = 100;
-
-    /**
-     * UriMatcher code for a specific row in the Weather Data table
-     */
-    private static final int WEATHER_DATA_KEY_MATCHER_ID = 110;
-
-    /**
-     * UriMatcher code for the Weather Condition table
-     */
-    private static final int WEATHER_CONDITION_MATCHER_ID = 200;
-
-    /**
-     * UriMatcher code for a specific row in the Weather Condition
-     * table.
-     */
-    private static final int WEATHER_CONDITION_KEY_MATCHER_ID = 210;
-
-    /**
-     * UriMatcher code for getting an entire "Weather Data" object's
-     * data from the database. This doesn't correspond to a specific
-     * table; it corresponds to a Weather Data entry and all of its
-     * associated Weather Condition entries.
-     */
-    private static final int ACCESS_ALL_DATA_FOR_LOCATION_MATCHER_ID = 300;
-
-    /**
-     * Constant used to match a specific row id with the UriMatcher path.
-     */
-    private static final String ROW_PATH_MOD = "/#";
-
-    /**
-     * Build the UriMatcher for this Content Provider.
-     */
-    private static UriMatcher buildUriMatcher() {
-        // Add default 'no match' result to matcher.
-        final UriMatcher matcher = new UriMatcher(UriMatcher.NO_MATCH);
-
-        // Store the authority.
-        final String authority = WeatherContract.AUTHORITY;
-
-        // Initialize the matcher with the URIs used to access each table
-        matcher.addURI(authority,
-                       WEATHER_DATA_TABLE_NAME,
-                       WEATHER_DATA_MATCHER_ID);
-        matcher.addURI(authority,
-                       WEATHER_DATA_TABLE_NAME 
-                       + ROW_PATH_MOD,
-                       WEATHER_DATA_KEY_MATCHER_ID);
-
-        matcher.addURI(authority,
-                       WEATHER_CONDITION_TABLE_NAME,
-                       WEATHER_CONDITION_MATCHER_ID);
-
-        matcher.addURI(authority,
-                       WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_TABLE_NAME
-                       + ROW_PATH_MOD,
-                       WEATHER_CONDITION_KEY_MATCHER_ID);
-
-        matcher.addURI(authority,
-                       WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
-                       ACCESS_ALL_DATA_FOR_LOCATION_MATCHER_ID);
-
-        return matcher;
-    }
-
-    /**
-     * Constant defining the where clause modifier to use when
-     * referring to a specific row.
-     */
-    private static final String SPECIFIC_ROW_MOD = " _id = ";
-
-    /**
-     * UriMatcher that is used to demultiplex the incoming URIs into
-     * requests.
-     */
-    private static final UriMatcher sUriMatcher = buildUriMatcher();
-
-    /**
-     * The database helper that is used to manage the providers db.
-     */
-    private WeatherDatabaseHelper mDBHelper;
+    private WeatherDatabaseHelper mDatabaseHelper;
 
     /**
      * Hook method called when the provider is created.
      */
     @Override
     public boolean onCreate() {
-        mDBHelper = new WeatherDatabaseHelper(getContext());
+        mDatabaseHelper =
+            new WeatherDatabaseHelper(getContext());
         return true;
     }
 
     /**
-     * Helper method that appends a given key id to the end of the passed WHERE
-     * statement.
+     * Helper method that appends a given key id to the end of the
+     * WHERE statement parameter.
      */
     private static String addKeyIdCheckToWhereStatement(String whereStatement,
                                                         long id) {
@@ -146,57 +70,61 @@ public class WeatherProvider extends ContentProvider {
             newWhereStatement = whereStatement + " AND ";
 
         return newWhereStatement 
-            + SPECIFIC_ROW_MOD 
+            + " _id = "
             + "'" 
             + id 
             + "'";
     }
 
     /**
-     * Constant defining the FROM and WHERE clauses for a statement
-     * working on all the data for a single Weather Data "object".
+     * Get a Cursor containing all data for a selected location.  It
+     * joins the Weather Values and Weather Conditions tables.  It
+     * will have a row for each Weather object corresponding to the
+     * location, with the Weather Values columns repeated.
      */
-    private static final String FROM_WHERE_STATEMENT_ALL_LOCATION_DATA = 
-        " FROM "
-        + WEATHER_DATA_TABLE_NAME
-        + ", "
-        + WEATHER_CONDITION_TABLE_NAME
-        + " WHERE "
-        + WEATHER_DATA_TABLE_NAME
-        + "."
-        + WeatherContract.WeatherDataEntry.COLUMN_NAME
-        + " = ? AND "
-        + WEATHER_DATA_TABLE_NAME
-        + "."
-        + WeatherContract.WeatherDataEntry._ID
-        + " = "
-        + WEATHER_CONDITION_TABLE_NAME
-        + "."
-        + WeatherContract.WeatherConditionEntry.COLUMN_WEATHER_DATA_PARENT_ID;
+    private Cursor getAllLocationsData(String locationKey) {
+        /**
+         * Constant defining the FROM and WHERE clauses for a
+         * statement working on all the data for a single Weather
+         * Values "object".  This WHERE statement is used to join both
+         * the Weather Values and Weather Conditions tables over a
+         * specific location.
+         */
+        final String FROM_WHERE_STATEMENT_ALL_LOCATION_DATA = 
+            "SELECT * FROM "
+            + WEATHER_VALUES_TABLE_NAME
+            + ", "
+            + WEATHER_CONDITIONS_TABLE_NAME
+            + " WHERE "
+            + WEATHER_VALUES_TABLE_NAME
+            + "."
+            + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY
+            + " = ? AND "
+            + WEATHER_VALUES_TABLE_NAME
+            + "."
+            + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY
+            + " = "
+            + WEATHER_CONDITIONS_TABLE_NAME
+            + "."
+            + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY;
 
-    /**
-     * Get a Cursor containing all data for a selected location: It
-     * joins the Weather Data and Weather Condition tables. It will
-     * have a row for each Weather object corresponding to the
-     * location, with the Weather Data columns repeated.
-     */
-    private Cursor getAllLocationsData(String location) {
         // Retreive the database from the helper
-        final SQLiteDatabase db = mDBHelper.getWritableDatabase();
+        final SQLiteDatabase db =
+            mDatabaseHelper.getReadableDatabase();
 
-        // Query statement.
-        final String selectQuery =
-            "SELECT * " 
-            + FROM_WHERE_STATEMENT_ALL_LOCATION_DATA;
+        // Formulate the query statement.
+        final String selectQuery = 
+            FROM_WHERE_STATEMENT_ALL_LOCATION_DATA;
 
         Log.v(TAG,
               selectQuery);
 
-        // Query the provider using the all-locations Uri, which will 
-        // return a Cursor joining the Weather Data and Conditions table
-        // entries for one WeatherData object for the target location
+        // Query the SQLite database using the all-locations Uri,
+        // which returns a Cursor joining the Weather Values and
+        // Conditions table entries for one WeatherData object for the
+        // target location
         return db.rawQuery(selectQuery,
-                           new String[] { location });
+                           new String[] { locationKey });
     }
 
     /**
@@ -209,7 +137,6 @@ public class WeatherProvider extends ContentProvider {
                         String whereStatement,
                         String[] whereStatementArgs,
                         String sortOrder) {
-       
     	// Create a SQLite query builder that will be modified based
     	// on the Uri passed.
         final SQLiteQueryBuilder queryBuilder =
@@ -219,37 +146,37 @@ public class WeatherProvider extends ContentProvider {
         // query. This will determine the table that the query will
         // act on and possibly add row qualifications to the WHERE
         // clause.
-        switch (sUriMatcher.match(uri)) {
-        case WEATHER_DATA_MATCHER_ID:
-            queryBuilder.setTables(WEATHER_DATA_TABLE_NAME);
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
+            queryBuilder.setTables(WEATHER_VALUES_TABLE_NAME);
             break;
-        case WEATHER_DATA_KEY_MATCHER_ID:
-            queryBuilder.setTables(WEATHER_DATA_TABLE_NAME);
+        case WeatherContract.WEATHER_VALUES_ITEM:
+            queryBuilder.setTables(WEATHER_VALUES_TABLE_NAME);
             whereStatement =
                 addKeyIdCheckToWhereStatement(whereStatement,
                                               ContentUris.parseId(uri));
             break;
-        case WEATHER_CONDITION_MATCHER_ID:
-            queryBuilder.setTables(WEATHER_CONDITION_TABLE_NAME);
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            queryBuilder.setTables(WEATHER_CONDITIONS_TABLE_NAME);
             break;
-        case WEATHER_CONDITION_KEY_MATCHER_ID:
-            queryBuilder.setTables(WEATHER_CONDITION_TABLE_NAME);
+        case WeatherContract.WEATHER_CONDITIONS_ITEM:
+            queryBuilder.setTables(WEATHER_CONDITIONS_TABLE_NAME);
             whereStatement =
                 addKeyIdCheckToWhereStatement(whereStatement,
                                               ContentUris.parseId(uri));
             break;
-        case ACCESS_ALL_DATA_FOR_LOCATION_MATCHER_ID:
+        case WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_ITEM:
             // This is a special Uri that is querying for an entire
-            // Weather Data object
+            // WeatherData object.
             return getAllLocationsData(whereStatementArgs[0]);
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
 
-        // One the query builder has been initialized based on the provided
-        // Uri, use it to query the database
+        // Once the query builder has been initialized based on the
+        // provided Uri, use it to query the database.
         final Cursor cursor =
-            queryBuilder.query(mDBHelper.getWritableDatabase(),
+            queryBuilder.query(mDatabaseHelper.getReadableDatabase(),
                                projection,
                                whereStatement,
                                whereStatementArgs,
@@ -271,17 +198,17 @@ public class WeatherProvider extends ContentProvider {
     public String getType(Uri uri) {
 	// Use the passed Uri to determine what data is being asked
     	// for and return the appropriate MIME type
-        switch (sUriMatcher.match(uri)) {
-        case WEATHER_DATA_MATCHER_ID:
-            return WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_CONTENT_TYPE;
-        case WEATHER_DATA_KEY_MATCHER_ID:
-            return WeatherContract.WeatherDataEntry.WEATHER_DATA_ITEM_CONTENT_TYPE;
-        case WEATHER_CONDITION_MATCHER_ID:
-            return WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_CONTENT_TYPE;
-        case WEATHER_CONDITION_KEY_MATCHER_ID:
-            return WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_ITEM_CONTENT_TYPE;
-        case ACCESS_ALL_DATA_FOR_LOCATION_MATCHER_ID:
-            return WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_CONTENT_TYPE;
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
+        case WeatherContract.WEATHER_VALUES_ITEM:
+            return WeatherValuesEntry.WEATHER_VALUES_ITEM;
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
+        case WeatherContract.WEATHER_CONDITIONS_ITEM:
+            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEM;
+        case WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_ITEM:
+            return WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION;
         default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
@@ -295,37 +222,39 @@ public class WeatherProvider extends ContentProvider {
     @Override
     public Uri insert(Uri uri,
                       ContentValues values) {
-        // The table to perform the insert on
+        // The table to perform the insert on.
     	String table;
         
-    	// The Uri containing the inserted row's id that is 
-    	// returned to the caller
+    	// The Uri containing the inserted row's id that is returned
+    	// to the caller.
     	Uri resultUri;
     	
         // Determine the base Uri to return and the table to insert on
         // using the UriMatcher.
-        switch (sUriMatcher.match(uri)) {
-        case WEATHER_DATA_MATCHER_ID:
-            table = WEATHER_DATA_TABLE_NAME;
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
+            table = WEATHER_VALUES_TABLE_NAME;
             resultUri =
-                WeatherContract.WeatherDataEntry.WEATHER_DATA_CONTENT_URI;
+                WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI;
             break;
 
-        case WEATHER_CONDITION_MATCHER_ID:
-            table = WEATHER_CONDITION_TABLE_NAME;
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            table = WEATHER_CONDITIONS_TABLE_NAME;
             resultUri =
-                WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_CONTENT_URI;
+                WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI;
             break;
 
         default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
         }
-        // Insert the data into the correct table
+        // Insert the data into the correct table.
         final long insertRow =
-            mDBHelper.getWritableDatabase().insert(table,
-                                                   "",
-                                                   values);
+            mDatabaseHelper.getWritableDatabase().insert
+                (table,
+                 null,
+                 values);
+
         // Check to ensure that the insertion worked.
         if (insertRow > 0) {
             // Create the result URI.
@@ -342,62 +271,59 @@ public class WeatherProvider extends ContentProvider {
     }
 
     /**
-     * Method called to handle delete requests from client
-     * applications.
+     * Method that handles bulk insert requests.
      */
     @Override
-    public int delete(Uri uri,
-                      String whereStatement,
-                      String[] whereStatementArgs) {
-        // Number of rows deleted.
-        int rowsDeleted;
-
+    public int bulkInsert(Uri uri,
+                          ContentValues[] values) {
+    	// Fetch the db from the helper.
         final SQLiteDatabase db =
-            mDBHelper.getWritableDatabase();
-
-        // Delete the appropriate rows based on the Uri. If the URI 
-        // includes a specific row to delete, add that row to the 
-        // WHERE statement.
-        switch (sUriMatcher.match(uri)) {
-        case WEATHER_DATA_MATCHER_ID:
-            rowsDeleted =
-                db.delete(WEATHER_DATA_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
+            mDatabaseHelper.getWritableDatabase();
+        
+        String dbName;
+        
+        // Match the Uri against the table's uris to determine the
+        // table in which table to insert the values.
+    	switch(WeatherContract.sUriMatcher.match(uri)) {
+    	case WeatherContract.WEATHER_VALUES_ITEMS:
+            dbName =
+                WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME;
             break;
-        case WEATHER_DATA_KEY_MATCHER_ID:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
-            rowsDeleted = 
-                db.delete(WEATHER_DATA_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
+    	case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            dbName =
+                WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME;
             break;
-        case WEATHER_CONDITION_MATCHER_ID:
-            rowsDeleted =
-                db.delete(WEATHER_CONDITION_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
-            break;
-        case WEATHER_CONDITION_KEY_MATCHER_ID:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
-            rowsDeleted =
-                db.delete(WEATHER_CONDITION_TABLE_NAME,
-                          whereStatement,
-                          whereStatementArgs);
-            break;
-        default:
+    	default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
+    	}
+        
+    	// Insert the values into the table in one transaction by
+        // beginning a transaction in EXCLUSIVE mode.
+        db.beginTransaction();
+        int returnCount = 0;
+        try {
+            for (ContentValues value : values) {
+                final long id =
+                    db.insert(dbName,
+                              null,
+                              value);
+                if (id != -1)
+                    returnCount++;
+            }
+            // Marks the current transaction as successful.
+            db.setTransactionSuccessful();
+        } finally {
+            // End the transaction
+            db.endTransaction();
         }
-        // Register to watch a content URI for changes.
-        getContext().getContentResolver().notifyChange(uri, 
+        
+        // Notifies registered observers that rows were updated and
+        // attempt to sync changes to the network.
+        getContext().getContentResolver().notifyChange(uri,
                                                        null);
-        return rowsDeleted;
-    }
+        return returnCount;
+    } 
 
     /**
      * Method called to handle update requests from client
@@ -412,43 +338,42 @@ public class WeatherProvider extends ContentProvider {
         int rowsUpdated;
 
         final SQLiteDatabase db = 
-            mDBHelper.getWritableDatabase();
+            mDatabaseHelper.getWritableDatabase();
 
-        // Update the appropriate rows. If the URI includes a specific
-        // row to update, add that row to the where statement.
-        switch (sUriMatcher.match(uri)) {
-        case WEATHER_DATA_MATCHER_ID:
+        // Update the appropriate rows.  If the URI includes a
+        // specific row to update, add that row to the where
+        // statement.
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
             rowsUpdated =
-                db.update(WEATHER_DATA_TABLE_NAME,
+                db.update(WEATHER_VALUES_TABLE_NAME,
                           values,
                           whereStatement,
                           whereStatementArgs);
             break;
-        case WEATHER_DATA_KEY_MATCHER_ID:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
+        case WeatherContract.WEATHER_VALUES_ITEM:
             rowsUpdated =
-                db.update(WEATHER_DATA_TABLE_NAME,
+                db.update(WEATHER_VALUES_TABLE_NAME,
+                          values,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
+                          whereStatementArgs);
+            break;
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            rowsUpdated =
+                db.update(WEATHER_CONDITIONS_TABLE_NAME,
                           values,
                           whereStatement,
                           whereStatementArgs);
             break;
-        case WEATHER_CONDITION_MATCHER_ID:
+        case WeatherContract.WEATHER_CONDITIONS_ITEM:
             rowsUpdated =
-                db.update(WEATHER_CONDITION_TABLE_NAME,
+                db.update(WEATHER_CONDITIONS_TABLE_NAME,
                           values,
-                          whereStatement,
-                          whereStatementArgs);
-            break;
-        case WEATHER_CONDITION_KEY_MATCHER_ID:
-            whereStatement =
-                addKeyIdCheckToWhereStatement(whereStatement,
-                                              ContentUris.parseId(uri));
-            rowsUpdated =
-                db.update(WEATHER_CONDITION_TABLE_NAME,
-                          values,
-                          whereStatement,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
                           whereStatementArgs);
             break;
         default:
@@ -457,64 +382,66 @@ public class WeatherProvider extends ContentProvider {
         }
 
         // Register to watch a content URI for changes.
-        getContext().getContentResolver().notifyChange(uri, null);
+        getContext().getContentResolver().notifyChange(uri,
+                                                       null);
 
         return rowsUpdated;
     }
-    
+
     /**
-     * Method that handles bulk insert requests.
+     * Method called to handle delete requests from client
+     * applications.
      */
     @Override
-    public int bulkInsert(Uri uri,
-                          ContentValues[] values) {
-    	
-    	// fetch the db from the helper
+    public int delete(Uri uri,
+                      String whereStatement,
+                      String[] whereStatementArgs) {
+        // Number of rows deleted.
+        int rowsDeleted;
+
         final SQLiteDatabase db =
-            mDBHelper.getWritableDatabase();
-        
-        String dbName;
-        
-        // Match the Uri against the table's uris to determine
-        // the table in which table to insert the values
-    	switch(sUriMatcher.match(uri)) {
-    	case WEATHER_DATA_MATCHER_ID :
-            dbName = WeatherContract.WeatherDataEntry.WEATHER_DATA_TABLE_NAME;
+            mDatabaseHelper.getWritableDatabase();
+
+        // Delete the appropriate rows based on the Uri. If the URI 
+        // includes a specific row to delete, add that row to the 
+        // WHERE statement.
+        switch (WeatherContract.sUriMatcher.match(uri)) {
+        case WeatherContract.WEATHER_VALUES_ITEMS:
+            rowsDeleted =
+                db.delete(WEATHER_VALUES_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
             break;
-    	case WEATHER_CONDITION_MATCHER_ID :
-            dbName = WeatherContract.WeatherConditionEntry.WEATHER_CONDITION_TABLE_NAME;
+        case WeatherContract.WEATHER_VALUES_ITEM:
+            rowsDeleted = 
+                db.delete(WEATHER_VALUES_TABLE_NAME,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),
+                          whereStatementArgs);
             break;
-    	default:
+        case WeatherContract.WEATHER_CONDITIONS_ITEMS:
+            rowsDeleted =
+                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
+                          whereStatement,
+                          whereStatementArgs);
+            break;
+        case WeatherContract.WEATHER_CONDITIONS_ITEM:
+            rowsDeleted =
+                db.delete(WEATHER_CONDITIONS_TABLE_NAME,
+                          addKeyIdCheckToWhereStatement
+                              (whereStatement,
+                               ContentUris.parseId(uri)),                          
+                          whereStatementArgs);
+            break;
+        default:
             throw new IllegalArgumentException("Unknown URI " 
                                                + uri);
-    	}
-        
-    	// Insert the values into the table in one transaction
-    	
-    	// Begins a transaction in EXCLUSIVE mode. 
-        db.beginTransaction();
-        int returnCount = 0;
-        try {
-        	for (ContentValues value : values) {
-                final long id =
-                    db.insert(dbName,
-                              null,
-                              value);
-                if (id != -1)
-                    returnCount++;
-        	}
-        	// Marks the current transaction as successful.
-            db.setTransactionSuccessful();
-        
-        } finally {
-        	// End the transaction
-        	db.endTransaction();
         }
-        
-        // Notifies registered observers that rows were updated
-        // and attempt to sync changes to the network.
-        getContext().getContentResolver().notifyChange(uri,
+
+        // Register to watch a content URI for changes.
+        getContext().getContentResolver().notifyChange(uri, 
                                                        null);
-        return returnCount;
-    } 
-}
+        return rowsDeleted;
+    }
+ }

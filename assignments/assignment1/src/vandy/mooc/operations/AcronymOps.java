@@ -53,8 +53,8 @@ public class AcronymOps
     private AcronymWebServiceProxy mAcronymWebServiceProxy;
 
     /**
-     * The GenericAsyncTask used to expand an acronym using the
-     * Acronym web service.
+     * The GenericAsyncTask used to expand an acronym in a background
+     * thread via the Acronym web service.
      */
     private GenericAsyncTask<String, Void, List<AcronymExpansion>, AcronymOps> mAsyncTask;
 
@@ -78,7 +78,7 @@ public class AcronymOps
               + " with activity = "
               + activity);
 
-        // Reset the mActivity WeakReference.
+        // (Re)set the mActivity WeakReference.
         mActivity = new WeakReference<>((AcronymActivity) activity);
 
         if (firstTimeIn) {
@@ -87,9 +87,8 @@ public class AcronymOps
                 new ContentProviderTimeoutCache
                 (activity.getApplicationContext());
 
-            // Create a proxy to access the Acronym Service web service.
-
-            // TODO -- you fill in here, replacing "null" with the
+            // Create a proxy to access the Acronym web service.  TODO
+            // -- you fill in here, replacing "null" with the
             // appropriate initialization of the proxy.
             mAcronymWebServiceProxy = null;
         } else
@@ -123,9 +122,9 @@ public class AcronymOps
     }
 
     /**
-     * Retrieve the expanded acronym results via a synchronous
-     * two-way method call, which runs in a background thread
-     * to avoid blocking the UI thread.
+     * Retrieve the expanded acronym results via a synchronous two-way
+     * method call, which runs in a background thread to avoid
+     * blocking the UI thread.
      */
     public List<AcronymExpansion> doInBackground(String acronym) {
         try {
@@ -165,6 +164,9 @@ public class AcronymOps
                 // form" of the acronym.
                 mAcronymCache.put(result.getSf(),
                                   longForms);
+
+                // Return the results that were just stored in the
+                // cache.
                 return longForms;
             }
         } catch (Exception e) {

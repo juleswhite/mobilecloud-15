@@ -1,101 +1,188 @@
 package vandy.mooc.provider;
 
 import android.content.ContentUris;
+import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
 /**
  * This contract defines the metadata for the Weather Content
  * Provider, including the provider's access URIs and its database
- * constants.
+ * constants.  The following two tables are managed by the Weather
+ * Content Provider:
+ *
+ * 1. Weather Values -- This table stores the weather information that
+ *    has a one-to-one relationship with a given location.
+ *
+ * 2. Weather Conditions -- This table stores each location's various
+ *    weather conditions (such as "broken clouds" or "sky is clear").
+ *    This table is separate from the Weather Values table because
+ *    each location can have multiple Weather Conditions.
  */
-public class WeatherContract {
+public final class WeatherContract {
     /**
-     * The Weather Provider's unique identifier.
+     * The WeatherProvider's unique authority identifier.
      */
     public static final String AUTHORITY =
-        "vandy.mooc.WeatherProvider";
+        "vandy.mooc.weatherprovider";
 
     /**
      * The base of all URIs that are used to communicate with the
-     * provider.
+     * WeatherProvider.
      */
     private static final Uri BASE_URI =
-        Uri.parse("content://" 
+        Uri.parse("content://"
                   + AUTHORITY);
 
     /**
-     * Constant for directory MIME types.
+     * Constant for a directory MIME type.
      */
     private static final String MIME_TYPE_DIR =
         "vnd.android.cursor.dir/";
 
     /**
-     * Constant for single item MIME types.
+     * Constant for a single item MIME type.
      */
     private static final String MIME_TYPE_ITEM =
         "vnd.android.cursor.item/";
 
     /**
-     * Path used to access all data for a given location.
+     * Path that accesses all the WeatherData for a given location,
+     * which is used to join both tables over the location.
      */
     public static final String ACCESS_ALL_DATA_FOR_LOCATION_PATH =
         "access_all_for_location";
 
     /**
-     * URI used to access all the data for a given location. This will
-     * access a cursor that concatenates the row of the Weather Data
-     * entry corresponding to the location with all the rows of its
-     * associated Weather Condition entries
+     * URI used to access all the data for a given location.  This
+     * will access a cursor that concatenates the row of the Weather
+     * Data entry corresponding to the location with all the rows of
+     * its associated Weather Conditions entries.
      */
     public static final Uri ACCESS_ALL_DATA_FOR_LOCATION_URI = 
-        BASE_URI.buildUpon().appendPath(ACCESS_ALL_DATA_FOR_LOCATION_PATH).build();
+        BASE_URI.buildUpon().appendPath
+            (ACCESS_ALL_DATA_FOR_LOCATION_PATH).build();
 
     /**
      * MIME type for accessing all the data for a location.
      */
-    public static final String ACCESS_ALL_DATA_FOR_LOCATION_CONTENT_TYPE =
+    public static final String ACCESS_ALL_DATA_FOR_LOCATION =
         MIME_TYPE_DIR
         + AUTHORITY 
         + "/" 
         + ACCESS_ALL_DATA_FOR_LOCATION_PATH;
 
     /**
-     * Inner class defining the contents of the Weather Data table.
+     * UriMatcher code for the Weather Values table.
      */
-    public static final class WeatherDataEntry implements BaseColumns {
+    public static final int WEATHER_VALUES_ITEMS = 100;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Values table.
+     */
+    public static final int WEATHER_VALUES_ITEM = 110;
+
+    /**
+     * UriMatcher code for the Weather Conditions table.
+     */
+    public static final int WEATHER_CONDITIONS_ITEMS = 200;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Conditions
+     * table.
+     */
+    public static final int WEATHER_CONDITIONS_ITEM = 210;
+
+    /**
+     * UriMatcher code for getting an entire "WeatherData" object's
+     * data from the database.  This doesn't correspond to a specific
+     * table; it corresponds to a Weather Values entry and all of its
+     * associated Weather Conditions entries.
+     */
+    public static final int ACCESS_ALL_DATA_FOR_LOCATION_ITEM = 300;
+
+    /**
+     * UriMatcher that is used to demultiplex the incoming URIs into
+     * requests.
+     */
+    public static final UriMatcher sUriMatcher =
+        buildUriMatcher();
+
+    /**
+     * Build the UriMatcher for this Content Provider.
+     */
+    public static UriMatcher buildUriMatcher() {
+        // Add default 'no match' result to matcher.
+        final UriMatcher matcher =
+            new UriMatcher(UriMatcher.NO_MATCH);
+
+        // Initialize the matcher with the URIs used to access each
+        // table.
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME,
+                       WEATHER_VALUES_ITEMS);
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME 
+                       + "/#",
+                       WEATHER_VALUES_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME,
+                       WEATHER_CONDITIONS_ITEMS);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
+                       + "/#",
+                       WEATHER_CONDITIONS_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
+                       ACCESS_ALL_DATA_FOR_LOCATION_ITEM);
+
+        return matcher;
+    }
+
+    /**
+     * Inner class defining the contents of the Weather Values table.
+     */
+    public static final class WeatherValuesEntry 
+                        implements BaseColumns {
         /**
-         * Weather Data's Table name.
+         * Weather Values's Table name.
          */
-        public static String WEATHER_DATA_TABLE_NAME = "weather_data";
+        public static String WEATHER_VALUES_TABLE_NAME =
+            "weather_values";
 
         /**
-         * Unique URI for the Weather Data table.
+         * Unique URI for the Weather Values table.
          */
-        public static final Uri WEATHER_DATA_CONTENT_URI =
-            BASE_URI.buildUpon().appendPath(WEATHER_DATA_TABLE_NAME).build();
+        public static final Uri WEATHER_VALUES_CONTENT_URI =
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_VALUES_TABLE_NAME)
+                    .build();
 
         /**
-         * MIME type for multiple Weather Data rows.
+         * MIME type for multiple Weather Values rows.
          */
-        public static final String WEATHER_DATA_CONTENT_TYPE =
+        public static final String WEATHER_VALUES_ITEMS =
             MIME_TYPE_DIR
             + AUTHORITY 
             + "/" 
-            + WEATHER_DATA_TABLE_NAME;
+            + WEATHER_VALUES_TABLE_NAME;
 
         /**
-         * MIME type for a single Weather Data row
+         * MIME type for a single Weather Values row
          */
-        public static final String WEATHER_DATA_ITEM_CONTENT_TYPE = 
+        public static final String WEATHER_VALUES_ITEM =
             MIME_TYPE_ITEM
             + AUTHORITY 
             + "/" 
-            + WEATHER_DATA_TABLE_NAME;
+            + WEATHER_VALUES_TABLE_NAME;
 
         /*
-         * Weather Data Table's Columns
+         * Weather Values Table's Columns.
          */
+        public static final String COLUMN_LOCATION_KEY = "loc_key";
         public static final String COLUMN_NAME = "name";
         public static final String COLUMN_DATE = "date";
         public static final String COLUMN_COD = "cod";
@@ -118,50 +205,53 @@ public class WeatherContract {
          * ID.
          */
         public static Uri buildRowAccessUri(Long id) {
-            return ContentUris.withAppendedId(WEATHER_DATA_CONTENT_URI,
+            return ContentUris.withAppendedId(WEATHER_VALUES_CONTENT_URI,
                                               id);
         }
     }
 
     /**
-     * Inner class defining the contents of the Weather Condition
+     * Inner class defining the contents of the Weather Conditions
      * table.
      */
-    public static final class WeatherConditionEntry implements BaseColumns {
+    public static final class WeatherConditionsEntry 
+                        implements BaseColumns {
         /**
-         * Weather Condition's Table name.
+         * Weather Conditions's Table name.
          */
-        public static String WEATHER_CONDITION_TABLE_NAME =
-            "weather_condition";
+        public static String WEATHER_CONDITIONS_TABLE_NAME =
+            "weather_conditions";
 
         /**
-         * Unique URI for the Weather Condition table.
+         * Unique URI for the Weather Conditions table.
          */
-        public static final Uri WEATHER_CONDITION_CONTENT_URI = 
-            BASE_URI.buildUpon().appendPath(WEATHER_CONDITION_TABLE_NAME).build();
+        public static final Uri WEATHER_CONDITIONS_CONTENT_URI = 
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_CONDITIONS_TABLE_NAME)
+                    .build();
 
         /**
-         * MIME type for multiple Weather Condition rows
+         * MIME type for multiple Weather Conditions rows
          */
-        public static final String WEATHER_CONDITION_CONTENT_TYPE = 
+        public static final String WEATHER_CONDITIONS_ITEMS = 
             MIME_TYPE_DIR
             + AUTHORITY 
             + "/" 
-            + WEATHER_CONDITION_TABLE_NAME;
+            + WEATHER_CONDITIONS_TABLE_NAME;
 
         /**
-         * MIME type for a single Weather Condition row
+         * MIME type for a single Weather Conditions row.
          */
-        public static final String WEATHER_CONDITION_ITEM_CONTENT_TYPE = 
+        public static final String WEATHER_CONDITIONS_ITEM = 
             MIME_TYPE_ITEM
             + AUTHORITY 
             + "/" 
-            + WEATHER_CONDITION_TABLE_NAME;
+            + WEATHER_CONDITIONS_TABLE_NAME;
 
         /*
-         * Weather Condition Table's Columns
+         * Weather Conditions Table's Columns
          */
-        public static final String COLUMN_WEATHER_CONDITION_OBJECT_ID =
+        public static final String COLUMN_WEATHER_CONDITIONS_OBJECT_ID =
             "weather_cond_object_id";
         public static final String COLUMN_MAIN =
             "main";
@@ -169,17 +259,15 @@ public class WeatherContract {
             "description";
         public static final String COLUMN_ICON =
             "icon";
-        public static final String COLUMN_LOCATION =
-            "location";
-        public static final String COLUMN_WEATHER_DATA_PARENT_ID =
-            "wd_id";
+        public static final String COLUMN_LOCATION_KEY =
+            "loc_key_sub";
 
         /**
          * Return a URI that points to the row containing the given ID.
          */
         public static Uri buildRowAccessUri(Long id) {
             return ContentUris.withAppendedId
-                (WEATHER_CONDITION_CONTENT_URI,
+                (WEATHER_CONDITIONS_CONTENT_URI,
                  id);
         }
     }

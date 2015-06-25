@@ -5,18 +5,23 @@ import java.util.Iterator;
 import vandy.mooc.utils.GenericAsyncTask;
 import vandy.mooc.utils.GenericAsyncTaskOps;
 import vandy.mooc.utils.Utils;
+import android.content.Context;
 import android.provider.ContactsContract;
 
 /**
  * Delete all designated contacts in a background thread.
  */
 public class DeleteContactsCommand
-       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer>,
-                  Runnable {
+       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer> {
     /**
      * Store a reference to the ContactsOps object.
      */
     private ContactsOps mOps;
+
+    /**
+     * Store a reference to the Application context. 
+     */
+    private Context mApplicationContext;
 
     /**
      * Iterator containing contacts to delete.
@@ -34,9 +39,11 @@ public class DeleteContactsCommand
      */
     public DeleteContactsCommand(ContactsOps ops,
                                  Iterator<String> contactsIter) {
-        // Store the ContactOps and Iterator.
+        // Store the ContactOps, Iterator, and Application context.
         mOps = ops;
         mContactsIter = contactsIter;
+        mApplicationContext =
+            ops.getActivity().getApplicationContext();
 
         // Create a GenericAsyncTask to delete the contacts off the UI
         // Thread.
@@ -91,8 +98,7 @@ public class DeleteContactsCommand
      * Delete the contact with the designated @a name.
      */
     private int deleteContact(String name) {
-        return mOps.getActivity()
-            .getApplicationContext()
+        return mApplicationContext
             .getContentResolver()
             .delete(ContactsContract.RawContacts.CONTENT_URI,
                     ContactsContract.Contacts.DISPLAY_NAME

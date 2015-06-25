@@ -4,14 +4,23 @@ import retrofit.http.GET;
 import retrofit.http.Query;
 
 /**
- * Interface defining methods used in the RetroFit service to access current
- * weather data from the openweathermap api.
+ * Interface defining methods used by RetroFit to access current
+ * weather data from the Weather Service web service.
  */
 public interface WeatherWebServiceProxy {
     /**
-     * Method used to query the weather api for the current weather at a
-     * location. The Annotations allow the java parameters to be converted
-     * into a http request.
+     * URL to the Web Search web service to use with the Retrofit
+     * service.
+     */
+    final String sWeather_Service_URL_Retro =
+        "http://api.openweathermap.org/data/2.5";
+
+    /**
+     * Method used to query the Weather Service web service for the
+     * current weather at a city @a location.  The annotations enable
+     * Retrofit to convert the @a location parameter into an HTTP
+     * request, which would look something like this:
+     * http://api.openweathermap.org/data/2.5/weather?q=location
      */
     @GET("/weather")
     WeatherData getWeatherData(@Query("q") String location);

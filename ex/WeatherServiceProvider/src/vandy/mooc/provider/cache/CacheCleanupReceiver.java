@@ -9,15 +9,16 @@ import android.content.Intent;
  * Broadcast receiver that will remove all the expired Weather data at regular
  * intervals.
  */
-public class CacheCleanupReceiver extends BroadcastReceiver {
+public class CacheCleanupReceiver 
+       extends BroadcastReceiver {
     /**
      * Private request code for sender that is passed in an Intent.
      */
     public static final int DELETE_CACHE_REQUEST_CODE = 100;
 
     /**
-     * Factory method to make a Pending Intent that is used by AlarmManager to
-     * schedule Cache cleanup at regular intervals.
+     * Factory method to make a Pending Intent that is used by
+     * AlarmManager to schedule Cache cleanup at regular intervals.
      * 
      * @param context
      * @return
@@ -51,9 +52,10 @@ public class CacheCleanupReceiver extends BroadcastReceiver {
      * Intent broadcast.
      */
     @Override
-    public void onReceive(Context context, Intent intent) {
-	// Create the TimeoutCache and remove all the expired Weather data
-	// from the cache.
+    public void onReceive(Context context,
+                          Intent intent) {
+	// Create the TimeoutCache and remove all the expired Weather
+	// data from the cache.
 	new WeatherTimeoutCache(context).removeExpiredWeatherData();
     }
 }

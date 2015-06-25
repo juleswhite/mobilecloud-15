@@ -13,10 +13,10 @@ import android.net.Uri;
  */
 public class AcronymProvider extends ContentProvider {
     /**
-     * The URI Matcher used by this content provider.
+     * Debugging tag used by the Android logger.
      */
-    private static final UriMatcher sUriMatcher =
-        buildUriMatcher();
+    private static final String TAG =
+        AcronymProvider.class.getSimpleName();
 
     /**
      * Use AcronymDatabaseHelper to manage database creation and version
@@ -37,6 +37,12 @@ public class AcronymProvider extends ContentProvider {
     private static final int ACRONYM = 101;
 
     /**
+     * The URI Matcher used by this content provider.
+     */
+    private static final UriMatcher sUriMatcher =
+        buildUriMatcher();
+
+    /**
      * Helper method to match each URI to the ACRONYM integers
      * constant defined above.
      * 
@@ -50,20 +56,12 @@ public class AcronymProvider extends ContentProvider {
         final UriMatcher matcher = 
             new UriMatcher(UriMatcher.NO_MATCH);
 
-        // The "Content authority" is a name for the entire content
-        // provider, similar to the relationship between a domain name
-        // and its website.  A convenient string to use for the
-        // content authority is the package name for the app, which is
-        // guaranteed to be unique on the device.
-        final String authority =
-            AcronymContract.CONTENT_AUTHORITY;
-
         // For each type of URI that is added, a corresponding code is
         // created.
-        matcher.addURI(authority,
+        matcher.addURI(AcronymContract.CONTENT_AUTHORITY,
                        AcronymContract.PATH_ACRONYM,
                        ACRONYMS);
-        matcher.addURI(authority,
+        matcher.addURI(AcronymContract.CONTENT_AUTHORITY,
                        AcronymContract.PATH_ACRONYM 
                        + "/#",
                        ACRONYM);
@@ -83,9 +81,9 @@ public class AcronymProvider extends ContentProvider {
 
     /**
      * Hook method called to handle requests for the MIME type of the
-     * data at the given URI. The returned MIME type should start with
-     * vnd.android.cursor.item for a single record, or
-     * vnd.android.cursor.dir/ for multiple items
+     * data at the given URI.  The returned MIME type should start
+     * with vnd.android.cursor.item for a single item or
+     * vnd.android.cursor.dir/ for multiple items.
      */
     @Override
     public String getType(Uri uri) {
@@ -96,13 +94,59 @@ public class AcronymProvider extends ContentProvider {
         // MIME_TYPE.
         switch (match) {
         case ACRONYMS:
-            return AcronymContract.AcronymEntry.CONTENT_TYPE;
+            return AcronymContract.AcronymEntry.CONTENT_ITEMS_TYPE;
         case ACRONYM:
             return AcronymContract.AcronymEntry.CONTENT_ITEM_TYPE;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
                                                     + uri);
         }
+    }
+
+    /**
+     * Hook method called to handle requests to insert a new row.  As
+     * a courtesy, notifyChange() is called after inserting.
+     */
+    @Override
+    public Uri insert(Uri uri,
+                      ContentValues values) {
+    	// Create and/or open a database that will be used for reading
+        // and writing. Once opened successfully, the database is
+        // cached, so you can call this method every time you need to
+        // write to the database.
+        final SQLiteDatabase db =
+            mOpenHelper.getWritableDatabase();
+
+        Uri returnUri;
+
+        // Try to match against the path in a url.  It returns the
+        // code for the matched node (added using addURI), or -1 if
+        // there is no matched node.  If there's a match insert a new
+        // row.
+        switch (sUriMatcher.match(uri)) {
+        case ACRONYMS:
+            // TODO - replace 0 with code that inserts a row in Table
+            // and returns the row id.
+            long id = 0;
+
+            // Check if a new row is inserted or not.
+            if (id > 0)
+                returnUri = 
+                    AcronymContract.AcronymEntry.buildAcronymUri(id);
+            else
+                throw new android.database.SQLException
+                    ("Failed to insert row into " 
+                     + uri);
+            break;
+        default:
+            throw new UnsupportedOperationException("Unknown uri: " 
+                                                    + uri);
+        }
+
+        // Notifies registered observers that a row was inserted.
+        getContext().getContentResolver().notifyChange(uri, 
+                                                       null);
+        return returnUri;
     }
 
     // Hook method to handle requests to insert a set of new rows, or
@@ -140,8 +184,7 @@ public class AcronymProvider extends ContentProvider {
                 db.endTransaction();
             }
 			   
-            // Notifies registered observers that rows were updated
-            // and attempt to sync changes to the network.
+            // Notifies registered observers that rows were updated.
             getContext().getContentResolver().notifyChange(uri,
                                                            null);
             return returnCount;
@@ -149,17 +192,6 @@ public class AcronymProvider extends ContentProvider {
             return super.bulkInsert(uri,
                                     contentValues);
         }
-    }
-
-    /**
-     * Hook method called to handle requests to insert a new row.  As
-     * a courtesy, notifyChange() is called after inserting.
-     */
-    @Override
-    public Uri insert(Uri uri,
-                      ContentValues values) {
-        // This method is not needed for this assignment.
-        throw new RuntimeException("Operation is not supported");
     }
 
     /**
@@ -183,6 +215,8 @@ public class AcronymProvider extends ContentProvider {
             retCursor = null;
             break;
         case ACRONYM: 
+            // Selection clause that matches row id with id passed
+            // from Uri.
             final String rowId =
                 ""
                 + AcronymContract.AcronymEntry._ID
@@ -237,19 +271,14 @@ public class AcronymProvider extends ContentProvider {
             // TODO -- replace "0" with a call to the SQLite database
             // to update the row(s) in the database based on the
             // parameters passed into this method.
-            rowsUpdated =
-                db.update(AcronymContract.AcronymEntry.TABLE_NAME,
-                          values,
-                          selection,
-                          selectionArgs);
+            rowsUpdated = 0;
             break;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
                                                     + uri);
         }
 
-        // Notifies registered observers that rows were updated and
-        // attempt to sync changes to the network.
+        // Notifies registered observers that rows were updated.
         if (rowsUpdated != 0) 
             getContext().getContentResolver().notifyChange(uri,
                                                            null);
@@ -257,7 +286,7 @@ public class AcronymProvider extends ContentProvider {
     }
     
     /**
-     * Hook method to handle requests to delete one or more rows. The
+     * Hook method to handle requests to delete one or more rows.  The
      * implementation should apply the selection clause when
      * performing deletion, allowing the operation to affect multiple
      * rows in a directory.  As a courtesy, notifyChange() is called
@@ -293,8 +322,7 @@ public class AcronymProvider extends ContentProvider {
                                                     + uri);
         }
 
-        // Notifies registered observers that rows were deleted and
-        // attempt to sync changes to the network.
+        // Notifies registered observers that rows were deleted.
         if (selection == null || rowsDeleted != 0) 
             getContext().getContentResolver().notifyChange(uri, 
                                                            null);

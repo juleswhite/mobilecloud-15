@@ -6,8 +6,8 @@ import java.util.Arrays;
 import java.util.List;
 
 import vandy.mooc.activities.ContactsActivity;
-import vandy.mooc.utils.ConfigurableOps;
-import vandy.mooc.utils.Utils;
+import vandy.mooc.common.ConfigurableOps;
+import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
@@ -58,16 +58,20 @@ public class ContactsOps implements ConfigurableOps {
      */
     protected final List<String> mContacts =
         new ArrayList<String>(Arrays.asList(new String[] 
-            { "Jimmy Buffet", 
+            { "Jimmy Buffett",
               "Jimmy Carter",
               "Jimmy Choo", 
-              "Jiminy Cricket", 
+              "Jimmy Connors", 
+              "Jiminy Cricket",
+              "Jimmy Durante",
               "Jimmy Fallon",
               "Jimmy Kimmel", 
               "Jimi Hendrix", 
               "Jimmy Johns",
               "Jimmy Johnson",
-              "Jimmy Page", }));
+              "Jimmy Page", 
+              "Jimmy Swaggart", 
+            }));
 
     /**
      * This default constructor must be public for the GenericOps

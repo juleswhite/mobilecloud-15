@@ -1,8 +1,8 @@
 package vandy.mooc.activities;
 
 import vandy.mooc.R;
+import vandy.mooc.common.GenericActivity;
 import vandy.mooc.operations.ContactsOps;
-import vandy.mooc.utils.GenericActivity;
 import android.database.Cursor;
 import android.os.Bundle;
 import android.provider.ContactsContract;
@@ -59,7 +59,7 @@ public class ContactsActivity
     @Override
     public void onCreate(Bundle savedInstanceState) {
         // Set the layout of the MainActivity.
-        setContentView(R.layout.main_activity);
+        setContentView(R.layout.contacts_activity);
 
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);

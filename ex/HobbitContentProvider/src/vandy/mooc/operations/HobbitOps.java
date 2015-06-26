@@ -25,7 +25,7 @@ public class HobbitOps implements ConfigurableOps {
      * Means for accessing the ContentProvider (i.e., CONTENT_RESOLVER
      * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
      */
-    private ContentProviderAccessMeans mAccessMeans = 
+    private ContentProviderAccessMeans mAccessMeans =
         ContentProviderAccessMeans.CONTENT_RESOLVER;
 
     /**
@@ -159,5 +159,14 @@ public class HobbitOps implements ConfigurableOps {
     public void displayAll()
         throws RemoteException {
         mHobbitOpsImpl.displayAll();
+    }
+
+    /**
+     * Sets the means for accessing the ContentProvider (i.e.,
+     * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
+     * implementation.
+     */
+    public void setContentProviderAccessMeans(ContentProviderAccessMeans accessMeans) {
+        mAccessMeans = accessMeans;
     }
 }

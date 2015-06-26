@@ -8,6 +8,9 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.RemoteException;
 import android.util.Log;
+import android.view.Menu;
+import android.view.MenuInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.ListView;
 import android.widget.SimpleCursorAdapter;
@@ -36,6 +39,11 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
      * HobbitContentProvider.
      */
     private SimpleCursorAdapter mAdapter;
+
+    /**
+     * Menu on main screen.
+     */
+    protected Menu mOpsOptionsMenu;
 
     /**
      * Hook method called when a new instance of Activity is created.
@@ -219,5 +227,44 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
         mAdapter.changeCursor(cursor);
+    }
+
+    /**
+     * Called by Android framework when menu option is clicked.
+     * 
+     * @param item
+     * @return true
+     */
+    public boolean chooseOpsOption(MenuItem item) {
+        switch (item.getItemId()) {
+        case R.id.contentResolver:
+            getOps().setContentProviderAccessMeans
+                (HobbitOps.ContentProviderAccessMeans.CONTENT_RESOLVER);
+            Toast.makeText(this,
+                           "ContentResolver selected",
+                           Toast.LENGTH_SHORT).show();
+            break;
+
+        case R.id.contentProviderClient:
+            getOps().setContentProviderAccessMeans
+                (HobbitOps.ContentProviderAccessMeans.CONTENT_PROVIDER_CLIENT); 
+            Toast.makeText(this,
+                           "ContentProviderClient selected",
+                           Toast.LENGTH_SHORT).show();
+            break;
+        }
+        return true;
+    }
+
+    /**
+     * Inflates the Operations ("Ops") Option Menu.
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        mOpsOptionsMenu = menu;
+        MenuInflater inflater = getMenuInflater();
+        inflater.inflate(R.menu.ops_options_menu,
+                         menu);
+        return true;
     }
 }

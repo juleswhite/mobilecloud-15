@@ -80,3 +80,7 @@ proguard/
 # Temp files for KDE and other Editor's 
 *~
 
+# Intellij project files: 
+# http://stackoverflow.com/questions/11968531/what-to-gitignore-from-the-idea-folder
+**/.idea/workspace.xml
+**/.idea/tasks.xml

@@ -27,15 +27,17 @@ public class QueryContactsCommand
         mOps = ops;
 
         // Initialize the LoaderManager. 
-        mOps.getActivity().getLoaderManager().initLoader(0,
-                                                         null,
-                                                         this);
+        execute(null);
     }
 
     /**
-     * Run the command.
+     * Run the command to initialize the LoaderManager.
      */
     public void execute(Iterator<String> ignored) {
+        // Initialize the LoaderManager. 
+        mOps.getActivity().getLoaderManager().initLoader(0,
+                                                         null,
+                                                         this);
     }
 
     /**

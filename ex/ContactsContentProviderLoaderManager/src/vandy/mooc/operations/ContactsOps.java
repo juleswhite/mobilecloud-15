@@ -145,7 +145,10 @@ public class ContactsOps implements ConfigurableOps {
                                                sColumnsToDisplay, 
                                                sColumnResIds,
                                                1);
-        } 
+        } else
+            // Rerun the query to display anything relevant that's in
+            // the ContentsProvider.
+            runQueryContactsCommand();
     }
 
     /**

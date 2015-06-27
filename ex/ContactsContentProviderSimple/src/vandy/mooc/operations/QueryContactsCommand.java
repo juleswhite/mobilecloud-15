@@ -6,10 +6,15 @@ import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
 import android.content.ContentResolver;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.net.Uri;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 
+/**
+ * Query all the star'd contacts in a background task.
+ */
 public class QueryContactsCommand
        extends GenericAsyncTaskOps<Void, Void, Cursor> 
        implements ContactsCommand {
@@ -24,6 +29,21 @@ public class QueryContactsCommand
     private ContentResolver mContentResolver;
 
     /**
+     * Observer that's dispatched by the ContentResolver when Contacts
+     * change (e.g., are inserted or deleted).
+     */
+    private final ContentObserver contactsChangeContentObserver =
+        new ContentObserver(null) {
+            /**
+             * Trigger a query and display.
+             */
+            @Override
+            public void onChange (boolean selfChange) {
+                execute(null);
+            }
+        };
+
+    /**
      * Constructor initializes the fields.
      */
     public QueryContactsCommand(ContactsOps ops) {
@@ -32,6 +52,13 @@ public class QueryContactsCommand
         mOps = ops;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();
+
+        // Register a ContentObserver that's notified when Contacts
+        // change (e.g., are inserted or deleted).
+        mContentResolver.registerContentObserver
+            (ContactsContract.Contacts.CONTENT_URI,
+             true,
+             contactsChangeContentObserver);
     }
 
     /**
@@ -68,8 +95,9 @@ public class QueryContactsCommand
     public void onPostExecute(Cursor cursor) {
         if (cursor == null
             || cursor.getCount() == 0)
-            Utils.showToast(mOps.getActivity(),
-                            "Contacts not found");
+            // Utils.showToast(mOps.getActivity(),
+            // "Contacts not found")
+            ;
         else {
             mOps.setCursor(cursor);
             mOps.getActivity().displayCursor(cursor);
@@ -101,7 +129,7 @@ public class QueryContactsCommand
 
         // Perform a synchronous (blocking) query on the
         // ContactsContentProvider.
-        return cr.query(ContactsContract.Contacts.CONTENT_URI, 
+        return cr.query(ContactsContract.RawContacts.CONTENT_URI, 
                         columnsToQuery, 
                         selection,
                         null, 

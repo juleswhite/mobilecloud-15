@@ -64,10 +64,10 @@ public class QueryContactsCommand
             + Contacts.STARRED
             + "== 1))";
 
-        // Create a new CursorLoader that will perfom the query
+        // Create a new CursorLoader that will perform the query
         // asynchronously.
         return new CursorLoader(mOps.getActivity(),
-                                Contacts.CONTENT_URI,
+                                ContactsContract.Contacts.CONTENT_URI,
                                 columnsToQuery,
                                 selection,
                                 null,

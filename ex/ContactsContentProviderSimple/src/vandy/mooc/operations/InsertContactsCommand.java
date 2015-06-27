@@ -19,7 +19,7 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 
 /**
- * Insert all designated contacts in a background thread.
+ * Insert all designated contacts in a background task.
  */
 public class InsertContactsCommand
        extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>

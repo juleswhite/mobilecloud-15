@@ -140,17 +140,8 @@ public class ContactsOps implements ConfigurableOps {
      * Insert the contacts.
      */
     public void runInsertContactCommand() {
-        // Reset mCursor and reset the display to show nothing.
-        mActivity.get().displayCursor(mCursor = null);
+        // Execute the InsertContactsCommand.
         mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()].execute
-            (mContacts.iterator());
-    }
-
-    /**
-     * Query the contacts.
-     */
-    public void runQueryContactsCommand() {
-        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute
             (mContacts.iterator());
     }
 
@@ -158,6 +149,7 @@ public class ContactsOps implements ConfigurableOps {
      * Delete the contacts.
      */
     public void runDeleteContactCommand() {
+        // Execute the InsertDeleteCommand.
         mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()].execute
             (mContacts.iterator());
     }

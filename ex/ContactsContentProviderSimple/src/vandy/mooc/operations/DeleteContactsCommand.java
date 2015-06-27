@@ -9,7 +9,7 @@ import android.content.ContentResolver;
 import android.provider.ContactsContract;
 
 /**
- * Delete all designated contacts in a background thread.
+ * Delete all designated contacts in a background task.
  */
 public class DeleteContactsCommand
        extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>

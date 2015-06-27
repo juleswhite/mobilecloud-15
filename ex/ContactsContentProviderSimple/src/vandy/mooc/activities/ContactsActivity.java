@@ -92,15 +92,6 @@ public class ContactsActivity
     }
 
     /**
-     * This click handler method queries contacts in the
-     * ContactsContentProvider.
-     */
-    public void queryContacts(View v) {
-        // Query contacts.
-        getOps().runQueryContactsCommand();
-    }
-
-    /**
      * This click handler method deletes contacts from the
      * ContactsContentProvider.
      */

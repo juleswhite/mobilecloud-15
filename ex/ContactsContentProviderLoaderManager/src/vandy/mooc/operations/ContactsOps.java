@@ -6,9 +6,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import vandy.mooc.activities.ContactsActivity;
-import vandy.mooc.common.AsyncCommand;
 import vandy.mooc.common.ConfigurableOps;
-import vandy.mooc.common.GenericArrayIterator;
 import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -18,15 +16,16 @@ import android.util.Log;
 
 /**
  * Class that implements the operations for inserting, querying, and
- * deleting contacts from the Android ContactsContentProvider using
- * the AsyncQueryHanders.  It implements ConfigurableOps so it can be
- * managed by the GenericActivity framework.
+ * deleting contacts from the Android ContactsContentProvider.  It
+ * implements ConfigurableOps so it can be managed by the
+ * GenericActivity framework.
  */
 public class ContactsOps implements ConfigurableOps {
     /**
      * Debugging tag used by the Android logger.
      */
-    protected final String TAG = getClass().getSimpleName();
+    protected final static String TAG =
+        ContactsOps.class.getSimpleName();
 
     /**
      * Stores a Weak Reference to the ContactsActivity so the garbage
@@ -64,13 +63,14 @@ public class ContactsOps implements ConfigurableOps {
               "Jimmy Carter",
               "Jimmy Choo", 
               "Jimmy Connors", 
-              "Jiminy Cricket", 
+              "Jiminy Cricket",
               "Jimmy Durante",
               "Jimmy Fallon",
               "Jimmy Kimmel", 
               "Jimi Hendrix", 
               "Jimmy Johns",
               "Jimmy Johnson",
+              "Jimmy Page", 
               "Jimmy Swaggart", 
             }));
 
@@ -107,71 +107,35 @@ public class ContactsOps implements ConfigurableOps {
     }
 
     /**
-     * Insert the contacts asynchronously.
+     * Insert the contacts.
      */
-    public void runInsertContactAsyncCommands() {
+    public void runInsertContactCommand() {
         // Reset mCursor and reset the display to show nothing.
         mActivity.get().displayCursor(mCursor = null);
 
-        // Start executing InsertAsyncCommand to insert the contacts
-        // into the Contacts Provider and then execute the
-        // QueryAsyncCommand to print out the inserted contacts.  Both
-        // commands run asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new InsertAsyncCommand(this,
-                                       mContacts.iterator()),
-                new QueryAsyncCommand(this, true)
-            });
+        // Create a command that executes a GenericAsyncTask to
+        // perform the insertions off the UI Thread.
+        new InsertContactsCommand(this, 
+                                  mContacts.iterator()).run();
     }
 
     /**
-     * Query the contacts asynchronously.
+     * Query the contacts.
      */
-    public void runQueryContactsAsyncCommands() {
-        // Start executing the QueryAsyncCommand asynchronously, which
-        // print out the inserted contacts when the query is done.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new QueryAsyncCommand(this, false)
-            });
+    public void runQueryContactsCommand() {
+        // Create a command that uses a LoaderManager to perform the
+        // Query off the UI Thread.
+        new QueryContactsCommand(this).run();
     }
 
     /**
-     * Delete the contacts asynchronously.
+     * Delete the contacts.
      */
-    public void runDeleteContactAsyncCommands() {
-        // Start executing the DeleteAsyncCommand, which runs
-        // asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new DeleteAsyncCommand(this,
-                                       mContacts.iterator()),
-                // Print a toast after all the contacts are deleted.
-                new AsyncCommand(null) {
-                	public void execute() {
-                		Utils.showToast(mActivity.get(),
-             			                "Contacts deleted");
-                	}
-                }
-            });
-    }
-
-    /**
-     * Execute the array of asyncCommands passed as a parameter.
-     */
-    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
-        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
-             new GenericArrayIterator<>(asyncCommands);
-
-        // Pass the Iterator to each of the AsyncCommands passed as a
-        // parameter.
-        for (AsyncCommand asyncCommand : asyncCommands)
-            asyncCommand.setIterator(asyncCommandsIter);
-
-        // Start executing the first AsyncCommand in the chain of
-        // AsyncCommands.
-        asyncCommandsIter.next().execute();
+    public void runDeleteContactCommand() {
+        // Create a command that executes a GenericAsyncTask to
+        // perform the deletions off the UI Thread.
+        new DeleteContactsCommand(this,
+                                  mContacts.iterator()).run();
     }
 
     /**

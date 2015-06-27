@@ -53,7 +53,7 @@ public class QueryAsyncCommand extends AsyncCommand {
         };
 
         // Contacts to select.
-        final String sSelection = 
+        final String selection = 
             "((" 
             + Contacts.DISPLAY_NAME 
             + " NOTNULL) AND ("
@@ -67,7 +67,7 @@ public class QueryAsyncCommand extends AsyncCommand {
                    null, 
                    ContactsContract.Contacts.CONTENT_URI, 
                    columnsToQuery, 
-                   sSelection,
+                   selection,
                    // ContactsContract.Contacts.STARRED /* + "= 0" */,
                    null, 
                    ContactsContract.Contacts._ID

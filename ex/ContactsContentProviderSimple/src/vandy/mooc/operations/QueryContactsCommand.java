@@ -11,28 +11,6 @@ import android.provider.ContactsContract.Contacts;
 public class QueryContactsCommand
        extends GenericAsyncTaskOps<Void, Void, Cursor> {
     /**
-     * Columns to query.
-     */
-    private final String sColumnsToQuery[] =
-        new String[] {
-        ContactsContract.Contacts._ID,
-        ContactsContract.Contacts.DISPLAY_NAME,
-        ContactsContract.Contacts.STARRED 
-    };
-	
-    /**
-     * Contacts to select.
-     */
-    private final String sSelection = 
-        "((" 
-        + Contacts.DISPLAY_NAME 
-        + " NOTNULL) AND ("
-        + Contacts.DISPLAY_NAME 
-        + " != '' ) AND (" 
-        + Contacts.STARRED
-        + "== 1))";
-
-    /**
      * Store a reference to the ContactsOps object.
      */
     private ContactsOps mOps;
@@ -101,11 +79,29 @@ public class QueryContactsCommand
      * ContentProvider.
      */
     public Cursor queryAllContacts(ContentResolver cr) {
+        // Columns to query.
+        final String columnsToQuery[] =
+            new String[] {
+            ContactsContract.Contacts._ID,
+            ContactsContract.Contacts.DISPLAY_NAME,
+            ContactsContract.Contacts.STARRED 
+        };
+	
+        // Contacts to select.
+        final String selection = 
+            "((" 
+            + Contacts.DISPLAY_NAME 
+            + " NOTNULL) AND ("
+            + Contacts.DISPLAY_NAME 
+            + " != '' ) AND (" 
+            + Contacts.STARRED
+            + "== 1))";
+
         // Perform a synchronous (blocking) query on the
         // ContactsContentProvider.
         return cr.query(ContactsContract.Contacts.CONTENT_URI, 
-                        sColumnsToQuery, 
-                        sSelection,
+                        columnsToQuery, 
+                        selection,
                         null, 
                         ContactsContract.Contacts._ID
                         + " ASC");

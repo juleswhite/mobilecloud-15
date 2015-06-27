@@ -64,6 +64,19 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " REAL)";
 
     /**
+     * index for  LOCATION_EKY 
+     */
+
+    private static final String CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX =
+        "CREATE INDEX  " + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME +  "_" + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY  + "_idx" 
+        + " ON "
+        + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME
+        + "(" 
+        + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY 
+        + ")";
+
+
+    /**
      * SQL statement used to create the Weather Conditions table.
      */
     private static final String CREATE_TABLE_WEATHER_CONDITIONS = 
@@ -82,6 +95,20 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " TEXT, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_ICON
         + " TEXT) ";
+
+
+    /**
+     * index for weather conditions LOCATION_KEY, which is used for join queries to 
+     */
+
+
+    private static final String CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX = 
+        "CREATE INDEX  " + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME +  "_" + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY + "_idx" 
+        + " ON "
+        + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
+        + "(" 
+        + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY 
+        + ")";
 
      /**
      * Constructor - initialize database name and version, but don't
@@ -109,6 +136,10 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         // Create the tables.
         db.execSQL(CREATE_TABLE_WEATHER_VALUES);
         db.execSQL(CREATE_TABLE_WEATHER_CONDITIONS);
+
+        // create index for LOCATION_KEY in both tables. (used in most queries)
+        db.execSQL(CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX);
+        db.execSQL(CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX);
     }
 
     /**

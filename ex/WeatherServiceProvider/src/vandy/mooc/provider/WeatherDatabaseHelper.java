@@ -64,17 +64,19 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " REAL)";
 
     /**
-     * index for  LOCATION_EKY 
+     * Index for LOCATION_KEY.
      */
-
     private static final String CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX =
-        "CREATE INDEX  " + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME +  "_" + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY  + "_idx" 
+        "CREATE INDEX  " 
+        + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME 
+        +  "_" 
+        + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY  
+        + "_idx" 
         + " ON "
         + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME
         + "(" 
         + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY 
         + ")";
-
 
     /**
      * SQL statement used to create the Weather Conditions table.
@@ -98,12 +100,15 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
 
 
     /**
-     * index for weather conditions LOCATION_KEY, which is used for join queries to 
+     * Index for weather conditions LOCATION_KEY, which is also used
+     * for join queries.
      */
-
-
     private static final String CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX = 
-        "CREATE INDEX  " + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME +  "_" + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY + "_idx" 
+        "CREATE INDEX  " 
+        + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME 
+        +  "_" 
+        + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY 
+        + "_idx" 
         + " ON "
         + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
         + "(" 
@@ -137,7 +142,8 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         db.execSQL(CREATE_TABLE_WEATHER_VALUES);
         db.execSQL(CREATE_TABLE_WEATHER_CONDITIONS);
 
-        // create index for LOCATION_KEY in both tables. (used in most queries)
+        // Create index for LOCATION_KEY in both tables, whic is used
+        // in most queries.
         db.execSQL(CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX);
         db.execSQL(CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX);
     }

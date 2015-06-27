@@ -145,8 +145,7 @@ public class ContactsOps implements ConfigurableOps {
                                                sColumnsToDisplay, 
                                                sColumnResIds,
                                                1);
-        } else
-            displayCursor(mCursor);
+        } 
     }
 
     /**

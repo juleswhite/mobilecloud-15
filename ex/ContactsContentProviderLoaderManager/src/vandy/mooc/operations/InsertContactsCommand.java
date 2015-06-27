@@ -22,52 +22,45 @@ import android.provider.ContactsContract.RawContacts;
  * Insert all designated contacts in a background thread.
  */
 public class InsertContactsCommand
-       extends GenericAsyncTaskOps<Iterator<String>, Void, Integer> {
+       extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>
+       implements ContactsCommand {
     /**
      * Store a reference to the ContactsOps object.
      */
     private ContactsOps mOps;
 
     /**
-     * Iterator containing contacts to delete.
-     */
-    private Iterator<String> mContactsIter;
-    
-    /**
      * Store a reference to the Application context's ContentResolver.
      */
     private ContentResolver mContentResolver;
 
     /**
-     * The GenericAsyncTask used to insert contacts into the
-     * ContactContentProvider.
-     */
-    private GenericAsyncTask<Iterator<String>, Void, Integer, InsertContactsCommand> mAsyncTask;
-
-    /**
      * Constructor initializes the field.
      */
-    public InsertContactsCommand(ContactsOps ops,
-                                 Iterator<String> contactsIter) {
+    public InsertContactsCommand(ContactsOps ops) {
         // Store the ContactOps, Iterator, and the ContentResolver
         // from the Application context.
         mOps = ops;
-        mContactsIter = contactsIter;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();
-
-        // Create a GenericAsyncTask to insert the contacts off the UI
-        // Thread.
-        mAsyncTask = new GenericAsyncTask<>(this);
     }
 
     /**
      * Run the command.
      */
     @SuppressWarnings("unchecked")
-    public void run() {
+    @Override
+    public void execute(Iterator<String> contactsIter) {
+        // Create a GenericAsyncTask to insert the contacts off the UI
+        // Thread.
+        final GenericAsyncTask<Iterator<String>,
+                               Void,
+                               Integer,
+                               InsertContactsCommand> asyncTask =
+            new GenericAsyncTask<>(this);
+
         // Execute the GenericAsyncTask.
-        mAsyncTask.execute(mContactsIter);
+        asyncTask.execute(contactsIter);
     }
 
     /** 

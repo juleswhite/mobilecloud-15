@@ -1,5 +1,7 @@
 package vandy.mooc.operations;
 
+import java.util.Iterator;
+
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
@@ -9,7 +11,8 @@ import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
 
 public class QueryContactsCommand
-       extends GenericAsyncTaskOps<Void, Void, Cursor> {
+       extends GenericAsyncTaskOps<Void, Void, Cursor> 
+       implements ContactsCommand {
     /**
      * Store a reference to the ContactsOps object.
      */
@@ -21,12 +24,6 @@ public class QueryContactsCommand
     private ContentResolver mContentResolver;
 
     /**
-     * The GenericAsyncTask used to query contacts into the
-     * ContactContentProvider.
-     */
-    private GenericAsyncTask<Void, Void, Cursor, QueryContactsCommand> mAsyncTask;
-
-    /**
      * Constructor initializes the fields.
      */
     public QueryContactsCommand(ContactsOps ops) {
@@ -35,16 +32,21 @@ public class QueryContactsCommand
         mOps = ops;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();
-
-        // Create a GenericAsyncTask to query the contacts off the UI
-        // Thread.
-        mAsyncTask = new GenericAsyncTask<>(this);
     }
 
     /**
      * Run the command.
      */
-    public void run() {
+    @Override
+    public void execute(Iterator<String> ignore) {
+        // Create a GenericAsyncTask to query the contacts off the UI
+        // Thread.
+        final GenericAsyncTask<Void,
+                               Void,
+                               Cursor,
+                               QueryContactsCommand> mAsyncTask = 
+            new GenericAsyncTask<>(this);
+
         // Execute the GenericAsyncTask.
         mAsyncTask.execute((Void) null);
     }

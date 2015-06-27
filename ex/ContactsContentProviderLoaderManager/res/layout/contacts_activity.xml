@@ -19,12 +19,13 @@
             android:onClick="insertContacts">
     </Button>
 
+    <!--  
     <Button android:layout_width="wrap_content"
             android:text="@string/query_text"
             android:layout_height="wrap_content" 
             android:id="@+id/button2" 
             android:onClick="queryContacts">
-    </Button>
+    </Button> -->
     
     <Button android:layout_width="wrap_content"
             android:text="@string/delete_text"

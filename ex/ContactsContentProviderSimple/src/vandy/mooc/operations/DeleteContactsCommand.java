@@ -12,7 +12,8 @@ import android.provider.ContactsContract;
  * Delete all designated contacts in a background thread.
  */
 public class DeleteContactsCommand
-       extends GenericAsyncTaskOps<Iterator<String>, Void, Integer> {
+       extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>
+       implements ContactsCommand {
     /**
      * Store a reference to the ContactsOps object.
      */
@@ -24,40 +25,32 @@ public class DeleteContactsCommand
     private ContentResolver mContentResolver;
 
     /**
-     * Iterator containing contacts to delete.
-     */
-    private Iterator<String> mContactsIter;
-
-    /**
-     * The GenericAsyncTask used to insert contacts into the
-     * ContactContentProvider.
-     */
-    private GenericAsyncTask<Iterator<String>, Void, Integer, DeleteContactsCommand> mAsyncTask;
-
-    /**
      * Constructor initializes the fields.
      */
-    public DeleteContactsCommand(ContactsOps ops,
-                                 Iterator<String> contactsIter) {
+    public DeleteContactsCommand(ContactsOps ops) {
         // Store the ContactOps, Iterator, and the ContentResolver
         // from the Application context.
         mOps = ops;
-        mContactsIter = contactsIter;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();
-
-        // Create a GenericAsyncTask to delete the contacts off the UI
-        // Thread.
-        mAsyncTask = new GenericAsyncTask<>(this);
     }
 
     /**
      * Run the command.
      */
     @SuppressWarnings("unchecked")
-    public void run() {
+    @Override
+    public void execute (Iterator<String> contactsIter) {
+        // Create a GenericAsyncTask to delete the contacts off the UI
+        // Thread.
+        final GenericAsyncTask<Iterator<String>,
+                               Void,
+                               Integer,
+                               DeleteContactsCommand> asyncTask =
+            new GenericAsyncTask<>(this);
+
         // Execute the GenericAsyncTask.
-        mAsyncTask.execute(mContactsIter);
+        asyncTask.execute(contactsIter);
     }
 
     /**

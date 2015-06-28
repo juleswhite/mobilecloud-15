@@ -60,6 +60,8 @@ public class InsertContactsCommand
             new GenericAsyncTask<>(this);
 
         // Execute the GenericAsyncTask.
+		//this uses active object pattern and inversion control{DIP ie dependency injection } to execute in the context of InsertContactsCommand
+		//and in a background thread
         asyncTask.execute(contactsIter);
     }
 
@@ -96,7 +98,7 @@ public class InsertContactsCommand
         // ContentProvider.
         while (contactsIter.hasNext())
             addContact(contactsIter.next(),
-                       batchOperation);
+                       batchOperation);//pass batch operation by reference
 
         try {
             // Apply all the batched operations synchronously.

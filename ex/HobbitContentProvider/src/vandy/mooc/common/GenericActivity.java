@@ -1,4 +1,4 @@
-package vandy.mooc.utils;
+package vandy.mooc.common;
 
 import android.os.Bundle;
 import android.util.Log;

@@ -1,0 +1,11 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<string name="app_name">ContractsContentProviderSimple</string>
+        <string name="insert_text">Insert\nContacts</string>
+        <string name="query_text">Query\nContacts</string>
+        <string name="modify_text">Modify\nContacts</string>
+        <string name="delete_text">Delete\nContacts</string>
+        <string name="simple_impl">ContactOpsImplSimple</string>
+        <string name="async_impl">ContactOpsImplAsync</string>
+        <string name="loader_manager_impl">ContactOpsImplLoaderManager</string>
+</resources>

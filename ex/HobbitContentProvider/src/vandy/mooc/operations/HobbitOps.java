@@ -1,6 +1,6 @@
 package vandy.mooc.operations;
 
-import vandy.mooc.utils.ConfigurableOps;
+import vandy.mooc.common.ConfigurableOps;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -16,17 +16,28 @@ import android.widget.SimpleCursorAdapter;
  * Model-View-Presenter pattern.
  */
 public class HobbitOps implements ConfigurableOps {
-    public enum ContentProviderAccessMeans {
+    /**
+     * Debugging tag used by the Android logger.
+     */
+    protected final static String TAG =
+        HobbitOps.class.getSimpleName();
+
+    /**
+     * Type for accessing the ContentProvider (i.e., CONTENT_RESOLVER
+     * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
+     */
+    public enum ContentProviderAccessType {
         CONTENT_RESOLVER,
         CONTENT_PROVIDER_CLIENT
     }
 
     /**
-     * Means for accessing the ContentProvider (i.e., CONTENT_RESOLVER
-     * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
+     * Stores the type for accessing the ContentProvider (i.e.,
+     * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
+     * implementation.
      */
-    private ContentProviderAccessMeans mAccessMeans =
-        ContentProviderAccessMeans.CONTENT_RESOLVER;
+    private ContentProviderAccessType mAccessType =
+        ContentProviderAccessType.CONTENT_RESOLVER;
 
     /**
      * Reference to the designed Concrete Implementor (i.e., either
@@ -39,9 +50,9 @@ public class HobbitOps implements ConfigurableOps {
      * class to work properly.
      */
     public HobbitOps() {
-        // Select the appropriate means of accessing the Content
+        // Select the appropriate type of access to the Content
         // Provider.
-        switch(mAccessMeans) {
+        switch(mAccessType) {
         case CONTENT_RESOLVER:
             mHobbitOpsImpl =
                 new HobbitOpsContentResolver();
@@ -162,11 +173,11 @@ public class HobbitOps implements ConfigurableOps {
     }
 
     /**
-     * Sets the means for accessing the ContentProvider (i.e.,
+     * Sets the type for accessing the ContentProvider (i.e.,
      * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
      * implementation.
      */
-    public void setContentProviderAccessMeans(ContentProviderAccessMeans accessMeans) {
-        mAccessMeans = accessMeans;
+    public void setContentProviderAccessType(ContentProviderAccessType accessType) {
+        mAccessType = accessType;
     }
 }

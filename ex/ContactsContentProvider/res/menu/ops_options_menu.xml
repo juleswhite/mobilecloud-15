@@ -1,0 +1,13 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <group android:id="@+id/opsOptions">
+    <item android:id="@+id/simpleImpl"
+          android:title="@string/simple_impl"
+          android:onClick="chooseOpsOption"/>
+    <item android:id="@+id/asyncImpl"
+          android:title="@string/async_impl"
+          android:onClick="chooseOpsOption" />
+    <item android:id="@+id/loaderManagerImpl"
+          android:title="@string/loader_manager_impl"
+          android:onClick="chooseOpsOption" />
+  </group>
+</menu>

@@ -1,8 +1,8 @@
 package vandy.mooc.activities;
 
 import vandy.mooc.R;
+import vandy.mooc.common.GenericActivity;
 import vandy.mooc.operations.HobbitOps;
-import vandy.mooc.utils.GenericActivity;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -238,16 +238,16 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
     public boolean chooseOpsOption(MenuItem item) {
         switch (item.getItemId()) {
         case R.id.contentResolver:
-            getOps().setContentProviderAccessMeans
-                (HobbitOps.ContentProviderAccessMeans.CONTENT_RESOLVER);
+            getOps().setContentProviderAccessType
+                (HobbitOps.ContentProviderAccessType.CONTENT_RESOLVER);
             Toast.makeText(this,
                            "ContentResolver selected",
                            Toast.LENGTH_SHORT).show();
             break;
 
         case R.id.contentProviderClient:
-            getOps().setContentProviderAccessMeans
-                (HobbitOps.ContentProviderAccessMeans.CONTENT_PROVIDER_CLIENT); 
+            getOps().setContentProviderAccessType
+                (HobbitOps.ContentProviderAccessType.CONTENT_PROVIDER_CLIENT); 
             Toast.makeText(this,
                            "ContentProviderClient selected",
                            Toast.LENGTH_SHORT).show();

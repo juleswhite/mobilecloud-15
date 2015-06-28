@@ -1,4 +1,4 @@
-package vandy.mooc.utils;
+package vandy.mooc.common;
 
 import java.lang.ref.WeakReference;
 import java.util.HashMap;

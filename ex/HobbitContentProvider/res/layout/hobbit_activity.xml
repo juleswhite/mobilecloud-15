@@ -20,19 +20,19 @@
        android:text="@string/add_all" />
 
     <Button
-       android:id="@+id/button1"
-       android:layout_width="wrap_content"
-       android:layout_height="wrap_content"
-       android:onClick="deleteAll"
-       android:text="@string/delete_all" />
-
-    <Button
-       android:id="@+id/button1"
+       android:id="@+id/button2"
        android:layout_width="wrap_content"
        android:layout_height="wrap_content"
        android:onClick="modifyAll"
        android:text="@string/modify_all" />
-
+    
+    <Button
+       android:id="@+id/button3"
+       android:layout_width="wrap_content"
+       android:layout_height="wrap_content"
+       android:onClick="deleteAll"
+       android:text="@string/delete_all" />
+ 
   </LinearLayout>
 
   <ListView

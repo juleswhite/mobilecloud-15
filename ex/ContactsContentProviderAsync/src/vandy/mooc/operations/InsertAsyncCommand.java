@@ -128,6 +128,9 @@ public class InsertAsyncCommand extends AsyncCommand {
                              Data.CONTENT_URI,
                              values);
         } else if (token == RAW_CONTACT_DATA) {
+            // Increment the count of insertions.
+            mOps.mCounter++;
+
             // Calls execute() to trigger insertion of the next
             // contact (if any) in the Iterator.
             this.execute();

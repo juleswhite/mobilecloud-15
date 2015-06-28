@@ -1,7 +1,6 @@
 package vandy.mooc.operations;
 
 import vandy.mooc.common.AsyncCommand;
-import vandy.mooc.common.Utils;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;
@@ -21,26 +20,15 @@ public class QueryAsyncCommand extends AsyncCommand {
      */
     final private ContactsOps mOps;
 
-    /**
-     * True if we only print the count of the number of entries that
-     * matched the query.
-     */
-    final private boolean mPrintCountOnly;
-
    /**
      * Constructor stores the ContentResolver and ListActivity.
      */
-    public QueryAsyncCommand(ContactsOps ops,
-                             boolean printCountOnly) {
+    public QueryAsyncCommand(ContactsOps ops) {
         // Get the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
 
         // Store the ContactOps.
         mOps = ops;
-
-        // Keep track of whether to only print the count of the
-        // contacts queried, rather than their values.
-        mPrintCountOnly = printCountOnly;
     }
 
     /**
@@ -67,7 +55,7 @@ public class QueryAsyncCommand extends AsyncCommand {
             + "== 1))";
 
         // Initiate an asynchronous query.
-        startQuery(mPrintCountOnly == true ? 1 : 0,
+        startQuery(0,
                    null, 
                    ContactsContract.Contacts.CONTENT_URI, 
                    columnsToQuery, 
@@ -85,14 +73,8 @@ public class QueryAsyncCommand extends AsyncCommand {
     public void onQueryComplete(int token,
                                 Object cookie,
                                 Cursor cursor) {
-        if (cursor == null
-            || cursor.getCount() == 0)
-            return;
-        else if (token == 1) {
-            Utils.showToast(mOps.getActivity(),
-                            cursor.getCount()
-                            + " contact(s) inserted");
-        } else {
+        if (cursor != null
+            && cursor.getCount() != 0) {
             mOps.setCursor(cursor);
             mOps.getActivity().displayCursor(cursor);
         }

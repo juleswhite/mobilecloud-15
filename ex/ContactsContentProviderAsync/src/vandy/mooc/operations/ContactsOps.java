@@ -16,7 +16,6 @@ import android.app.Activity;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
-import android.os.Looper;
 import android.provider.ContactsContract;
 import android.util.Log;
 
@@ -59,6 +58,10 @@ public class ContactsOps implements ConfigurableOps {
      */
     private Cursor mCursor;
 
+    /**
+     * Keeps track of the number of contacts inserted, deleted, and
+     * modified.
+     */
     public int mCounter;
 
     /**
@@ -114,14 +117,12 @@ public class ContactsOps implements ConfigurableOps {
                 "James Swaggart", 
             }));
 
-    private final Handler handler = new Handler(Looper.getMainLooper());
-
     /**
      * Observer that's dispatched by the ContentResolver when Contacts
      * change (e.g., are inserted or deleted).
      */
     private final ContentObserver contactsChangeContentObserver =
-        new ContentObserver(handler) {
+        new ContentObserver(new Handler()) {
             /**
              * Trigger a query and display.
              */
@@ -211,15 +212,13 @@ public class ContactsOps implements ConfigurableOps {
         mActivity.get().displayCursor(mCursor = null);
 
         // Start executing InsertAsyncCommand to insert the contacts
-        // into the Contacts Provider and then execute the
-        // QueryAsyncCommand to print out the number of inserted
-        // contacts.  Both commands run asynchronously.
+        // into the Contacts Provider.
         executeAsyncCommands
             (new AsyncCommand[]{
                 new InsertAsyncCommand(this,
                                        mContacts.iterator()),
-                new QueryAsyncCommand(this, 
-                                      true)
+                // Print a toast after all the contacts are inserted.
+                makeToastAsyncCommand(" contact(s) inserted")
             });
     }
 
@@ -231,8 +230,7 @@ public class ContactsOps implements ConfigurableOps {
         // print out the inserted contacts when the query is done.
         executeAsyncCommands
             (new AsyncCommand[]{
-                new QueryAsyncCommand(this, 
-                                      false)
+                new QueryAsyncCommand(this)
             });
     }
 
@@ -249,13 +247,7 @@ public class ContactsOps implements ConfigurableOps {
                 new DeleteAsyncCommand(this,
                                        mModifyContacts.iterator()),
                 // Print a toast after all the contacts are deleted.
-                new AsyncCommand(null) {
-                	public void execute() {
-                		Utils.showToast(mActivity.get(),
-             			                mCounter 
-                                                + " contact(s) deleted");
-                	}
-                }
+                makeToastAsyncCommand(" contact(s) deleted")
             });
     }
 
@@ -271,14 +263,8 @@ public class ContactsOps implements ConfigurableOps {
             (new AsyncCommand[]{
                 new ModifyAsyncCommand(this,
                                        mModifyContacts.iterator()),
-                // Print a toast after all the contacts are deleted.
-                new AsyncCommand(null) {
-                	public void execute() {
-                		Utils.showToast(mActivity.get(),
-                                                mCounter
-                                                + " contact(s) modified");
-                	}
-                }
+                // Print a toast after all the contacts are modified.
+                makeToastAsyncCommand(" contact(s) modified")
             });
     }
 
@@ -297,6 +283,19 @@ public class ContactsOps implements ConfigurableOps {
         // Start executing the first AsyncCommand in the chain of
         // AsyncCommands.
         asyncCommandsIter.next().execute();
+    }
+
+    /**
+     * Print a toast after all the contacts are deleted.
+     */
+    private AsyncCommand makeToastAsyncCommand(final String message) {
+        return new AsyncCommand(null) {
+            public void execute() {
+                Utils.showToast(mActivity.get(),
+                                mCounter 
+                                + message);
+            }
+        };
     }
 
     /* 

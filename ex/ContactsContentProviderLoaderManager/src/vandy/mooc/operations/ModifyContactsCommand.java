@@ -6,12 +6,13 @@ import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
 import android.content.ContentResolver;
+import android.content.ContentValues;
 import android.provider.ContactsContract;
 
 /**
- * Delete all designated contacts in a background task.
+ * Modify some designated contacts in a background task.
  */
-public class DeleteContactsCommand
+public class ModifyContactsCommand
        extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>
        implements ContactsCommand {
     /**
@@ -27,9 +28,9 @@ public class DeleteContactsCommand
     /**
      * Constructor initializes the fields.
      */
-    public DeleteContactsCommand(ContactsOps ops) {
-        // Store the ContactOps and the ContentResolver from the
-        // Application context.
+    public ModifyContactsCommand(ContactsOps ops) {
+        // Store the ContactOps, Iterator, and the ContentResolver
+        // from the Application context.
         mOps = ops;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();
@@ -46,7 +47,7 @@ public class DeleteContactsCommand
         final GenericAsyncTask<Iterator<String>,
                                Void,
                                Integer,
-                               DeleteContactsCommand> asyncTask =
+                               ModifyContactsCommand> asyncTask =
             new GenericAsyncTask<>(this);
 
         // Execute the GenericAsyncTask.
@@ -59,8 +60,8 @@ public class DeleteContactsCommand
     @SuppressWarnings("unchecked")
     @Override
     public Integer doInBackground(Iterator<String>... contactsIter) {
-        // Delete all the contacts named by the iterator.
-        return deleteAllContacts(contactsIter[0]);
+        // Modify all the contacts named by the iterator.
+        return modifyAllContacts(contactsIter[0]);
     }
 
     /**
@@ -68,33 +69,38 @@ public class DeleteContactsCommand
      * many contacts were deleted.
      */
     @Override
-    public void onPostExecute(Integer totalContactsDeleted) {
+    public void onPostExecute(Integer totalContactsModified) {
         Utils.showToast(mOps.getActivity(),
-                        totalContactsDeleted 
-                        + " contact(s) deleted");
+                        totalContactsModified
+                        + " contact(s) modified");
     }
 
-
     /**
-     * Synchronously delete all contacts designated by the Iterator.
+     * Synchronously modify all contacts designated by the Iterator.
      */
-    private int deleteAllContacts(Iterator<String> contactsIter) {
-        int totalContactsDeleted = 0;
+    private int modifyAllContacts(Iterator<String> contactsIter) {
+        int totalContactsModified = 0;
 
-        // Delete all the contacts named by the iterator.
+        // Modify all the contacts named by the iterator.
         while (contactsIter.hasNext())
-            totalContactsDeleted += deleteContact(contactsIter.next());
+            totalContactsModified += modifyContact(contactsIter.next(),
+                                                   contactsIter.next());
 
-        return totalContactsDeleted;
+        return totalContactsModified;
     }
 
     /**
-     * Delete the contact with the designated @a name.
+     * Modify the contact with the designated @a name.
      */
-    private int deleteContact(String name) {
-        return mContentResolver.delete(ContactsContract.RawContacts.CONTENT_URI,
+    private int modifyContact(String originalName,
+                              String updatedName) {
+        final ContentValues cvs = new ContentValues();
+        cvs.put(ContactsContract.Contacts.DISPLAY_NAME,
+                updatedName);
+        return mContentResolver.update(ContactsContract.RawContacts.CONTENT_URI,
+                                       cvs,
                                        ContactsContract.Contacts.DISPLAY_NAME
                                        + "=?",
-                                       new String[] { name });
+                                       new String[] { originalName });
     }
 }

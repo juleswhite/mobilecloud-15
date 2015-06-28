@@ -52,7 +52,16 @@ public class ContactsActivity
      */
     public void insertContacts(View v) {
         // Insert contacts.
-        getOps().runInsertContactCommand();
+        getOps().runInsertContactsCommand();
+    }
+
+    /**
+     * This click handler method modifies contacts in the
+     * ContactsContentProvider.
+     */
+    public void modifyContacts(View v) {
+        // Modify contacts.
+        getOps().runModifyContactsCommand();
     }
 
     /**
@@ -61,6 +70,6 @@ public class ContactsActivity
      */
     public void deleteContacts(View v) {
         // Delete contacts.
-        getOps().runDeleteContactCommand();
+        getOps().runDeleteContactsCommand();
     }
 }

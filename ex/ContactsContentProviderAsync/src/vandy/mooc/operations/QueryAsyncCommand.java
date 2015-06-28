@@ -1,7 +1,5 @@
 package vandy.mooc.operations;
 
-import java.util.Iterator;
-
 import vandy.mooc.common.AsyncCommand;
 import vandy.mooc.common.Utils;
 import android.database.Cursor;
@@ -34,8 +32,14 @@ public class QueryAsyncCommand extends AsyncCommand {
      */
     public QueryAsyncCommand(ContactsOps ops,
                              boolean printCountOnly) {
+        // Get the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
+
+        // Store the ContactOps.
         mOps = ops;
+
+        // Keep track of whether to only print the count of the
+        // contacts queried, rather than their values.
         mPrintCountOnly = printCountOnly;
     }
 
@@ -78,14 +82,12 @@ public class QueryAsyncCommand extends AsyncCommand {
      * This method is called back by Android after the query on the
      * Contacts Provider finishes to perform the completion task.
      */
-    @SuppressWarnings("deprecation")
     public void onQueryComplete(int token,
-                                Object commandIter,
+                                Object cookie,
                                 Cursor cursor) {
         if (cursor == null
             || cursor.getCount() == 0)
-            Utils.showToast(mOps.getActivity(),
-                            "Contacts not found");
+            return;
         else if (token == 1) {
             Utils.showToast(mOps.getActivity(),
                             cursor.getCount()

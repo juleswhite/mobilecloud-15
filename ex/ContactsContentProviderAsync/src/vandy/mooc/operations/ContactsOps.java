@@ -13,7 +13,11 @@ import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.Handler;
+import android.os.Looper;
+import android.provider.ContactsContract;
 import android.util.Log;
 
 /**
@@ -55,6 +59,8 @@ public class ContactsOps implements ConfigurableOps {
      */
     private Cursor mCursor;
 
+    public int mCounter;
+
     /**
      * The list of contacts that we'll insert, query, and delete.
      */
@@ -73,6 +79,57 @@ public class ContactsOps implements ConfigurableOps {
               "Jimmy Johnson",
               "Jimmy Swaggart", 
             }));
+
+    /**
+     * The list of contacts that we'll modify.
+     */
+    protected final List<String> mModifyContacts =
+        new ArrayList<String>(Arrays.asList(new String[] 
+            { 
+                "Jiminy Cricket", 
+                "James Cricket",
+                "Jimi Hendrix", 
+                "James Hendix",
+                "Jimmy Buffett",
+                "James Buffett",
+                "Jimmy Carter",
+                "James Carter",
+                "Jimmy Choo", 
+                "James Choo", 
+                "Jimmy Connors", 
+                "James Connors", 
+                "Jimmy Durante",
+                "James Durante",
+                "Jimmy Fallon",
+                "James Fallon",
+                "Jimmy Kimmel", 
+                "James Kimmel", 
+                "Jimmy Johns",
+                "James Johns",
+                "Jimmy Johnson",
+                "James Johnson",
+                "Jimmy Page", 
+                "James Page", 
+                "Jimmy Swaggart", 
+                "James Swaggart", 
+            }));
+
+    private final Handler handler = new Handler(Looper.getMainLooper());
+
+    /**
+     * Observer that's dispatched by the ContentResolver when Contacts
+     * change (e.g., are inserted or deleted).
+     */
+    private final ContentObserver contactsChangeContentObserver =
+        new ContentObserver(handler) {
+            /**
+             * Trigger a query and display.
+             */
+            @Override
+            public void onChange (boolean selfChange) {
+                runQueryContactsAsyncCommands();
+            }
+        };
 
     /**
      * This default constructor must be public for the GenericOps
@@ -97,81 +154,16 @@ public class ContactsOps implements ConfigurableOps {
         mActivity = 
             new WeakReference<>((ContactsActivity) activity);
 
-        if (firstTimeIn)
+        if (firstTimeIn) {
             // Initialize the Google account information.
             initializeAccount();
-        else if (mCursor != null)
+
+            // Initialize the ContentObserver.
+            initializeContentObserver();
+        } else if (mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
             mActivity.get().displayCursor(mCursor);
-    }
-
-    /**
-     * Insert the contacts asynchronously.
-     */
-    public void runInsertContactAsyncCommands() {
-        // Reset mCursor and reset the display to show nothing.
-        mActivity.get().displayCursor(mCursor = null);
-
-        // Start executing InsertAsyncCommand to insert the contacts
-        // into the Contacts Provider and then execute the
-        // QueryAsyncCommand to print out the inserted contacts.  Both
-        // commands run asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new InsertAsyncCommand(this,
-                                       mContacts.iterator()),
-                new QueryAsyncCommand(this, true)
-            });
-    }
-
-    /**
-     * Query the contacts asynchronously.
-     */
-    public void runQueryContactsAsyncCommands() {
-        // Start executing the QueryAsyncCommand asynchronously, which
-        // print out the inserted contacts when the query is done.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new QueryAsyncCommand(this, false)
-            });
-    }
-
-    /**
-     * Delete the contacts asynchronously.
-     */
-    public void runDeleteContactAsyncCommands() {
-        // Start executing the DeleteAsyncCommand, which runs
-        // asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[]{
-                new DeleteAsyncCommand(this,
-                                       mContacts.iterator()),
-                // Print a toast after all the contacts are deleted.
-                new AsyncCommand(null) {
-                	public void execute() {
-                		Utils.showToast(mActivity.get(),
-             			                "Contacts deleted");
-                	}
-                }
-            });
-    }
-
-    /**
-     * Execute the array of asyncCommands passed as a parameter.
-     */
-    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
-        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
-             new GenericArrayIterator<>(asyncCommands);
-
-        // Pass the Iterator to each of the AsyncCommands passed as a
-        // parameter.
-        for (AsyncCommand asyncCommand : asyncCommands)
-            asyncCommand.setIterator(asyncCommandsIter);
-
-        // Start executing the first AsyncCommand in the chain of
-        // AsyncCommands.
-        asyncCommandsIter.next().execute();
     }
 
     /**
@@ -197,6 +189,114 @@ public class ContactsOps implements ConfigurableOps {
                       + e);
             }
         }
+    }
+
+    /**
+     * Initialize the ContentObserver.
+     */
+    public void initializeContentObserver() {
+        // Register a ContentObserver that's notified when Contacts
+        // change (e.g., are inserted or deleted).
+        mActivity.get().getContentResolver().registerContentObserver
+            (ContactsContract.Contacts.CONTENT_URI,
+             true,
+             contactsChangeContentObserver);
+    }
+
+    /**
+     * Insert the contacts asynchronously.
+     */
+    public void runInsertContactsAsyncCommands() {
+        // Reset mCursor and reset the display to show nothing.
+        mActivity.get().displayCursor(mCursor = null);
+
+        // Start executing InsertAsyncCommand to insert the contacts
+        // into the Contacts Provider and then execute the
+        // QueryAsyncCommand to print out the number of inserted
+        // contacts.  Both commands run asynchronously.
+        executeAsyncCommands
+            (new AsyncCommand[]{
+                new InsertAsyncCommand(this,
+                                       mContacts.iterator()),
+                new QueryAsyncCommand(this, 
+                                      true)
+            });
+    }
+
+    /**
+     * Query the contacts asynchronously.
+     */
+    public void runQueryContactsAsyncCommands() {
+        // Start executing the QueryAsyncCommand asynchronously, which
+        // print out the inserted contacts when the query is done.
+        executeAsyncCommands
+            (new AsyncCommand[]{
+                new QueryAsyncCommand(this, 
+                                      false)
+            });
+    }
+
+    /**
+     * Delete the contacts asynchronously.
+     */
+    public void runDeleteContactsAsyncCommands() {
+        mCounter = 0;
+
+        // Start executing the DeleteAsyncCommand, which runs
+        // asynchronously.
+        executeAsyncCommands
+            (new AsyncCommand[]{
+                new DeleteAsyncCommand(this,
+                                       mModifyContacts.iterator()),
+                // Print a toast after all the contacts are deleted.
+                new AsyncCommand(null) {
+                	public void execute() {
+                		Utils.showToast(mActivity.get(),
+             			                mCounter 
+                                                + " contact(s) deleted");
+                	}
+                }
+            });
+    }
+
+    /**
+     * Modify the contacts asynchronously.
+     */
+    public void runModifyContactsAsyncCommands() {
+        mCounter = 0;
+
+        // Start executing the ModifyAsyncCommand, which runs
+        // asynchronously.
+        executeAsyncCommands
+            (new AsyncCommand[]{
+                new ModifyAsyncCommand(this,
+                                       mModifyContacts.iterator()),
+                // Print a toast after all the contacts are deleted.
+                new AsyncCommand(null) {
+                	public void execute() {
+                		Utils.showToast(mActivity.get(),
+                                                mCounter
+                                                + " contact(s) modified");
+                	}
+                }
+            });
+    }
+
+    /**
+     * Execute the array of asyncCommands passed as a parameter.
+     */
+    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
+        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
+             new GenericArrayIterator<>(asyncCommands);
+
+        // Pass the Iterator to each of the AsyncCommands passed as a
+        // parameter.
+        for (AsyncCommand asyncCommand : asyncCommands)
+            asyncCommand.setIterator(asyncCommandsIter);
+
+        // Start executing the first AsyncCommand in the chain of
+        // AsyncCommands.
+        asyncCommandsIter.next().execute();
     }
 
     /* 

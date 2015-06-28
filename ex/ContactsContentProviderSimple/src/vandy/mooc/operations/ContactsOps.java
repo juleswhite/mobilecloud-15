@@ -62,15 +62,48 @@ public class ContactsOps implements ConfigurableOps {
               "Jimmy Carter",
               "Jimmy Choo", 
               "Jimmy Connors", 
-              "Jiminy Cricket",
+              "Jiminy Cricket", 
               "Jimmy Durante",
               "Jimmy Fallon",
               "Jimmy Kimmel", 
               "Jimi Hendrix", 
               "Jimmy Johns",
               "Jimmy Johnson",
-              "Jimmy Page", 
               "Jimmy Swaggart", 
+            }));
+
+    /**
+     * The list of contacts that we'll modify.
+     */
+    protected final List<String> mModifyContacts =
+        new ArrayList<String>(Arrays.asList(new String[] 
+            { 
+                "Jiminy Cricket", 
+                "James Cricket",
+                "Jimi Hendrix", 
+                "James Hendix",
+                "Jimmy Buffett",
+                "James Buffett",
+                "Jimmy Carter",
+                "James Carter",
+                "Jimmy Choo", 
+                "James Choo", 
+                "Jimmy Connors", 
+                "James Connors", 
+                "Jimmy Durante",
+                "James Durante",
+                "Jimmy Fallon",
+                "James Fallon",
+                "Jimmy Kimmel", 
+                "James Kimmel", 
+                "Jimmy Johns",
+                "James Johns",
+                "Jimmy Johnson",
+                "James Johnson",
+                "Jimmy Page", 
+                "James Page", 
+                "Jimmy Swaggart", 
+                "James Swaggart", 
             }));
 
     /**
@@ -79,6 +112,7 @@ public class ContactsOps implements ConfigurableOps {
     enum ContactsCommandType {
         INSERT_COMMAND,
         QUERY_COMMAND,
+        MODIFY_COMMAND,
         DELETE_COMMAND,
     }
 
@@ -126,9 +160,14 @@ public class ContactsOps implements ConfigurableOps {
             new InsertContactsCommand(this);
 
         // Create a command that executes a GenericAsyncTask to
-        // perform the Query off the UI Thread.
+        // perform the queries off the UI Thread.
         mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()] =
             new QueryContactsCommand(this);
+
+        // Create a command that executes a GenericAsyncTask to
+        // perform the modifications off the UI Thread.
+        mCommands[ContactsCommandType.MODIFY_COMMAND.ordinal()] =
+            new ModifyContactsCommand(this);
 
         // Create a command that executes a GenericAsyncTask to
         // perform the deletions off the UI Thread.
@@ -146,12 +185,21 @@ public class ContactsOps implements ConfigurableOps {
     }
 
     /**
+     * Modify the contacts.
+     */
+    public void runModifyContactCommand() {
+        // Execute the InsertModifyCommand.
+        mCommands[ContactsCommandType.MODIFY_COMMAND.ordinal()].execute
+            (mModifyContacts.iterator());
+    }
+
+    /**
      * Delete the contacts.
      */
     public void runDeleteContactCommand() {
         // Execute the InsertDeleteCommand.
         mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()].execute
-            (mContacts.iterator());
+            (mModifyContacts.iterator());
     }
 
     /**

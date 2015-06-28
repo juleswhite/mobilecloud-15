@@ -38,8 +38,8 @@ public class InsertContactsCommand
      * Constructor initializes the field.
      */
     public InsertContactsCommand(ContactsOps ops) {
-        // Store the ContactOps, Iterator, and the ContentResolver
-        // from the Application context.
+        // Store the ContactOps and the ContentResolver from the
+        // Application context.
         mOps = ops;
         mContentResolver =
             ops.getActivity().getApplicationContext().getContentResolver();

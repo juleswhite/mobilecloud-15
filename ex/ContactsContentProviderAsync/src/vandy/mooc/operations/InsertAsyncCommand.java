@@ -3,7 +3,6 @@ package vandy.mooc.operations;
 import java.util.Iterator;
 
 import vandy.mooc.common.AsyncCommand;
-import android.content.ContentResolver;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.net.Uri;
@@ -117,12 +116,13 @@ public class InsertAsyncCommand extends AsyncCommand {
                                  Uri uri) {
         if (token == RAW_CONTACT) {
             // If the token is RAW_CONTACT then make a ContentValues
-            // object containing the data associated with RawContact
-            // and initiate an asynchronous insert on the Contacts
-            // Provider.
+            // object containing the data associated with RawContact.
             ContentValues values =
                 makeRawContactData(mContactsIter.next(),
                                    uri);
+
+            // Initiate an asynchronous insert on the Contacts
+            // Provider.
             this.startInsert(RAW_CONTACT_DATA,
                              null,
                              Data.CONTENT_URI,

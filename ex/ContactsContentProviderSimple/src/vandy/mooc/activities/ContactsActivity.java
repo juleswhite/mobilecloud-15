@@ -92,6 +92,15 @@ public class ContactsActivity
     }
 
     /**
+     * This click handler method modified contacts from the
+     * ContactsContentProvider.
+     */
+    public void modifyContacts(View v) {
+        // Modify contacts.
+        getOps().runModifyContactCommand();
+    }
+
+    /**
      * This click handler method deletes contacts from the
      * ContactsContentProvider.
      */

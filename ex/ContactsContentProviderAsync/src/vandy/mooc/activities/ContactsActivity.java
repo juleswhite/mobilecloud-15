@@ -88,7 +88,7 @@ public class ContactsActivity
      */
     public void insertContacts(View v) {
         // Insert contacts.
-        getOps().runInsertContactAsyncCommands();
+        getOps().runInsertContactsAsyncCommands();
     }
 
     /**
@@ -101,12 +101,21 @@ public class ContactsActivity
     }
 
     /**
+     * This click handler method modifies contacts in the
+     * ContactsContentProvider.
+     */
+    public void modifyContacts(View v) {
+        // Modify contacts.
+        getOps().runModifyContactsAsyncCommands();
+    }
+
+    /**
      * This click handler method deletes contacts from the
      * ContactsContentProvider.
      */
     public void deleteContacts(View v) {
         // Delete contacts.
-        getOps().runDeleteContactAsyncCommands();
+        getOps().runDeleteContactsAsyncCommands();
     }
 
     /**

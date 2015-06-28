@@ -20,10 +20,10 @@
     </Button>
 
     <Button android:layout_width="wrap_content"
-            android:text="@string/query_text"
+            android:text="@string/modify_text"
             android:layout_height="wrap_content" 
             android:id="@+id/button2" 
-            android:onClick="queryContacts">
+            android:onClick="modifyContacts">
     </Button>
     
     <Button android:layout_width="wrap_content"

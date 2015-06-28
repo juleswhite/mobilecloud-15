@@ -4,6 +4,7 @@ import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import vandy.mooc.activities.ContactsActivity;
 import vandy.mooc.common.AsyncCommand;
@@ -62,7 +63,7 @@ public class ContactsOps implements ConfigurableOps {
      * Keeps track of the number of contacts inserted, deleted, and
      * modified.
      */
-    public int mCounter;
+    private AtomicInteger mCounter = new AtomicInteger(0);
 
     /**
      * The list of contacts that we'll insert, query, and delete.
@@ -208,15 +209,15 @@ public class ContactsOps implements ConfigurableOps {
      * Insert the contacts asynchronously.
      */
     public void runInsertContactsAsyncCommands() {
-        // Reset mCursor and reset the display to show nothing.
-        mActivity.get().displayCursor(mCursor = null);
+        mCounter.set(0);
 
         // Start executing InsertAsyncCommand to insert the contacts
         // into the Contacts Provider.
         executeAsyncCommands
-            (new AsyncCommand[]{
+            (new AsyncCommand[] {
                 new InsertAsyncCommand(this,
-                                       mContacts.iterator()),
+                                       mContacts.iterator(),
+                                       mCounter),
                 // Print a toast after all the contacts are inserted.
                 makeToastAsyncCommand(" contact(s) inserted")
             });
@@ -229,7 +230,7 @@ public class ContactsOps implements ConfigurableOps {
         // Start executing the QueryAsyncCommand asynchronously, which
         // print out the inserted contacts when the query is done.
         executeAsyncCommands
-            (new AsyncCommand[]{
+            (new AsyncCommand[] {
                 new QueryAsyncCommand(this)
             });
     }
@@ -238,14 +239,15 @@ public class ContactsOps implements ConfigurableOps {
      * Delete the contacts asynchronously.
      */
     public void runDeleteContactsAsyncCommands() {
-        mCounter = 0;
+        mCounter.set(0);
 
         // Start executing the DeleteAsyncCommand, which runs
         // asynchronously.
         executeAsyncCommands
-            (new AsyncCommand[]{
+            (new AsyncCommand[] {
                 new DeleteAsyncCommand(this,
-                                       mModifyContacts.iterator()),
+                                       mModifyContacts.iterator(),
+                                       mCounter),
                 // Print a toast after all the contacts are deleted.
                 makeToastAsyncCommand(" contact(s) deleted")
             });
@@ -255,14 +257,15 @@ public class ContactsOps implements ConfigurableOps {
      * Modify the contacts asynchronously.
      */
     public void runModifyContactsAsyncCommands() {
-        mCounter = 0;
+        mCounter.set(0);
 
         // Start executing the ModifyAsyncCommand, which runs
         // asynchronously.
         executeAsyncCommands
-            (new AsyncCommand[]{
+            (new AsyncCommand[] {
                 new ModifyAsyncCommand(this,
-                                       mModifyContacts.iterator()),
+                                       mModifyContacts.iterator(),
+                                       mCounter),
                 // Print a toast after all the contacts are modified.
                 makeToastAsyncCommand(" contact(s) modified")
             });
@@ -292,7 +295,7 @@ public class ContactsOps implements ConfigurableOps {
         return new AsyncCommand(null) {
             public void execute() {
                 Utils.showToast(mActivity.get(),
-                                mCounter 
+                                mCounter.get()
                                 + message);
             }
         };

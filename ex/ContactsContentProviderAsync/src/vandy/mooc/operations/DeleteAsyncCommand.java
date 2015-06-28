@@ -1,6 +1,7 @@
 package vandy.mooc.operations;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import vandy.mooc.common.AsyncCommand;
 import android.provider.ContactsContract;
@@ -25,14 +26,24 @@ public class DeleteAsyncCommand extends AsyncCommand {
     final private Iterator<String> mContactsIter;
 
     /**
+     * Keeps track of the number of contacts deleted.
+     */
+    private AtomicInteger mCounter;
+
+    /**
      * Constructor stores the ContentResolver and Iterator that
      * contains all the contacts to delete.
      */
     public DeleteAsyncCommand (ContactsOps ops,
-                               Iterator<String> contactsIter) {
+                               Iterator<String> contactsIter,
+                               AtomicInteger counter) {
+        // Set the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
+
+        // Store the ContactOps and the iterator.
         mOps = ops;
         mContactsIter = contactsIter;
+        mCounter = counter;
     }
 
     /**
@@ -44,7 +55,7 @@ public class DeleteAsyncCommand extends AsyncCommand {
         // asynchronous deletion on the Contacts Provider.  
         if (mContactsIter.hasNext()) {
             this.startDelete(0, 
-                             null,
+                             mCounter,
                              ContactsContract.RawContacts.CONTENT_URI,
                              ContactsContract.Contacts.DISPLAY_NAME + "=?",
                              new String[] {mContactsIter.next()});
@@ -62,10 +73,10 @@ public class DeleteAsyncCommand extends AsyncCommand {
      */
     @Override
     public void onDeleteComplete(int token,
-                                 Object cookie,
+                                 Object counter,
                                  int result) {
         // Increment the count of deletions.
-        mOps.mCounter += result;
+        ((AtomicInteger) counter).getAndAdd(result);
 
         // Call the execute() method to trigger the deletion of next
         // contact (if any) in the Iterator.

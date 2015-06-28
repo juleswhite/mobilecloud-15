@@ -1,6 +1,7 @@
 package vandy.mooc.operations;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import vandy.mooc.common.AsyncCommand;
 import android.content.ContentUris;
@@ -37,6 +38,11 @@ public class InsertAsyncCommand extends AsyncCommand {
     final private Iterator<String> mContactsIter;
 
     /**
+     * Keeps track of the number of contacts inserted.
+     */
+    private AtomicInteger mCounter;
+
+    /**
      * Token that indicates the type of operation.
      */
     final static int RAW_CONTACT = 1;
@@ -47,10 +53,15 @@ public class InsertAsyncCommand extends AsyncCommand {
      * all the contacts to delete, and the account type/name.
      */
     public InsertAsyncCommand (ContactsOps ops,
-                               Iterator<String> contactsIter) {
+                               Iterator<String> contactsIter,
+                               AtomicInteger counter) {
+        // Set the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
+
+        // Store the ContactOps and the iterator.
         mOps = ops;
         mContactsIter = contactsIter;
+        mCounter = counter;
     }
 
     /**
@@ -96,7 +107,7 @@ public class InsertAsyncCommand extends AsyncCommand {
             // the Contacts Provider.
             ContentValues values = makeRawContact(1);
             this.startInsert(RAW_CONTACT,
-                             null,
+                             mCounter,
                              RawContacts.CONTENT_URI,
                              values);
         } else
@@ -112,7 +123,7 @@ public class InsertAsyncCommand extends AsyncCommand {
      */
     @Override
     public void onInsertComplete(int token,
-                                 Object cookie,
+                                 Object counter,
                                  Uri uri) {
         if (token == RAW_CONTACT) {
             // If the token is RAW_CONTACT then make a ContentValues
@@ -124,12 +135,12 @@ public class InsertAsyncCommand extends AsyncCommand {
             // Initiate an asynchronous insert on the Contacts
             // Provider.
             this.startInsert(RAW_CONTACT_DATA,
-                             null,
+                             counter,
                              Data.CONTENT_URI,
                              values);
         } else if (token == RAW_CONTACT_DATA) {
             // Increment the count of insertions.
-            mOps.mCounter++;
+            ((AtomicInteger) counter).incrementAndGet();
 
             // Calls execute() to trigger insertion of the next
             // contact (if any) in the Iterator.

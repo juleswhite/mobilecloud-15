@@ -1,6 +1,7 @@
 package vandy.mooc.operations;
 
 import java.util.Iterator;
+import java.util.concurrent.atomic.AtomicInteger;
 
 import vandy.mooc.common.AsyncCommand;
 import android.content.ContentValues;
@@ -26,14 +27,24 @@ public class ModifyAsyncCommand extends AsyncCommand {
     final private Iterator<String> mContactsIter;
 
     /**
+     * Keeps track of the number of contacts modified.
+     */
+    private AtomicInteger mCounter;
+
+    /**
      * Constructor stores the ContentResolver and Iterator that
      * contains all the contacts to delete.
      */
     public ModifyAsyncCommand (ContactsOps ops,
-                               Iterator<String> contactsIter) {
+                               Iterator<String> contactsIter,
+                               AtomicInteger counter) {
+        // Set the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
+
+        // Store the ContactOps and the iterator.
         mOps = ops;
         mContactsIter = contactsIter;
+        mCounter = counter;
     }
 
     /**
@@ -51,7 +62,7 @@ public class ModifyAsyncCommand extends AsyncCommand {
                     updatedName);
 
             this.startUpdate(0,
-                             null,
+                             mCounter,
                              ContactsContract.RawContacts.CONTENT_URI,
                              cvs,
                              ContactsContract.Contacts.DISPLAY_NAME + "=?",
@@ -70,10 +81,10 @@ public class ModifyAsyncCommand extends AsyncCommand {
      */
     @Override
     public void onUpdateComplete(int token,
-                                 Object cookie,
+                                 Object counter,
                                  int result) {
         // Increment the count of modifications.
-        mOps.mCounter += result;
+        ((AtomicInteger) counter).getAndAdd(result);
 
         // Call the execute() method to trigger the update of next
         // contact (if any) in the Iterator.

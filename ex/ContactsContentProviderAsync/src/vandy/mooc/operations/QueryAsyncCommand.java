@@ -24,7 +24,7 @@ public class QueryAsyncCommand extends AsyncCommand {
      * Constructor stores the ContentResolver and ListActivity.
      */
     public QueryAsyncCommand(ContactsOps ops) {
-        // Get the ContentResolver from the Activity context.
+        // Set the ContentResolver from the Activity context.
         super(ops.getActivity().getContentResolver());
 
         // Store the ContactOps.

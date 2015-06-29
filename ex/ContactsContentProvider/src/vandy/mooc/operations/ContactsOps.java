@@ -38,8 +38,7 @@ public class ContactsOps implements ConfigurableOps {
      * Stores the type of the ContactsOpsImpl (i.e., SIMPLE, ASYNC, or
      * LOADER_MANAGER).
      */
-    private ContactsOpsImplType mImplType =
-        ContactsOpsImplType.SIMPLE;
+    private ContactsOpsImplType mImplType = null;
 
     /**
      * The root of the Implementor hierarchy.
@@ -51,18 +50,7 @@ public class ContactsOps implements ConfigurableOps {
      * class to work properly.
      */
     public ContactsOps() {
-        // Select the appropriate type of ContactsOpsImpl.
-        switch(mImplType) {
-        case SIMPLE:
-            mImpl = new ContactsOpsImplSimple();
-            break;
-        case ASYNC:
-            mImpl = new ContactsOpsImplAsync();
-            break;
-        case LOADER_MANAGER:
-            mImpl = new ContactsOpsImplLoaderManager();
-            break;
-        }
+        setContactsOpsImplType(ContactsOpsImplType.SIMPLE);
     }
 
     /**
@@ -114,6 +102,20 @@ public class ContactsOps implements ConfigurableOps {
      * LOADER_MANAGER).
      */
     public void setContactsOpsImplType(ContactsOpsImplType implType) {
-        mImplType = implType;
+        // Set and construct the appropriate type of ContactsOpsImpl.
+        if (implType != mImplType) {
+            mImplType = implType;
+            switch(mImplType) {
+                case SIMPLE:
+                    mImpl = new ContactsOpsImplSimple();
+                    break;
+                case ASYNC:
+                    mImpl = new ContactsOpsImplAsync();
+                    break;
+                case LOADER_MANAGER:
+                    mImpl = new ContactsOpsImplLoaderManager();
+                    break;
+            }
+        }
     }
 }

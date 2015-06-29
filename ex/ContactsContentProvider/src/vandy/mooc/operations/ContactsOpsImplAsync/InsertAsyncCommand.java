@@ -58,6 +58,63 @@ public class InsertAsyncCommand extends AsyncCommand {
     }
 
     /**
+     * Execute the command to asynchronously insert all the contacts
+     * in the Iterator passed to the constructor.  Each contact
+     * requires two (asynchronous) insertions into the Contacts
+     * Provider.  The first insert puts the RawContact into the
+     * Contacts Provider and the second insert puts the data
+     * associated with the RawContact into the Contacts Provider.
+     */
+    public void execute() {
+        if (mContactsIter.hasNext()) {
+            // If there are any contacts left to insert, make a
+            // ContentValues object containing the RawContact portion
+            // of the contact and initiate an asynchronous insert on
+            // the Contacts Provider.
+            final ContentValues values = makeRawContact(1);
+            startInsert(RAW_CONTACT,
+                        mCounter,
+                        RawContacts.CONTENT_URI,
+                        values);
+        } else
+            // Otherwise, execute the next AsyncCommand (if any) in
+            // the Iterator.
+            super.executeNext();
+    }
+
+    /**
+     * This method is called back by Android after the item has been
+     * inserted into the Contacts Provider to perform the completion
+     * task(s).
+     */
+    @Override
+    public void onInsertComplete(int token,
+                                 Object counter,
+                                 Uri uri) {
+        if (token == RAW_CONTACT) {
+            // If the token is RAW_CONTACT then make a ContentValues
+            // object containing the data associated with RawContact.
+            final ContentValues values =
+                makeRawContactData(mContactsIter.next(),
+                                   uri);
+
+            // Initiate an asynchronous insert on the Contacts
+            // Provider.
+            this.startInsert(RAW_CONTACT_DATA,
+                             counter,
+                             Data.CONTENT_URI,
+                             values);
+        } else if (token == RAW_CONTACT_DATA) {
+            // Increment the insertion count.
+            ((MutableInt) counter).increment();
+
+            // Calls execute() to trigger insertion of the next
+            // contact (if any) in the Iterator.
+            execute();
+        }
+    }
+
+    /**
      * Factory method that creates a ContentValues containing the
      * RawContact associated with the account type/name.
      */
@@ -86,63 +143,6 @@ public class InsertAsyncCommand extends AsyncCommand {
         values.put(StructuredName.DISPLAY_NAME,
                    displayName);
         return values;
-    }
-
-    /**
-     * Execute the command to asynchronously insert all the contacts
-     * in the Iterator passed to the constructor.  Each contact
-     * requires two (asynchronous) insertions into the Contacts
-     * Provider.  The first insert puts the RawContact into the
-     * Contacts Provider and the second insert puts the data
-     * associated with the RawContact into the Contacts Provider.
-     */
-    public void execute() {
-        if (mContactsIter.hasNext()) {
-            // If there are any contacts left to insert, make a
-            // ContentValues object containing the RawContact portion
-            // of the contact and initiate an asynchronous insert on
-            // the Contacts Provider.
-            ContentValues values = makeRawContact(1);
-            this.startInsert(RAW_CONTACT,
-                             mCounter,
-                             RawContacts.CONTENT_URI,
-                             values);
-        } else
-            // Otherwise, execute the next AsyncCommand (if any) in
-            // the Iterator.
-            super.executeNext();
-    }
-
-    /**
-     * This method is called back by Android after the item has been
-     * inserted into the Contacts Provider to perform the completion
-     * task(s).
-     */
-    @Override
-    public void onInsertComplete(int token,
-                                 Object counter,
-                                 Uri uri) {
-        if (token == RAW_CONTACT) {
-            // If the token is RAW_CONTACT then make a ContentValues
-            // object containing the data associated with RawContact.
-            ContentValues values =
-                makeRawContactData(mContactsIter.next(),
-                                   uri);
-
-            // Initiate an asynchronous insert on the Contacts
-            // Provider.
-            this.startInsert(RAW_CONTACT_DATA,
-                             counter,
-                             Data.CONTENT_URI,
-                             values);
-        } else if (token == RAW_CONTACT_DATA) {
-            // Increment the insertion count.
-            ((MutableInt) counter).increment();
-
-            // Calls execute() to trigger insertion of the next
-            // contact (if any) in the Iterator.
-            this.execute();
-        }
     }
 }
 

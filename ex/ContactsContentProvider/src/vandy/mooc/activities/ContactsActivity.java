@@ -51,6 +51,7 @@ public class ContactsActivity
         // manage.
         super.onCreate(savedInstanceState, 
                        ContactsOps.class);
+
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);
 
@@ -119,7 +120,7 @@ public class ContactsActivity
         // new implementation type and construct a new instance of
         // that implementation.  These changes require initializing
         // the implementation WeakReference to this Activity, which
-        // can be accomplished by generating a fake configuration
+        // can be accomplished by generating a "fake" configuration
         // change event.  Moreover, since the ContactOps
         // implementation was just constructed and is not being
         // restored, we need to pass in true for the "firstTimeIn" in

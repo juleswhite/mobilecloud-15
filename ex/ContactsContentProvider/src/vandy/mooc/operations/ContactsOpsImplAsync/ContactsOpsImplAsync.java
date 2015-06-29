@@ -21,7 +21,8 @@ import android.provider.ContactsContract;
  * to asynchronous dispatch the various operations on the Contacts
  * ContentProvider.
  */
-public class ContactsOpsImplAsync extends ContactsOpsImpl {
+public class ContactsOpsImplAsync
+       extends ContactsOpsImpl {
     /**
      * Contains the most recent result from a query so the display can
      * be updated after a runtime configuration change.
@@ -83,6 +84,23 @@ public class ContactsOpsImplAsync extends ContactsOpsImpl {
             (ContactsContract.Contacts.CONTENT_URI,
              true,
              contactsChangeContentObserver);
+    }
+
+    /**
+     * Execute the array of asyncCommands passed as a parameter.
+     */
+    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
+        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
+             new GenericArrayIterator<>(asyncCommands);
+
+        // Pass the Iterator to each of the AsyncCommands passed as a
+        // parameter.
+        for (AsyncCommand asyncCommand : asyncCommands)
+            asyncCommand.setIterator(asyncCommandsIter);
+
+        // Start executing the first AsyncCommand in the chain of
+        // AsyncCommands.
+        asyncCommandsIter.next().execute();
     }
 
     /**
@@ -149,23 +167,6 @@ public class ContactsOpsImplAsync extends ContactsOpsImpl {
                 // Print a toast after all the contacts are deleted.
                 makeToastAsyncCommand(" contact(s) deleted")
             });
-    }
-
-    /**
-     * Execute the array of asyncCommands passed as a parameter.
-     */
-    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
-        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
-             new GenericArrayIterator<>(asyncCommands);
-
-        // Pass the Iterator to each of the AsyncCommands passed as a
-        // parameter.
-        for (AsyncCommand asyncCommand : asyncCommands)
-            asyncCommand.setIterator(asyncCommandsIter);
-
-        // Start executing the first AsyncCommand in the chain of
-        // AsyncCommands.
-        asyncCommandsIter.next().execute();
     }
 
     /**

@@ -13,7 +13,8 @@ import android.database.Cursor;
  * applies the Command pattern to dispatch the various operations on
  * the Contacts ContentProvider. 
  */
-public class ContactsOpsImplLoaderManager extends ContactsOpsImpl {
+public class ContactsOpsImplLoaderManager 
+       extends ContactsOpsImpl {
     /**
      * The types of ContactCommands.
      */

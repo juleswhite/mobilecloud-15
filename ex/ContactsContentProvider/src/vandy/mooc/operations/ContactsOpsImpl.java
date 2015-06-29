@@ -69,7 +69,7 @@ public abstract class ContactsOpsImpl {
     protected String mAccountName;
 
     /**
-     * The list of contacts that we'll insert, query, and delete.
+     * The list of contacts that we'll insert and query.
      */
     protected final List<String> mContacts =
         new ArrayList<String>(Arrays.asList(new String[] 
@@ -173,7 +173,7 @@ public abstract class ContactsOpsImpl {
     public abstract void deleteContacts();
 
     /**
-     * Return the SimpleCursorAdapter.
+     * Factory method that returns the SimpleCursorAdapter.
      */ 
     public SimpleCursorAdapter makeCursorAdapter() {
         return mAdapter;

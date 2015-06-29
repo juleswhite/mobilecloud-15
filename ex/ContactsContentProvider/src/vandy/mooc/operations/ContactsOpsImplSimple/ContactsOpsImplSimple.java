@@ -133,9 +133,9 @@ public class ContactsOpsImplSimple
      * Query the contacts.
      */
     public void queryContacts() {
-        // Execute the QUERY_COMMAND.
-        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute
-            (mModifyContacts.iterator());
+        // Execute the QUERY_COMMAND (which doesn't use the mContacts
+        // iterator).
+        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute(null);
     }
 
     /**

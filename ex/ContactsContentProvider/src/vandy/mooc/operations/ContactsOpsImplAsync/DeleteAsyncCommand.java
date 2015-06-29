@@ -53,11 +53,11 @@ public class DeleteAsyncCommand extends AsyncCommand {
         // If there are any contacts left to delete, initiate an
         // asynchronous deletion on the Contacts Provider.  
         if (mContactsIter.hasNext()) {
-            this.startDelete(0, 
-                             mCounter,
-                             ContactsContract.RawContacts.CONTENT_URI,
-                             ContactsContract.Contacts.DISPLAY_NAME + "=?",
-                             new String[] {mContactsIter.next()});
+            startDelete(0, 
+                        mCounter,
+                        ContactsContract.RawContacts.CONTENT_URI,
+                        ContactsContract.Contacts.DISPLAY_NAME + "=?",
+                        new String[] {mContactsIter.next()});
         } else {
             // Otherwise, execute the next AsyncCommand (if any) in
             // the Iterator.
@@ -79,7 +79,7 @@ public class DeleteAsyncCommand extends AsyncCommand {
 
         // Call the execute() method to trigger the deletion of next
         // contact (if any) in the Iterator.
-        this.execute();
+        execute();
     }
 }
                 

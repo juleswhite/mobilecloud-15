@@ -61,7 +61,7 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + WeatherContract.WeatherValuesEntry.COLUMN_COUNTRY 
         + " TEXT, "
         + WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME 
-        + " REAL)";
+        + " INTEGER)";
 
     /**
      * Index for LOCATION_KEY.

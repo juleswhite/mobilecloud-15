@@ -95,14 +95,14 @@ public class ContactsActivity
         switch (item.getItemId()) {
         case R.id.simpleImpl:
             getOps().setContactsOpsImplType
-                (ContactsOps.ContactsOpsImplType.SIMPLE);
+                    (ContactsOps.ContactsOpsImplType.SIMPLE);
             Utils.showToast(this,
                             "ContactsOpsImplSimple selected");
             break;
 
         case R.id.asyncImpl:
             getOps().setContactsOpsImplType
-                (ContactsOps.ContactsOpsImplType.ASYNC); 
+                (ContactsOps.ContactsOpsImplType.ASYNC);
             Utils.showToast(this,
                             "ContactsOpsImplAsync selected");
             break;
@@ -114,6 +114,18 @@ public class ContactsActivity
                             "ContactsOpsImplLoaderManager selected");
             break;
         }
+
+        // The calls to setContactsOpsImplType above will both set
+        // the new implementation type as well as construct a new
+        // instance of that implementation. This requires initializing
+        // the implementation weak reference to the this Activity,
+        // which can be accomplished by generating a fake configuration
+        // change event. Also, since the ContactOps implementation was
+        // just constructed and is not being restored, we need to pass
+        // in true for the "firstTimeIn" in parameter.
+        //
+        getOps().onConfiguration(this, true);
+
         return true;
     }
 

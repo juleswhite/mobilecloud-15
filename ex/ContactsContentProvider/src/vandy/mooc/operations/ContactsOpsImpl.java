@@ -7,6 +7,8 @@ import java.util.List;
 
 import vandy.mooc.R;
 import vandy.mooc.activities.ContactsActivity;
+import vandy.mooc.common.AsyncCommand;
+import vandy.mooc.common.MutableInt;
 import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
@@ -241,5 +243,19 @@ public abstract class ContactsOpsImpl {
      */
     public void displayCursor(Cursor cursor) {
         /* no op */
+    }
+
+    /**
+     * Print a toast after all the contacts are deleted.
+     */
+    public AsyncCommand makeToastAsyncCommand(final String message,
+                                              final MutableInt counter) {
+        return new AsyncCommand(null) {
+            public void execute() {
+                Utils.showToast(mActivity.get(),
+                                counter.getValue()
+                                + message);
+            }
+        };
     }
 }

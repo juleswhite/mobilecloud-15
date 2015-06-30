@@ -2,9 +2,9 @@ package vandy.mooc.operations.ContactsOpsImplSimple;
 
 import java.util.Iterator;
 
+import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.content.ContentResolver;
 import android.provider.ContactsContract;
 
@@ -12,7 +12,7 @@ import android.provider.ContactsContract;
  * Delete all designated contacts in the UI thread.
  */
 public class DeleteContactsCommand
-       implements ContactsCommand {
+       implements Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOps object.
      */

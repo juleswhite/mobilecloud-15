@@ -1,7 +1,9 @@
 package vandy.mooc.operations.ContactsOpsImplSimple;
 
+import java.util.Iterator;
+
+import vandy.mooc.common.Command;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.app.Activity;
 import android.database.ContentObserver;
 import android.database.Cursor;
@@ -35,11 +37,12 @@ public class ContactsOpsImplSimple
     private Cursor mCursor;
 
     /**
-     * An array of ContactsCommands that are used to dispatch user
-     * button presses to the right command.
+     * An array of Commands that are used to dispatch user button
+     * presses to the right command.
      */
-    private ContactsCommand mCommands[] =
-        new ContactsCommand[ContactsCommandType.values().length];
+    @SuppressWarnings("unchecked")
+    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
+        new Command[ContactsCommandType.values().length];
 
     /**
      * Observer that's dispatched by the ContentResolver when Contacts

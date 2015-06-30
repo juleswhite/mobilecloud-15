@@ -1,9 +1,9 @@
 package vandy.mooc.operations.ContactsOpsImplAsync;
 
-import vandy.mooc.common.AsyncCommand;
-import vandy.mooc.common.GenericArrayIterator;
+import java.util.Iterator;
+
+import vandy.mooc.common.Command;
 import vandy.mooc.common.MutableInt;
-import vandy.mooc.common.Utils;
 import vandy.mooc.operations.ContactsOpsImpl;
 import android.app.Activity;
 import android.database.ContentObserver;
@@ -28,6 +28,24 @@ public class ContactsOpsImplAsync
      * be updated after a runtime configuration change.
      */
     private Cursor mCursor;
+
+    /**
+     * The types of ContactCommands.
+     */
+    private enum ContactsCommandType {
+        INSERT_COMMAND,
+        QUERY_COMMAND,
+        MODIFY_COMMAND,
+        DELETE_COMMAND,
+    }
+
+    /**
+     * An array of Commands that are used to dispatch user button
+     * presses to the right command.
+     */
+    @SuppressWarnings("unchecked")
+    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
+        new Command[ContactsCommandType.values().length];
 
     /**
      * Keeps track of the number of contacts inserted, deleted, and
@@ -65,13 +83,41 @@ public class ContactsOpsImplAsync
         super.onConfiguration(activity,
                               firstTimeIn);
 
-        if (firstTimeIn) 
+        if (firstTimeIn) {
             // Initialize the ContentObserver.
             initializeContentObserver();
-        else if (mCursor != null)
+
+            // Initialize the ContentObserver.
+            initializeCommands();
+        } else if (mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
             displayCursor(mCursor);
+    }
+
+    /**
+     * Initialize all the ContactsCommands.
+     */
+    private void initializeCommands() {
+        // Create a command that executes a GenericAsyncTask to
+        // perform the insertions off the UI Thread.
+        mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()] =
+            new InsertContactsCommand(this);
+
+        // Create a command that executes a GenericAsyncTask to
+        // perform the queries off the UI Thread.
+        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()] =
+            new QueryContactsCommand(this);
+
+        // Create a command that executes a GenericAsyncTask to
+        // perform the modifications off the UI Thread.
+        mCommands[ContactsCommandType.MODIFY_COMMAND.ordinal()] =
+            new ModifyContactsCommand(this);
+
+        // Create a command that executes a GenericAsyncTask to
+        // perform the deletions off the UI Thread.
+        mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()] =
+            new DeleteContactsCommand(this);
     }
 
     /**
@@ -87,99 +133,39 @@ public class ContactsOpsImplAsync
     }
 
     /**
-     * Execute the array of asyncCommands passed as a parameter.
-     */
-    protected void executeAsyncCommands(AsyncCommand[] asyncCommands) {
-        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
-             new GenericArrayIterator<>(asyncCommands);
-
-        // Pass the Iterator to each of the AsyncCommands passed as a
-        // parameter.
-        for (AsyncCommand asyncCommand : asyncCommands)
-            asyncCommand.setIterator(asyncCommandsIter);
-
-        // Start executing the first AsyncCommand in the chain of
-        // AsyncCommands.
-        asyncCommandsIter.next().execute();
-    }
-
-    /**
-     * Insert the contacts asynchronously.
+     * Insert the contacts.
      */
     public void insertContacts() {
-        mCounter.setValue(0);
-
-        // Start executing InsertAsyncCommand to insert the contacts
-        // into the Contacts Provider.
-        executeAsyncCommands
-            (new AsyncCommand[] {
-                new InsertAsyncCommand(this,
-                                       mContacts.iterator(),
-                                       mCounter),
-                // Print a toast after all the contacts are inserted.
-                makeToastAsyncCommand(" contact(s) inserted")
-            });
+        // Execute the INSERT_COMMAND.
+        mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()].execute
+            (mContacts.iterator());
     }
 
     /**
-     * Query the contacts asynchronously.
+     * Query the contacts.
      */
     public void queryContacts() {
-        // Start executing the QueryAsyncCommand asynchronously, which
-        // print out the inserted contacts when the query is done.
-        executeAsyncCommands
-            (new AsyncCommand[] {
-                new QueryAsyncCommand(this)
-            });
+        // Execute the QUERY_COMMAND (which doesn't use the mContacts
+        // iterator).
+        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute(null);
     }
 
     /**
-     * Modify the contacts asynchronously.
+     * Modify the contacts.
      */
     public void modifyContacts() {
-        mCounter.setValue(0);
-
-        // Start executing the ModifyAsyncCommand, which runs
-        // asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[] {
-                new ModifyAsyncCommand(this,
-                                       mModifyContacts.iterator(),
-                                       mCounter),
-                // Print a toast after all the contacts are modified.
-                makeToastAsyncCommand(" contact(s) modified")
-            });
+        // Execute the MODIFY_COMMAND.
+        mCommands[ContactsCommandType.MODIFY_COMMAND.ordinal()].execute
+            (mModifyContacts.iterator());
     }
 
     /**
-     * Delete the contacts asynchronously.
+     * Delete the contacts.
      */
     public void deleteContacts() {
-        mCounter.setValue(0);
-
-        // Start executing the DeleteAsyncCommand, which runs
-        // asynchronously.
-        executeAsyncCommands
-            (new AsyncCommand[] {
-                new DeleteAsyncCommand(this,
-                                       mModifyContacts.iterator(),
-                                       mCounter),
-                // Print a toast after all the contacts are deleted.
-                makeToastAsyncCommand(" contact(s) deleted")
-            });
-    }
-
-    /**
-     * Print a toast after all the contacts are deleted.
-     */
-    private AsyncCommand makeToastAsyncCommand(final String message) {
-        return new AsyncCommand(null) {
-            public void execute() {
-                Utils.showToast(mActivity.get(),
-                                mCounter.getValue()
-                                + message);
-            }
-        };
+        // Execute the DELETE_COMMAND.
+        mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()].execute
+            (mModifyContacts.iterator());
     }
 
     /**

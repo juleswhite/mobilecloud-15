@@ -31,10 +31,10 @@ public class WeatherTimeoutCache
         WeatherTimeoutCache.class.getSimpleName();
 
     /**
-     * Default cache timeout in to 25 seconds (in nanoseconds).
+     * Default cache timeout in to 25 seconds (in milliseconds).
      */
     private static final long DEFAULT_TIMEOUT =
-        Long.valueOf(25000000000L);
+        Long.valueOf(25000L);
 
     /**
      * Cache is cleaned up at regular intervals (i.e., twice a day) to
@@ -67,7 +67,7 @@ public class WeatherTimeoutCache
         + " = ?";
     
     /**
-     * The timeout for an instance of this class in nanoseconds.
+     * The timeout for an instance of this class in milliseconds.
      */
     private long mDefaultTimeout;
 
@@ -84,7 +84,7 @@ public class WeatherTimeoutCache
 	// Store the context.
 	mContext = context;
 
-	// Set the timeout in nanoseconds.
+	// Set the timeout in milliseconds.
 	mDefaultTimeout = DEFAULT_TIMEOUT;
 
 	// Get the AlarmManager system service.
@@ -130,7 +130,7 @@ public class WeatherTimeoutCache
 	cvs.put(WeatherContract.WeatherValuesEntry.COLUMN_DEG,
                 wd.getWind().getDeg());
 	cvs.put(WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME,
-		System.nanoTime() 
+		System.currentTimeMillis() 
                 + timeout);
 	return cvs;
     }
@@ -180,8 +180,8 @@ public class WeatherTimeoutCache
                     int timeout) {
 	putImpl(key,
                 obj,
-                // Timeout must be expressed in nanoseconds.
-                timeout * 1000 * 1000 * 1000);
+                // Timeout must be expressed in milliseconds.
+                timeout * 1000);
     }
 
     /**
@@ -248,7 +248,7 @@ public class WeatherTimeoutCache
 		if (wdCursor.getLong
                         (wdCursor.getColumnIndex
                              (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME)) 
-                    < System.nanoTime()) {
+                    < System.currentTimeMillis()) {
 
 		    // Concurrently delete the stale data from the db
 		    // in a new thread.
@@ -397,7 +397,7 @@ public class WeatherTimeoutCache
                  (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI, 
                   new String[] { WeatherValuesEntry.COLUMN_LOCATION_KEY },
                   EXPIRATION_SELECTION, 
-                  new String[] {String.valueOf(System.nanoTime())}, 
+                  new String[] {String.valueOf(System.currentTimeMillis())}, 
                   null)) { 
 	    // Use the expired data id's to delete the designated
 	    // entries from both tables.

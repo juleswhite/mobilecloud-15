@@ -1,0 +1,10 @@
+<menu xmlns:android="http://schemas.android.com/apk/res/android">
+  <group android:id="@+id/opsOptions">
+    <item android:id="@+id/contentResolver"
+          android:title="@string/content_resolver"
+          android:onClick="chooseOpsOption"/>
+    <item android:id="@+id/contentProviderClient"
+          android:title="@string/content_provider_client"
+           android:onClick="chooseOpsOption" />
+  </group>
+</menu>

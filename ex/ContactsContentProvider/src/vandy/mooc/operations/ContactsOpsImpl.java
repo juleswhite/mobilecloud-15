@@ -3,17 +3,19 @@ package vandy.mooc.operations;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Iterator;
 import java.util.List;
 
 import vandy.mooc.R;
 import vandy.mooc.activities.ContactsActivity;
-import vandy.mooc.common.AsyncCommand;
-import vandy.mooc.common.MutableInt;
+import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
 import android.app.Activity;
+import android.database.ContentObserver;
 import android.database.Cursor;
+import android.os.Handler;
 import android.provider.ContactsContract;
 import android.util.Log;
 import android.widget.SimpleCursorAdapter;
@@ -35,7 +37,31 @@ public abstract class ContactsOpsImpl {
      * Stores a Weak Reference to the ContactsActivity so the garbage
      * collector can remove it when it's not in use.
      */
-    protected WeakReference<ContactsActivity> mActivity;
+    private WeakReference<ContactsActivity> mActivity;
+
+    /**
+     * The types of ContactCommands.
+     */
+    protected enum ContactsCommandType {
+        INSERT_COMMAND,
+        QUERY_COMMAND,
+        MODIFY_COMMAND,
+        DELETE_COMMAND,
+    }
+
+    /**
+     * An array of Commands that are used to dispatch user button
+     * presses to the right Command object.
+     */
+    @SuppressWarnings("unchecked")
+    protected Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
+        new Command[ContactsCommandType.values().length];
+
+    /**
+     * Contains the most recent result from a query so the display can
+     * be updated after a runtime configuration change.
+     */
+    protected Cursor mCursor;
 
     /**
      * Columns to display.
@@ -127,7 +153,22 @@ public abstract class ContactsOpsImpl {
      * Used to display the results of contacts queried from the
      * ContactsContentProvider.
      */
-    protected SimpleCursorAdapter mAdapter;
+    protected SimpleCursorAdapter mCursorAdapter;
+
+    /**
+     * Observer that's dispatched by the ContentResolver when Contacts
+     * change (e.g., are inserted, modified, or deleted).
+     */
+    protected final ContentObserver contactsChangeContentObserver =
+        new ContentObserver(new Handler()) {
+            /**
+             * Trigger a query and display the results.
+             */
+            @Override
+            public void onChange (boolean selfChange) {
+                queryContacts();
+            }
+        };
 
     /**
      * Hook method dispatched by the GenericActivity framework to
@@ -150,7 +191,8 @@ public abstract class ContactsOpsImpl {
             initializeAccount();
 
             // Initialize the SimpleCursorAdapter.
-            mAdapter = new SimpleCursorAdapter(activity.getApplicationContext(),
+            mCursorAdapter =
+                new SimpleCursorAdapter(activity.getApplicationContext(),
                                                R.layout.list_layout, 
                                                null,
                                                sColumnsToDisplay, 
@@ -160,9 +202,36 @@ public abstract class ContactsOpsImpl {
     }
 
     /**
+     * Register the ContentObserver.
+     */
+    protected void registerContentObserver() {
+        // Register a ContentObserver that's notified when Contacts
+        // change (e.g., are inserted, modified, or deleted).
+        getActivity().getContentResolver().registerContentObserver
+            (ContactsContract.Contacts.CONTENT_URI,
+             true,
+             contactsChangeContentObserver);
+    }
+
+    /**
+     * Unregister the ContentObserver.
+     */
+    protected void unregisterContentObserver() {
+        // Unregister a ContentObserver so it won't be notified when
+        // Contacts change (e.g., are inserted, modified, or deleted).
+        getActivity().getContentResolver().unregisterContentObserver
+            (contactsChangeContentObserver);
+    }
+
+    /**
      * Insert the contacts.
      */
     public abstract void insertContacts();
+
+    /**
+     * Query the contacts.
+     */
+    public abstract void queryContacts();
 
     /**
      * Modify the contacts.
@@ -178,7 +247,7 @@ public abstract class ContactsOpsImpl {
      * Factory method that returns the SimpleCursorAdapter.
      */ 
     public SimpleCursorAdapter makeCursorAdapter() {
-        return mAdapter;
+        return mCursorAdapter;
     }
     
     /**
@@ -232,30 +301,7 @@ public abstract class ContactsOpsImpl {
     }
 
     /**
-     * Set the cursor.
+     * Display the cursor.
      */
-    public void setCursor(Cursor cursor) {
-        /* no op */
-    }
-
-    /**
-     * ...
-     */
-    public void displayCursor(Cursor cursor) {
-        /* no op */
-    }
-
-    /**
-     * Print a toast after all the contacts are deleted.
-     */
-    public AsyncCommand makeToastAsyncCommand(final String message,
-                                              final MutableInt counter) {
-        return new AsyncCommand(null) {
-            public void execute() {
-                Utils.showToast(mActivity.get(),
-                                counter.getValue()
-                                + message);
-            }
-        };
-    }
+    public abstract void displayCursor(Cursor cursor);
 }

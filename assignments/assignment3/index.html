@@ -1,0 +1,199 @@
+<html>
+
+<title>Assignment 3: Video Upload/Download Project</title>
+
+<body text = "#000000"
+      link="#000fff"
+      vlink="#ff0f0f"
+      bgcolor="#ffffff">
+
+  <hr>
+  <h3>Assignment 3: Video Upload/Download Project</h3>
+
+  <hr width=50% align=left>
+  <h4>Overview of the Video Upload/Download Project</h4>
+
+  <p> 
+
+The purpose of this "mini-project" assignment is to give you
+experience using Android and Spring to develop a complete
+client/server Video Upload/Download app.  The client-side of this app
+runs on an Android device and uses Content Providers to store the
+videos and associated meta-data on the device.  It also uses Retrofit
+to upload and download videos via an extension of the Web Service
+server you implemented in <A
+HREF="https://github.com/juleswhite/mobilecloud-15/tree/master/assignments/assignment2">Assignment
+2</A>.  You must therefore have a working version of Assignment 2's
+Video Service to complete this assignment, as well as a good grasp of
+the material covered in the lectures from weeks 1 through 4.  </P>
+
+<P> Since this is a mini-project, there will be no skeletons, though
+we will walk through an example of a Video Upload app in the week 4
+Live Lectures that provides guidance on key aspects of the assignment.
+You therefore have a great degree of flexibility in how you design and
+implement this app, as long as it meets the following server- and
+client-side requirements:  </P>
+
+<UL> 
+<LI><strong>Server-side requirements</strong>
+
+    <UL>
+    <LI> <P> The Video Service should enable each video to have a
+             "star" rating associated with it, where "5 stars" is the
+             highest rating and "1 star" is the lowest rating. </P>
+
+     <LI> <P> The Video Service should enable clients to store the
+              star rating of a video anonymously (i.e., no need to
+              track/authenticate the identify of a client). </P>
+
+    <LI> <P> The Video Service should must enable a client to obtain
+             the average of the star ratings of a video. </P>
+    </UL>
+</LI>
+
+<LI><strong>Client-side requirements</strong>
+
+    <UL> 
+
+    <LI> <P> The client must handle runtime configuration changes
+             robustly, i.e., it should be able to handle screen
+             orientation changes while uploading/downloading videos.
+             Information on how to handle these types of changes is
+             available <A
+             HREF="http://developer.android.com/guide/topics/resources/runtime-changes.html">here</a>
+             A video outlining several approaches to runtime
+             configuration changes appears <A
+             HREF="https://class.coursera.org/posacommunication-001/lecture/235">here</a>.
+             </P>
+    
+    <LI> <P> The client should use Retrofit to communicate with the
+             Video Service, though none of these communications should
+             block the UI thread. </P>
+
+    <LI> <P> The client should allow uploading a video to the Video
+             Service by making the appropriate Retrofit calls to the
+             Service.  It should either enable <A
+             HREF="http://developer.android.com/training/camera/videobasics.html">recording</A>
+             a video and/or <A
+             HREF="https://developer.android.com/guide/components/intents-common.html#Storage">using
+             the Android Gallery</A> app to get a video to upload to
+             the Video Service (you must implement one of these
+             mechanisms, it optional to implement both). <EM>
+             (<strong>Caution:</strong> If you decide to get video
+             from the Gallery make sure the minimum SDK of your client
+             is API 19, as discussed here <A
+             HREF="http://stackoverflow.com/questions/20067508/get-real-path-from-uri-android-kitkat-new-storage-access-framework">here</a>)
+             </EM> </P>
+
+    <LI> <P> The client should limit the size of an uploaded video to
+             50MB or less.  The client should display an error toast
+             if the the upload video size is greater than 50MB.  </P>
+
+    <LI> <P> The client should download a video from the Video Service
+             by making the appropriate Retrofit calls.  Downloaded
+             videos can be stored in either <A
+             HREF="http://developer.android.com/guide/topics/data/data-storage.html#filesInternal">internal
+             storage</a> or <A
+             HREF="http://developer.android.com/guide/topics/data/data-storage.html#filesExternal">external
+             storage</a>. <P>
+
+    <LI> <P> The client should play the downloaded video or have an
+             option to download it if it is not present in device. You
+             can use <A
+             HREF="http://developer.android.com/reference/android/widget/VideoView.html">VideoView</A>
+             or use an <A
+             HREF="http://developer.android.com/reference/android/content/Intent.html#ACTION_VIEW">
+             ACTION_VIEW</A> implicit Intent to play video using
+             another Video app on the Android device.  </P>
+
+     <LI> <P> The client should allow the user to give a star rating
+              (i.e., a 1 through 5 star rating) to a video and upload
+              that information to the Video Service via a Retrofit
+              call. </P>
+
+    <LI> <P> Since the information about the recorded videos or
+             Gallery videos are stored in the Android <A
+             HREF="http://developer.android.com/reference/android/provider/MediaStore.html">MediaStore</A>
+             Content Provider, which you can query to access meta-data
+             and media content about videos stored on the device.  You
+             should use a <CODE>CursorLoader</CODE>,
+             <CODE>AsyncQueryHandler</CODE>, or <CODE>AsyncTask</CODE>
+             to access data from the Content Provider
+             concurrently. </P>
+
+    <LI> <P> The client should implement its own Content Provider to
+             store Video meta-data, such as <U><CODE>id</CODE></U>,
+             <U><CODE>title</CODE></U>, <U><CODE> duration</CODE></U>,
+             <U><CODE> contentType</CODE></U>,
+             <U><CODE>data_url</CODE></U>, and
+             <U><CODE>star_rating</CODE></U>.  In addition to these
+             fields, you are free to store any other data you like in
+             your client's Content Provider.</P>
+
+     <LI> <P> The client should make the appropriate Retrofit calls to
+              the Video Service to get the list of available videos
+              (along with the average star ratings) and display them
+              on the device.  </P>
+
+     </UL>
+</UL>
+
+In addtion to the standard libraries packaged with Android, you can
+only use the following libraries in your Video Upload/Download
+project:
+
+        <UL> 
+            <LI> Retrofit </LI>
+            <LI> Gson </LI>
+            <LI> Jackson Annotations </LI>
+            <LI> Commons IO </LI>
+            <LI> Spring </LI>
+        </UL>
+    <br/>
+
+  <hr width=50% align=left>
+  <h4>Implementation Hints</h4>
+  <p>  <UL> 
+           <LI>
+             After recroding a video or after getting the Video from Gallery, you will get a Video Uri to that Video
+             in the Android MediaStore Content Provider. Query that Uri to get the information you need like
+             <STRONG>title, duration, contentType(which is stored as Mime_Type in Android).</STRONG>
+             You can use this info and upload it to Server.
+           </LI>
+          </LI>
+
+           <LI>All the Videos and the Recorded Videos that are public are stored in Android MediaStore Content Provider.
+               To get the Video data from Android MediaStore you should query the <strong>MediaStore.Video.Media.EXTERNAL_CONTENT_URI..</strong>
+               All the Columns to query for Video Data are present in <strong>MediaStore.Video.Media.***</strong></LI>
+          </LI>
+
+           <LI> You can get some hints from the AutogradingTest of <A
+           HREF="https://github.com/juleswhite/mobilecloud-15/tree/master/assignments/assignment2">Assignment
+           2</A> on how to upload and download Videos.</LI>
+
+           <LI> You can reuse the VideoSvcApi, Video, and VideoStatus components from Assignment 2.</LI>
+
+           <LI> You can also reuse any code from your previous
+           projects, as well as any example code provided for these
+           MOOCs.</LI>
+
+        </UL>
+
+  </p>
+
+<hr width=50% align=left>
+<h4>Concluding Remarks</h4>
+<p>
+
+This assignment is designed to deepen your understanding on how to
+create and integrate an Android client containing Content Providers
+with an extended version of your Video Service implementation from
+Assignment 2.  We encourage you to be as creative as you'd like, as
+long as you meet the requirements described above.  If you have
+questions please come to Virtual Office Hours and/or post them on the
+discussion forums.
+
+</p> 
+
+</body>
+</html>

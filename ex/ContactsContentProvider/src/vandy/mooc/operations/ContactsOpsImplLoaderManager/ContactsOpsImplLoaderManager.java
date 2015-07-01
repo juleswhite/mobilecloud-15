@@ -1,7 +1,9 @@
 package vandy.mooc.operations.ContactsOpsImplLoaderManager;
 
+import java.util.Iterator;
+
+import vandy.mooc.common.Command;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.app.Activity;
 import android.database.Cursor;
 
@@ -13,7 +15,8 @@ import android.database.Cursor;
  * applies the Command pattern to dispatch the various operations on
  * the Contacts ContentProvider. 
  */
-public class ContactsOpsImplLoaderManager extends ContactsOpsImpl {
+public class ContactsOpsImplLoaderManager 
+       extends ContactsOpsImpl {
     /**
      * The types of ContactCommands.
      */
@@ -25,11 +28,12 @@ public class ContactsOpsImplLoaderManager extends ContactsOpsImpl {
     }
 
     /**
-     * An array of ContactsCommands that are used to dispatch user
-     * button presses to the right command.
+     * An array of Commands that are used to dispatch user button
+     * presses to the right command.
      */
-    private ContactsCommand mCommands[] =
-        new ContactsCommand[ContactsCommandType.values().length];
+    @SuppressWarnings("unchecked")
+    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
+        new Command[ContactsCommandType.values().length];
 
     /**
      * Hook method dispatched by the GenericActivity framework to

@@ -36,9 +36,8 @@ public class HobbitOps implements ConfigurableOps {
      * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
      * implementation.
      */
-    private ContentProviderAccessType mAccessType =
-        ContentProviderAccessType.CONTENT_RESOLVER;
-
+    private ContentProviderAccessType mAccessType;
+        
     /**
      * Reference to the designed Concrete Implementor (i.e., either
      * HobbitOpsContentResolver or HobbitOpsContentProviderClient).
@@ -50,18 +49,8 @@ public class HobbitOps implements ConfigurableOps {
      * class to work properly.
      */
     public HobbitOps() {
-        // Select the appropriate type of access to the Content
-        // Provider.
-        switch(mAccessType) {
-        case CONTENT_RESOLVER:
-            mHobbitOpsImpl =
-                new HobbitOpsContentResolver();
-            break;
-        case CONTENT_PROVIDER_CLIENT:
-            mHobbitOpsImpl =
-                new HobbitOpsContentProviderClient();
-            break;
-        }
+        setContentProviderAccessType
+            (ContentProviderAccessType.CONTENT_RESOLVER);
     }
 
     /**
@@ -178,6 +167,20 @@ public class HobbitOps implements ConfigurableOps {
      * implementation.
      */
     public void setContentProviderAccessType(ContentProviderAccessType accessType) {
-        mAccessType = accessType;
+        // Select the appropriate type of access to the Content
+        // Provider.
+        if (mAccessType != accessType) {
+            mAccessType = accessType;
+            switch(mAccessType) {
+            case CONTENT_RESOLVER:
+                mHobbitOpsImpl =
+                    new HobbitOpsContentResolver();
+                break;
+            case CONTENT_PROVIDER_CLIENT:
+                mHobbitOpsImpl =
+                    new HobbitOpsContentProviderClient();
+                break;
+            }
+        }
     }
 }

@@ -2,11 +2,11 @@ package vandy.mooc.operations.ContactsOpsImplLoaderManager;
 
 import java.util.Iterator;
 
+import vandy.mooc.common.Command;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
@@ -16,7 +16,7 @@ import android.provider.ContactsContract;
  */
 public class ModifyContactsCommand
        extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>
-       implements ContactsCommand {
+       implements Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOpsImpl object.
      */

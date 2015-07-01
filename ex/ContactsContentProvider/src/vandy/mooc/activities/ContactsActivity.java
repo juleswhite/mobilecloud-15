@@ -51,6 +51,7 @@ public class ContactsActivity
         // manage.
         super.onCreate(savedInstanceState, 
                        ContactsOps.class);
+
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);
 
@@ -95,14 +96,14 @@ public class ContactsActivity
         switch (item.getItemId()) {
         case R.id.simpleImpl:
             getOps().setContactsOpsImplType
-                (ContactsOps.ContactsOpsImplType.SIMPLE);
+                    (ContactsOps.ContactsOpsImplType.SIMPLE);
             Utils.showToast(this,
                             "ContactsOpsImplSimple selected");
             break;
 
         case R.id.asyncImpl:
             getOps().setContactsOpsImplType
-                (ContactsOps.ContactsOpsImplType.ASYNC); 
+                (ContactsOps.ContactsOpsImplType.ASYNC);
             Utils.showToast(this,
                             "ContactsOpsImplAsync selected");
             break;
@@ -114,6 +115,18 @@ public class ContactsActivity
                             "ContactsOpsImplLoaderManager selected");
             break;
         }
+
+        // The calls to setContactsOpsImplType() above will set the
+        // new implementation type and construct a new instance of
+        // that implementation.  These changes require initializing
+        // the implementation WeakReference to this Activity, which
+        // can be accomplished by generating a "fake" configuration
+        // change event.  Moreover, since the ContactOps
+        // implementation was just constructed and is not being
+        // restored, we need to pass in true for the "firstTimeIn" in
+        // parameter.
+        getOps().onConfiguration(this, 
+                                 true);
         return true;
     }
 

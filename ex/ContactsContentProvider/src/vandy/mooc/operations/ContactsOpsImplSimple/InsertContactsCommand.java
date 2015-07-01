@@ -4,9 +4,9 @@ import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
+import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
@@ -22,7 +22,7 @@ import android.provider.ContactsContract.RawContacts;
  * Insert all designated contacts in the UI thread.
  */
 public class InsertContactsCommand
-       implements ContactsCommand {
+       implements Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOps object.
      */

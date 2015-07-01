@@ -2,9 +2,9 @@ package vandy.mooc.operations.ContactsOpsImplSimple;
 
 import java.util.Iterator;
 
+import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
@@ -13,7 +13,7 @@ import android.provider.ContactsContract;
  * Modify some designated contacts in the UI thread.
  */
 public class ModifyContactsCommand
-       implements ContactsCommand {
+       implements Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOps object.
      */

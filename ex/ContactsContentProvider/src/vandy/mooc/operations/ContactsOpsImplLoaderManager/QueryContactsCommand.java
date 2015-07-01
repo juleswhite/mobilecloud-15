@@ -2,8 +2,8 @@ package vandy.mooc.operations.ContactsOpsImplLoaderManager;
 
 import java.util.Iterator;
 
+import vandy.mooc.common.Command;
 import vandy.mooc.operations.ContactsOpsImpl;
-import vandy.mooc.utils.ContactsCommand;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -14,7 +14,7 @@ import android.provider.ContactsContract.Contacts;
 
 public class QueryContactsCommand
        implements LoaderManager.LoaderCallbacks<Cursor>,
-                  ContactsCommand {
+                  Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOpsImpl object.
      */

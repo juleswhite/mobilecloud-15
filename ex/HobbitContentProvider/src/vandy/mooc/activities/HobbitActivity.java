@@ -253,6 +253,17 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
                            Toast.LENGTH_SHORT).show();
             break;
         }
+
+        // The calls to setContentProviderAccessType() above will set
+        // the new implementation type and construct a new instance of
+        // that implementation.  These changes require initializing
+        // the implementation WeakReference to this Activity, which
+        // can be accomplished by generating a fake configuration
+        // change event.  Moreover, since the HobbitOps implementation
+        // was just constructed and is not being restored, we need to
+        // pass in true for the "firstTimeIn" in parameter.
+        getOps().onConfiguration(this, 
+                                 true);
         return true;
     }
 

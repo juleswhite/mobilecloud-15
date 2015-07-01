@@ -16,7 +16,8 @@ import android.content.ContentResolver;
  *        that's used to chain together a set of AsyncCommands that
  *        will be run (asynchronously) in a sequence.
  */
-public abstract class AsyncCommand extends AsyncQueryHandler {
+public abstract class AsyncCommand
+       extends AsyncQueryHandler {
     /**
      * An Iterator that contains a chain of AsyncCommands that will be
      * run in a sequence.
@@ -32,12 +33,6 @@ public abstract class AsyncCommand extends AsyncQueryHandler {
     }
 
     /**
-     * Can be overridden by subclasses to implement their
-     * command-specific logic.
-     */
-    public abstract void execute();
-
-    /**
      * When there is no other processing to run for an AsyncCommand a
      * subclass of AsyncCommand should call executeNext() in its
      * execute() method so that the next AsyncCommand in the Iterator
@@ -50,10 +45,33 @@ public abstract class AsyncCommand extends AsyncQueryHandler {
     }
 
     /**
+     * Can be overridden by subclasses to implement their
+     * command-specific logic.
+     */
+    abstract public void execute();
+
+    /**
      * Set the Iterator used to chain together the AsyncCommands into
      * a sequence.
      */
     public void setIterator(Iterator<AsyncCommand> asyncCommandIter) {
         mAsyncCommandIter = asyncCommandIter;
+    }
+
+    /**
+     * Execute the array of asyncCommands passed as a parameter.
+     */
+    public static void executeAsyncCommands(AsyncCommand[] asyncCommands) {
+        GenericArrayIterator<AsyncCommand> asyncCommandsIter = 
+             new GenericArrayIterator<>(asyncCommands);
+
+        // Pass the Iterator to each of the AsyncCommands passed as a
+        // parameter.
+        for (AsyncCommand asyncCommand : asyncCommands)
+            asyncCommand.setIterator(asyncCommandsIter);
+
+        // Start executing the first AsyncCommand in the chain of
+        // AsyncCommands.
+        asyncCommandsIter.next().execute();
     }
 }

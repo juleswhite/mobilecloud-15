@@ -3,6 +3,7 @@
       package="vandy.mooc"
       android:versionCode="1"
       android:versionName="1.0">
+
   <uses-sdk
      android:minSdkVersion="18"
      android:targetSdkVersion="22" />
@@ -21,7 +22,7 @@
     </activity>
 
     <provider android:name=".provider.HobbitProvider"
-              android:authorities="vandy.mooc.hobbitcontentprovider"
+              android:authorities="vandy.mooc.hobbitprovider"
               android:exported="false">
     </provider>
     </application>

@@ -61,7 +61,22 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + WeatherContract.WeatherValuesEntry.COLUMN_COUNTRY 
         + " TEXT, "
         + WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME 
-        + " REAL)";
+        + " INTEGER)";
+
+    /**
+     * Index for LOCATION_KEY.
+     */
+    private static final String CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX =
+        "CREATE INDEX  " 
+        + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME 
+        +  "_" 
+        + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY  
+        + "_idx" 
+        + " ON "
+        + WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME
+        + "(" 
+        + WeatherContract.WeatherValuesEntry.COLUMN_LOCATION_KEY 
+        + ")";
 
     /**
      * SQL statement used to create the Weather Conditions table.
@@ -82,6 +97,23 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " TEXT, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_ICON
         + " TEXT) ";
+
+
+    /**
+     * Index for weather conditions LOCATION_KEY, which is also used
+     * for join queries.
+     */
+    private static final String CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX = 
+        "CREATE INDEX  " 
+        + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME 
+        +  "_" 
+        + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY 
+        + "_idx" 
+        + " ON "
+        + WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
+        + "(" 
+        + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY 
+        + ")";
 
      /**
      * Constructor - initialize database name and version, but don't
@@ -109,6 +141,11 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         // Create the tables.
         db.execSQL(CREATE_TABLE_WEATHER_VALUES);
         db.execSQL(CREATE_TABLE_WEATHER_CONDITIONS);
+
+        // Create index for LOCATION_KEY in both tables, whic is used
+        // in most queries.
+        db.execSQL(CREATE_INDEX_WEATHER_VALUES_LOCATION_KEY_IDX);
+        db.execSQL(CREATE_INDEX_WEATHER_CONDITIONS_LOCATION_KEY_IDX);
     }
 
     /**

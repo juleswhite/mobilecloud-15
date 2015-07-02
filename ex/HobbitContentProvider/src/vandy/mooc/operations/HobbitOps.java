@@ -1,6 +1,6 @@
 package vandy.mooc.operations;
 
-import vandy.mooc.utils.ConfigurableOps;
+import vandy.mooc.common.ConfigurableOps;
 import android.app.Activity;
 import android.net.Uri;
 import android.os.RemoteException;
@@ -16,18 +16,28 @@ import android.widget.SimpleCursorAdapter;
  * Model-View-Presenter pattern.
  */
 public class HobbitOps implements ConfigurableOps {
-    public enum ContentProviderAccessMeans {
+    /**
+     * Debugging tag used by the Android logger.
+     */
+    protected final static String TAG =
+        HobbitOps.class.getSimpleName();
+
+    /**
+     * Type for accessing the ContentProvider (i.e., CONTENT_RESOLVER
+     * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
+     */
+    public enum ContentProviderAccessType {
         CONTENT_RESOLVER,
         CONTENT_PROVIDER_CLIENT
     }
 
     /**
-     * Means for accessing the ContentProvider (i.e., CONTENT_RESOLVER
-     * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
+     * Stores the type for accessing the ContentProvider (i.e.,
+     * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
+     * implementation.
      */
-    private ContentProviderAccessMeans mAccessMeans = 
-        ContentProviderAccessMeans.CONTENT_RESOLVER;
-
+    private ContentProviderAccessType mAccessType;
+        
     /**
      * Reference to the designed Concrete Implementor (i.e., either
      * HobbitOpsContentResolver or HobbitOpsContentProviderClient).
@@ -39,18 +49,8 @@ public class HobbitOps implements ConfigurableOps {
      * class to work properly.
      */
     public HobbitOps() {
-        // Select the appropriate means of accessing the Content
-        // Provider.
-        switch(mAccessMeans) {
-        case CONTENT_RESOLVER:
-            mHobbitOpsImpl =
-                new HobbitOpsContentResolver();
-            break;
-        case CONTENT_PROVIDER_CLIENT:
-            mHobbitOpsImpl =
-                new HobbitOpsContentProviderClient();
-            break;
-        }
+        setContentProviderAccessType
+            (ContentProviderAccessType.CONTENT_RESOLVER);
     }
 
     /**
@@ -159,5 +159,28 @@ public class HobbitOps implements ConfigurableOps {
     public void displayAll()
         throws RemoteException {
         mHobbitOpsImpl.displayAll();
+    }
+
+    /**
+     * Sets the type for accessing the ContentProvider (i.e.,
+     * CONTENT_RESOLVER or CONTENT_PROVIDER_CLIENT) for the HobbitOps
+     * implementation.
+     */
+    public void setContentProviderAccessType(ContentProviderAccessType accessType) {
+        // Select the appropriate type of access to the Content
+        // Provider.
+        if (mAccessType != accessType) {
+            mAccessType = accessType;
+            switch(mAccessType) {
+            case CONTENT_RESOLVER:
+                mHobbitOpsImpl =
+                    new HobbitOpsContentResolver();
+                break;
+            case CONTENT_PROVIDER_CLIENT:
+                mHobbitOpsImpl =
+                    new HobbitOpsContentProviderClient();
+                break;
+            }
+        }
     }
 }

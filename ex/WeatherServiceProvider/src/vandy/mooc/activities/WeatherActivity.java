@@ -42,12 +42,6 @@ public class WeatherActivity extends GenericActivity<WeatherOps> {
     private ImageView mIconView;
 
     /**
-     * Keeps track of whether a call is already in progress and
-     * ignores subsequent calls until the first call is done.
-     */
-    private boolean mCallInProgress;
-
-    /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., initializing
      * views.
@@ -75,33 +69,28 @@ public class WeatherActivity extends GenericActivity<WeatherOps> {
      * "Get Current Weather" button.
      */
     public void getWeather(View v) {
-        if (mCallInProgress)
-	    // Don't allow multiple calls.
-	    Utils.showToast(this,
-                            "Call current in progress");
-        else {
-            // Hide the keyboard.
-            Utils.hideKeyboard(this,
-                               mEditText.getWindowToken());
+        // Hide the keyboard.
+        Utils.hideKeyboard(this,
+                           mEditText.getWindowToken());
         
-            // Get the user's input and convert it to upper case so
-            // it's consistent with what we get back from the Weather
-            // Service web service.
-            final String location =
-                mEditText.getText().toString().toUpperCase(Locale.ENGLISH);
+        // Get the user's input and convert it to upper case so
+        // it's consistent with what we get back from the Weather
+        // Service web service.
+        final String location =
+            mEditText.getText().toString().toUpperCase(Locale.ENGLISH);
 
-            if (location.isEmpty())
-                // No location provided.
-                Utils.showToast(this,
-                                "Enter a location");
-            else {
-                mCallInProgress = true;
+        // Pop an error toast if no location provided.
+        if (location.isEmpty())
+            Utils.showToast(this,
+                            "Enter a location");
 
-                // Get the current weather from either the cache or
-                // the Weather Service web service.
-                getOps().getCurrentWeather(location);
-            }
-        }
+        // Try to the current weather from either the cache or the
+        // Weather Service web service.
+        else if (getOps().getCurrentWeather(location) == false)
+            // Pop an error toast if there's already a call in
+            // progress.
+            Utils.showToast(this,
+                            "Call currently in progress");
     }
 
     /**
@@ -145,9 +134,6 @@ public class WeatherActivity extends GenericActivity<WeatherOps> {
      */
     public void displayResults(WeatherData wd,
                                String errorReason) {
-        // Allow another call to proceed when this method returns.
-        mCallInProgress = false;
-
         if (wd == null)
             Utils.showToast(this,
                             errorReason);

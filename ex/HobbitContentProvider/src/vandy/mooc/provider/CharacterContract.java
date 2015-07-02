@@ -2,6 +2,7 @@ package vandy.mooc.provider;
 
 import vandy.mooc.R;
 import android.content.ContentUris;
+import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -9,12 +10,12 @@ import android.provider.BaseColumns;
  * This contract defines the metadata for the HobbitContentProvider,
  * including the provider's access URIs and its "database" constants.
  */
-public class CharacterContract {
+public final class CharacterContract {
     /**
      * This ContentProvider's unique identifier.
      */
     public static final String CONTENT_AUTHORITY =
-        "vandy.mooc.hobbitcontentprovider";
+        "vandy.mooc.hobbitprovider";
 
     /**
      * Use CONTENT_AUTHORITY to create the base of all URI's which
@@ -114,5 +115,49 @@ public class CharacterContract {
             return ContentUris.withAppendedId(CONTENT_URI,
                                               id);
         }
+    }
+
+    /**
+     * The code that is returned when a URI for more than 1 items is
+     * matched against the given components.  Must be positive.
+     */
+    public static final int CHARACTERS = 100;
+
+    /**
+     * The code that is returned when a URI for exactly 1 item is
+     * matched against the given components.  Must be positive.
+     */
+    public static final int CHARACTER = 101;
+
+    /**
+     * The URI Matcher used by this content provider.
+     */
+    public static final UriMatcher sUriMatcher =
+        buildUriMatcher();
+
+    /**
+     * Helper method to match each URI to the ACRONYM integers
+     * constant defined above.
+     * 
+     * @return UriMatcher
+     */
+    protected static UriMatcher buildUriMatcher() {
+        // All paths added to the UriMatcher have a corresponding code
+        // to return when a match is found.  The code passed into the
+        // constructor represents the code to return for the rootURI.
+        // It's common to use NO_MATCH as the code for this case.
+        final UriMatcher matcher = 
+            new UriMatcher(UriMatcher.NO_MATCH);
+
+        // For each type of URI that is added, a corresponding code is
+        // created.
+        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
+                       CharacterContract.PATH_CHARACTER,
+                       CHARACTERS);
+        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
+                       CharacterContract.PATH_CHARACTER
+                       + "/#",
+                       CHARACTER);
+        return matcher;
     }
 }

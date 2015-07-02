@@ -2,7 +2,6 @@ package vandy.mooc.provider;
 
 import android.content.ContentValues;
 import android.content.Context;
-import android.content.UriMatcher;
 import android.database.Cursor;
 import android.net.Uri;
 
@@ -24,50 +23,6 @@ public abstract class HobbitProviderImpl {
     protected Context mContext;
 
     /**
-     * The code that is returned when a URI for more than 1 items is
-     * matched against the given components.  Must be positive.
-     */
-    protected static final int CHARACTERS = 100;
-
-    /**
-     * The code that is returned when a URI for exactly 1 item is
-     * matched against the given components.  Must be positive.
-     */
-    protected static final int CHARACTER = 101;
-
-    /**
-     * The URI Matcher used by this content provider.
-     */
-    protected static final UriMatcher sUriMatcher =
-        buildUriMatcher();
-
-    /**
-     * Helper method to match each URI to the ACRONYM integers
-     * constant defined above.
-     * 
-     * @return UriMatcher
-     */
-    protected static UriMatcher buildUriMatcher() {
-        // All paths added to the UriMatcher have a corresponding code
-        // to return when a match is found.  The code passed into the
-        // constructor represents the code to return for the rootURI.
-        // It's common to use NO_MATCH as the code for this case.
-        final UriMatcher matcher = 
-            new UriMatcher(UriMatcher.NO_MATCH);
-
-        // For each type of URI that is added, a corresponding code is
-        // created.
-        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
-                       CharacterContract.PATH_CHARACTER,
-                       CHARACTERS);
-        matcher.addURI(CharacterContract.CONTENT_AUTHORITY,
-                       CharacterContract.PATH_CHARACTER
-                       + "/#",
-                       CHARACTER);
-        return matcher;
-    }
-
-    /**
      * Constructor initializes the Context field.
      */
     public HobbitProviderImpl(Context context) {
@@ -81,10 +36,10 @@ public abstract class HobbitProviderImpl {
     public String getType(Uri uri) {
         // Match the id returned by UriMatcher to return appropriate
         // MIME_TYPE.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             return CharacterContract.CharacterEntry.CONTENT_ITEMS_TYPE;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             return CharacterContract.CharacterEntry.CONTENT_ITEM_TYPE;
         default:
             throw new UnsupportedOperationException("Unknown uri: " 
@@ -105,8 +60,8 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI), or -1 if
         // there is no matched node.  If there's a match insert a new
         // row.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             returnUri = insertCharacters(uri,
                                          cvs);
             break;
@@ -139,8 +94,8 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI), or -1 if
         // there is no matched node.  If there's a match insert new
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             int returnCount = bulkInsertCharacters(uri,
                                                    cvsArray);
 
@@ -177,15 +132,15 @@ public abstract class HobbitProviderImpl {
 
         // Match the id returned by UriMatcher to query appropriate
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             cursor = queryCharacters(uri,
                                      projection,
                                      selection,
                                      selectionArgs,
                                      sortOrder);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             cursor = queryCharacter(uri,
                                     projection,
                                     selection,
@@ -240,14 +195,14 @@ public abstract class HobbitProviderImpl {
 
         // Match the id returned by UriMatcher to update appropriate
         // rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             recsUpdated = updateCharacters(uri,
                                            cvs,
                                            selection,
                                            selectionArgs);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             recsUpdated = updateCharacter(uri,
                                           cvs,
                                           selection,
@@ -302,13 +257,13 @@ public abstract class HobbitProviderImpl {
         // code for the matched node (added using addURI) or -1 if
         // there is no matched node.  If a match is found delete the
         // appropriate rows.
-        switch (sUriMatcher.match(uri)) {
-        case CHARACTERS:
+        switch (CharacterContract.sUriMatcher.match(uri)) {
+        case CharacterContract.CHARACTERS:
             recsDeleted = deleteCharacters(uri,
                                            selection,
                                            selectionArgs);
             break;
-        case CHARACTER:
+        case CharacterContract.CHARACTER:
             recsDeleted = deleteCharacter(uri,
                                           selection,
                                           selectionArgs);

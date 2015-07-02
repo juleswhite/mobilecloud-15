@@ -1,6 +1,7 @@
 package vandy.mooc.provider;
 
 import android.content.ContentUris;
+import android.content.UriMatcher;
 import android.net.Uri;
 import android.provider.BaseColumns;
 
@@ -18,7 +19,7 @@ import android.provider.BaseColumns;
  *    This table is separate from the Weather Values table because
  *    each location can have multiple Weather Conditions.
  */
-public class WeatherContract {
+public final class WeatherContract {
     /**
      * The WeatherProvider's unique authority identifier.
      */
@@ -30,7 +31,7 @@ public class WeatherContract {
      * WeatherProvider.
      */
     private static final Uri BASE_URI =
-        Uri.parse("content://" 
+        Uri.parse("content://"
                   + AUTHORITY);
 
     /**
@@ -72,6 +73,76 @@ public class WeatherContract {
         + ACCESS_ALL_DATA_FOR_LOCATION_PATH;
 
     /**
+     * UriMatcher code for the Weather Values table.
+     */
+    public static final int WEATHER_VALUES_ITEMS = 100;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Values table.
+     */
+    public static final int WEATHER_VALUES_ITEM = 110;
+
+    /**
+     * UriMatcher code for the Weather Conditions table.
+     */
+    public static final int WEATHER_CONDITIONS_ITEMS = 200;
+
+    /**
+     * UriMatcher code for a specific row in the Weather Conditions
+     * table.
+     */
+    public static final int WEATHER_CONDITIONS_ITEM = 210;
+
+    /**
+     * UriMatcher code for getting an entire "WeatherData" object's
+     * data from the database.  This doesn't correspond to a specific
+     * table; it corresponds to a Weather Values entry and all of its
+     * associated Weather Conditions entries.
+     */
+    public static final int ACCESS_ALL_DATA_FOR_LOCATION_ITEM = 300;
+
+    /**
+     * UriMatcher that is used to demultiplex the incoming URIs into
+     * requests.
+     */
+    public static final UriMatcher sUriMatcher =
+        buildUriMatcher();
+
+    /**
+     * Build the UriMatcher for this Content Provider.
+     */
+    public static UriMatcher buildUriMatcher() {
+        // Add default 'no match' result to matcher.
+        final UriMatcher matcher =
+            new UriMatcher(UriMatcher.NO_MATCH);
+
+        // Initialize the matcher with the URIs used to access each
+        // table.
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME,
+                       WEATHER_VALUES_ITEMS);
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherValuesEntry.WEATHER_VALUES_TABLE_NAME 
+                       + "/#",
+                       WEATHER_VALUES_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME,
+                       WEATHER_CONDITIONS_ITEMS);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.WeatherConditionsEntry.WEATHER_CONDITIONS_TABLE_NAME
+                       + "/#",
+                       WEATHER_CONDITIONS_ITEM);
+
+        matcher.addURI(WeatherContract.AUTHORITY,
+                       WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_PATH,
+                       ACCESS_ALL_DATA_FOR_LOCATION_ITEM);
+
+        return matcher;
+    }
+
+    /**
      * Inner class defining the contents of the Weather Values table.
      */
     public static final class WeatherValuesEntry 
@@ -80,14 +151,15 @@ public class WeatherContract {
          * Weather Values's Table name.
          */
         public static String WEATHER_VALUES_TABLE_NAME =
-            "weather_data";
+            "weather_values";
 
         /**
          * Unique URI for the Weather Values table.
          */
         public static final Uri WEATHER_VALUES_CONTENT_URI =
-            BASE_URI.buildUpon().appendPath
-                (WEATHER_VALUES_TABLE_NAME).build();
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_VALUES_TABLE_NAME)
+                    .build();
 
         /**
          * MIME type for multiple Weather Values rows.
@@ -148,13 +220,15 @@ public class WeatherContract {
          * Weather Conditions's Table name.
          */
         public static String WEATHER_CONDITIONS_TABLE_NAME =
-            "weather_condition";
+            "weather_conditions";
 
         /**
          * Unique URI for the Weather Conditions table.
          */
         public static final Uri WEATHER_CONDITIONS_CONTENT_URI = 
-            BASE_URI.buildUpon().appendPath(WEATHER_CONDITIONS_TABLE_NAME).build();
+            BASE_URI.buildUpon()
+                    .appendPath(WEATHER_CONDITIONS_TABLE_NAME)
+                    .build();
 
         /**
          * MIME type for multiple Weather Conditions rows

@@ -40,8 +40,8 @@ public class ContactsCommandBase
     public void execute(Iterator<String> contactsIter) {
         // Set the iterator containing the contacts to operate upon in
         // the first AsyncProviderCommand in the array.
-            mAsyncProviderCommand.getArgs()
-                                 .setIterator(contactsIter);
+        mAsyncProviderCommand.getArgs()
+            .setIterator(contactsIter);
 
         // Execute the AsyncProviderCommand on the Contacts Provider.
         mAsyncProviderCommand.execute();

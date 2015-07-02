@@ -89,6 +89,9 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
             // Expand the acronym.
             getOps().expandAcronym(acronym);
         }
+        
+        mEditText.requestFocus();
+        mEditText.selectAll();
     }
 
     /**

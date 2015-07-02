@@ -10,11 +10,16 @@ public class GenericAsyncTask<Params,
                               Progress,
                               Result, 
                               Ops extends GenericAsyncTaskOps<Params, Progress, Result>>
-       extends AsyncTask<Params, Progress, Result> {
+      extends AsyncTask<Params, Progress, Result> {
+    /**
+     * Debugging tag used by the Android logger.
+     */
+    protected final String TAG = getClass().getSimpleName();
+    
     /**
      * Reference to the enclosing Ops object.
      */
-    private Ops mOps;
+    protected Ops mOps;
 
     /**
      * Constructor initializes the field.
@@ -27,10 +32,11 @@ public class GenericAsyncTask<Params,
      * Called in the UI thread prior to running doInBackground() in a
      * background thread.
      */
-    @Override
-    protected void onPreExecute() {
-        mOps.onPreExecute();
-    }
+    // @@ Omit until Android supports default methods in interfaces..
+    // @Override
+    // protected void onPreExecute() {
+    //     mOps.onPreExecute();
+    // }
 
     /**
      * Called in a background thread to process the @a params.

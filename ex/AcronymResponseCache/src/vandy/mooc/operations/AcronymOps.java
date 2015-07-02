@@ -33,9 +33,14 @@ import com.squareup.okhttp.OkHttpClient;
  * background task.
  */
 public class AcronymOps 
-       extends GenericAsyncTaskOps<String, Void, List<AcronymExpansion>>
-       implements ConfigurableOps,
+       implements GenericAsyncTaskOps<String, Void, List<AcronymExpansion>>,
+                  ConfigurableOps,
                   Callback<List<AcronymData>> {
+    /**
+     * Debugging tag used by the Android logger.
+     */
+    protected final static String TAG = AcronymOps.class.getSimpleName();
+    
     /**
      * Name of the filename used for the cache.
      */

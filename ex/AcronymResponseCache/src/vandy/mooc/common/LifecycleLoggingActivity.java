@@ -12,7 +12,8 @@ public abstract class LifecycleLoggingActivity extends Activity {
     /**
      * Debugging tag used by the Android logger.
      */
-    protected final String TAG = getClass().getSimpleName();
+    protected final static String TAG = 
+        LifecycleLoggingActivity.class.getSimpleName();
 
     /**
      * Hook method called when a new instance of Activity is created. One time

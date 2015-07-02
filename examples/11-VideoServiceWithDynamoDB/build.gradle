@@ -47,13 +47,13 @@ dependencies {
     compile("org.springframework.boot:spring-boot-starter-aop")
     compile("org.springframework.boot:spring-boot-starter-test")
     compile("org.springframework.data:spring-data-rest-webmvc:2.1.0.RELEASE")
-   
-    compile("org.socialsignin:spring-data-dynamodb:1.0.1-SNAPSHOT")
-    
+
+    compile("org.socialsignin:spring-data-dynamodb:1.0.4-SNAPSHOT")
+
     compile("com.google.guava:guava:17.0")
     compile("com.squareup.retrofit:retrofit:1.6.0")
     compile("commons-io:commons-io:2.4")
-    
+
     testCompile("junit:junit")
 }
 

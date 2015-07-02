@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.eclipse.jetty.orbit:javax.servlet.jsp:2.2.0.v201112011158">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.orbit/javax.servlet.jsp/2.2.0.v201112011158/80b4ffe7c26ee97313bea2ddda5835fd38812ee4/javax.servlet.jsp-2.2.0.v201112011158.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.eclipse.jetty.orbit/javax.servlet.jsp/2.2.0.v201112011158/3d1e4ebc9b2c2b203dd9a471ba75a3ed8a28eccc/javax.servlet.jsp-2.2.0.v201112011158-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

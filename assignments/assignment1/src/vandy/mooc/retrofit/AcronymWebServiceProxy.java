@@ -25,11 +25,11 @@ public interface AcronymWebServiceProxy {
     /**
      * Get List of LongForm associated with acronym from Acronym Web
      * service.
-     * 
+     *
      * @param shortForm
      * @return List of JsonAcronym
      */
     @GET("/dictionary.py")
-    public List<AcronymData> getAcronymResults
-        (@Query(SHORT_FORM_QUERY_PARAMETER) String shortForm);
+    public List<AcronymData> getAcronymResults(
+        @Query(SHORT_FORM_QUERY_PARAMETER) String shortForm);
 }

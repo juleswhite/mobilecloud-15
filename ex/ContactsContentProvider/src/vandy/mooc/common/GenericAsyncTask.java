@@ -32,10 +32,11 @@ public class GenericAsyncTask<Params,
      * Called in the UI thread prior to running doInBackground() in a
      * background thread.
      */
-    @Override
-    protected void onPreExecute() {
-        mOps.onPreExecute();
-    }
+    // @@ Omit until Android supports default methods in interfaces..
+    // @Override
+    // protected void onPreExecute() {
+    //     mOps.onPreExecute();
+    // }
 
     /**
      * Called in a background thread to process the @a params.

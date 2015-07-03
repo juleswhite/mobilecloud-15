@@ -39,7 +39,8 @@ public class AcronymOps
     /**
      * Debugging tag used by the Android logger.
      */
-    protected final static String TAG = AcronymOps.class.getSimpleName();
+    protected final static String TAG =
+        AcronymOps.class.getSimpleName();
     
     /**
      * Name of the filename used for the cache.
@@ -57,11 +58,11 @@ public class AcronymOps
      * Network calls and data 
      * will expire after a certain timeout.
      */
-    private Cache cache;
+    private Cache mCache;
 
     /**
-     * Client used by Retrofit to make Network calls It manages 
-     * the cached responses and removes expired data.
+     * Client used by Retrofit to make network calls.  It manages the
+     * cached responses and removes expired data.
      */
     private OkHttpClient mOkHttpClient;
 
@@ -123,16 +124,16 @@ public class AcronymOps
         
             // Set up the HttpResponse cache that will be used by
             // Retrofit.
-            cache = new Cache(new File(mContext.getCacheDir(),
-                                       CACHE_FILENAME),
-                              // Cache stores up to 1 MB.
-                              1024 * 1024); 
+            mCache = new Cache(new File(mContext.getCacheDir(),
+                                        CACHE_FILENAME),
+                               // Cache stores up to 1 MB.
+                               1024 * 1024); 
         
             // Set up the client that will use this cache.  Retrofit
             // will use okhttp client to make network calls.
             mOkHttpClient = new OkHttpClient();  
-            if (cache != null) 
-                mOkHttpClient.setCache(cache);
+            if (mCache != null) 
+                mOkHttpClient.setCache(mCache);
 
             // Create a proxy to access the Acronym Service web
             // service.

@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name">VideoUploadClient</string>
+    <string name="action_settings">Settings</string>
+    <string name="content_authority">vandy.mooc</string>
+    <string name="thumbnail_image">Thumbnail Image</string>
+    <string name="title_upload_video">Upload Video by </string>
+
+</resources>

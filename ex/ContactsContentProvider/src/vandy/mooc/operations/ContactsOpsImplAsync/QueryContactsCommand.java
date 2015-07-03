@@ -1,9 +1,6 @@
 package vandy.mooc.operations.ContactsOpsImplAsync;
 
-import java.util.Iterator;
-
-import vandy.mooc.common.AsyncCommand;
-import vandy.mooc.common.Command;
+import vandy.mooc.common.AsyncProviderCommand;
 import vandy.mooc.operations.ContactsOpsImpl;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -11,89 +8,80 @@ import android.provider.ContactsContract.Contacts;
 
 /**
  * Defines a command that asynchronously queries the ContentResolver
- * for all the starred contacts and displays the results via a
- * ListActivity passed as a parameter.  This class plays the role of
- * the Concrete Command in the Command pattern.
+ * for all the starred contacts and displays the results.  This class
+ * plays the role of the Concrete Command in the Command pattern.
  */
 public class QueryContactsCommand 
-       implements Command<Iterator<String>> {    
-    /**
-     * Store a reference to the ContactsOps object.
-     */
-    final private ContactsOpsImpl mOps;
-
+       extends ContactsCommandBase {
    /**
      * Constructor stores the ContentResolver and ListActivity.
      */
     public QueryContactsCommand(ContactsOpsImpl ops) {
-        // Store the ContactOps.
-        mOps = ops;
+        super(new QueryAsyncCommand(ops));
     }
 
     /**
-     * Execute the command to asynchronously query the contacts in the
-     * Iterator passed to the constructor.
+     * Define an AsyncCommand that modifies contacts from the Contacts
+     * ContentProvider.
      */
-    @Override
-    public void execute(Iterator<String> ignored) {
-        // Start executing an AsyncCommand to query the "starred"
-        // contacts from the Contacts Provider.
-        AsyncCommand.executeAsyncCommands
-            (new AsyncCommand[] {
-                new AsyncCommand(mOps.getActivity().getContentResolver()) {
-                    @Override
-                    public void execute() {
-                        // Columns to query.
-                        final String columnsToQuery[] = 
-                            new String[] {
-                            ContactsContract.Contacts._ID,
-                            ContactsContract.Contacts.DISPLAY_NAME,
-                            ContactsContract.Contacts.STARRED 
-                        };
+    private static class QueryAsyncCommand
+            extends AsyncProviderCommand<CommandArgs> {
+        /**
+         * Constructor initializes the fields.
+         */
+        public QueryAsyncCommand(ContactsOpsImpl ops) {
+            super(new CommandArgs(ops));
+        }
 
-                        // Contacts to select.
-                        final String selection = 
-                            "((" 
-                            + Contacts.DISPLAY_NAME 
-                            + " NOTNULL) AND ("
-                            + Contacts.DISPLAY_NAME 
-                            + " != '' ) AND (" 
-                            + Contacts.STARRED
-                            + "== 1))";
+        /**
+         * Asynchronously query the contacts based on selection
+         * criteria.
+         */
+        @Override
+        public void execute() {
+            // Columns to query.
+            final String columnsToQuery[] = 
+                new String[] {
+                ContactsContract.Contacts._ID,
+                ContactsContract.Contacts.DISPLAY_NAME,
+                ContactsContract.Contacts.STARRED 
+            };
 
-                        // Initiate an asynchronous query.
-                        startQuery(0,
-                                   null, 
-                                   ContactsContract.Contacts.CONTENT_URI, 
-                                   columnsToQuery, 
-                                   selection,
-                                   // ContactsContract.Contacts.STARRED /* + "= 0" */,
-                                   null, 
-                                   ContactsContract.Contacts._ID
-                                   + " ASC");        
-                    }
+            // Contacts to select.
+            final String selection = 
+                "((" 
+                + Contacts.DISPLAY_NAME 
+                + " NOTNULL) AND ("
+                + Contacts.DISPLAY_NAME 
+                + " != '' ) AND (" 
+                + Contacts.STARRED
+                + "== 1))";
 
-                    /**
-                     * This method is called back by Android after the
-                     * query on the Contacts Provider finishes to
-                     * perform the completion task.
-                     */
-                    @Override
-                    public void onQueryComplete(int token,
-                                                Object cookie,
-                                                Cursor cursor) {
-                        // Display the results if there are any.
-                        if (cursor != null
-                            && cursor.getCount() != 0) {
-                            mOps.setCursor(cursor);
-                            mOps.displayCursor(cursor);
-                        }
+            // Initiate an asynchronous query.
+            getArgs().getAdapter()
+                     .startQuery(this,
+                                 0,
+                                 ContactsContract.Contacts.CONTENT_URI, 
+                                 columnsToQuery, 
+                                 selection,
+                                 // ContactsContract.Contacts.STARRED /* + "= 0" */,
+                                 null, 
+                                 ContactsContract.Contacts._ID
+                                 + " ASC");        
+        }
 
-                        // Execute the next AsyncCommand (if any) in the Iterator.
-                        super.executeNext();
-                    }
-                }
-            });
+        /**
+         * This method is called back after the query on the Contacts
+         * Provider finishes to perform the completion operations.
+         */
+        @Override
+        public void onCompletion(int token,
+                                 Cursor cursor) {
+            // Display the results if there are any.
+            if (cursor != null
+                && cursor.getCount() != 0) 
+                getArgs().getOps().displayCursor(cursor);
+        }
     }
 }
 

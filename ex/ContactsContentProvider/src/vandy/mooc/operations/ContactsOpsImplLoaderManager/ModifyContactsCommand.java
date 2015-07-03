@@ -15,8 +15,8 @@ import android.provider.ContactsContract;
  * Modify some designated contacts in a background task.
  */
 public class ModifyContactsCommand
-       extends GenericAsyncTaskOps<Iterator<String>, Void, Integer>
-       implements Command<Iterator<String>> {
+       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer>,
+                  Command<Iterator<String>> {
     /**
      * Store a reference to the ContactsOpsImpl object.
      */

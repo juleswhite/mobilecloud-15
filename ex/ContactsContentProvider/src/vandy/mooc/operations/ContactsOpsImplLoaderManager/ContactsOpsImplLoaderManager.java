@@ -1,40 +1,19 @@
 package vandy.mooc.operations.ContactsOpsImplLoaderManager;
 
-import java.util.Iterator;
-
-import vandy.mooc.common.Command;
 import vandy.mooc.operations.ContactsOpsImpl;
 import android.app.Activity;
 import android.database.Cursor;
 
 /**
- * Class that implements the operations for inserting, querying,
- * modifying, and deleting contacts from the Android Contacts
- * ContentProvider using the Android LoaderManager.  It plays the role
- * of the "Concrete Implementor" in the Bridge pattern and also
- * applies the Command pattern to dispatch the various operations on
- * the Contacts ContentProvider. 
+ * Implements operations for inserting, querying, modifying, and
+ * deleting contacts from the Android Contacts ContentProvider using
+ * the Android LoaderManager.  It plays the role of the "Concrete
+ * Implementor" in the Bridge pattern and also applies the Command
+ * pattern to dispatch the various operations on the Contacts
+ * ContentProvider.
  */
 public class ContactsOpsImplLoaderManager 
        extends ContactsOpsImpl {
-    /**
-     * The types of ContactCommands.
-     */
-    private enum ContactsCommandType {
-        INSERT_COMMAND,
-        QUERY_COMMAND,
-        MODIFY_COMMAND,
-        DELETE_COMMAND,
-    }
-
-    /**
-     * An array of Commands that are used to dispatch user button
-     * presses to the right command.
-     */
-    @SuppressWarnings("unchecked")
-    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
-        new Command[ContactsCommandType.values().length];
-
     /**
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOps object after it's been created.
@@ -53,7 +32,10 @@ public class ContactsOpsImplLoaderManager
         if (firstTimeIn) {
             // Initialize all the ContactsCommand objects.
             initializeCommands();
-        } else
+
+            // Unregister the ContentObserver.
+            unregisterContentObserver();
+        }        else
             // Rerun the query to display anything relevant that's in
             // the ContentsProvider.
             queryContacts();
@@ -122,6 +104,6 @@ public class ContactsOpsImplLoaderManager
     public void displayCursor(Cursor cursor) {
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
-        mAdapter.swapCursor(cursor);
+        mCursorAdapter.swapCursor(cursor);
     }
 }

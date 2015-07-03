@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<string name="app_name">ContractsContentProviderSimple</string>
+	<string name="app_name">ContractsContentProvider</string>
         <string name="insert_text">Insert\nContacts</string>
         <string name="query_text">Query\nContacts</string>
         <string name="modify_text">Modify\nContacts</string>

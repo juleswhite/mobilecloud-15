@@ -1,64 +1,19 @@
 package vandy.mooc.operations.ContactsOpsImplSimple;
 
-import java.util.Iterator;
-
-import vandy.mooc.common.Command;
 import vandy.mooc.operations.ContactsOpsImpl;
 import android.app.Activity;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.Handler;
-import android.provider.ContactsContract;
 
 /**
- * Class that implements the operations for inserting, querying,
- * modifying, and deleting contacts from the Android Contacts
- * ContentProvider using basic Android ContentResolver methods.  It
- * plays the role of the "Concrete Implementor" in the Bridge pattern
- * and also applies the Command pattern to dispatch the various
- * operations on the Contacts ContentProvider.
+ * Implements operations for inserting, querying, modifying, and
+ * deleting contacts from the Android Contacts ContentProvider using
+ * basic Android ContentResolver methods.  It plays the role of the
+ * "Concrete Implementor" in the Bridge pattern and also applies the
+ * Command pattern to dispatch the various operations on the Contacts
+ * ContentProvider.
  */
 public class ContactsOpsImplSimple 
        extends ContactsOpsImpl {
-    /**
-     * The types of ContactCommands.
-     */
-    private enum ContactsCommandType {
-        INSERT_COMMAND,
-        QUERY_COMMAND,
-        MODIFY_COMMAND,
-        DELETE_COMMAND,
-    }
-
-    /**
-     * Contains the most recent result from a query so the display can
-     * be updated after a runtime configuration change.
-     */
-    private Cursor mCursor;
-
-    /**
-     * An array of Commands that are used to dispatch user button
-     * presses to the right command.
-     */
-    @SuppressWarnings("unchecked")
-    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
-        new Command[ContactsCommandType.values().length];
-
-    /**
-     * Observer that's dispatched by the ContentResolver when Contacts
-     * change (e.g., are inserted or deleted).
-     */
-    private final ContentObserver contactsChangeContentObserver =
-        new ContentObserver(new Handler()) {
-            /**
-             * Trigger a query and display.
-             */
-            @Override
-            public void onChange (boolean selfChange) {
-                queryContacts();
-            }
-        };
-
     /**
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOpsImpl object after it's been created.
@@ -77,9 +32,12 @@ public class ContactsOpsImplSimple
         if (firstTimeIn) {
             // Initialize the ContactsCommands.
             initializeCommands();
+            
+            // Unregister the ContentObserver.
+            unregisterContentObserver();
 
-            // Initialize the ContentObserver.
-            initializeContentObserver();
+            // Register the ContentObserver.
+            registerContentObserver();
         } else if (mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
@@ -109,18 +67,6 @@ public class ContactsOpsImplSimple
         // perform the deletions off the UI Thread.
         mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()] =
             new DeleteContactsCommand(this);
-    }
-
-    /**
-     * Initialize the ContentObserver.
-     */
-    public void initializeContentObserver() {
-        // Register a ContentObserver that's notified when Contacts
-        // change (e.g., are inserted or deleted).
-        mActivity.get().getContentResolver().registerContentObserver
-            (ContactsContract.Contacts.CONTENT_URI,
-             true,
-             contactsChangeContentObserver);
     }
 
     /**
@@ -163,15 +109,12 @@ public class ContactsOpsImplSimple
      * Display the contents of the cursor as a ListView.
      */
     public void displayCursor(Cursor cursor) {
+        // Store the most recent result from a query so the display
+        // can be updated after a runtime configuration change.
+        mCursor = cursor;
+
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
-        mAdapter.changeCursor(cursor);
-    }
-
-    /**
-     * Set the cursor.
-     */
-    public void setCursor(Cursor cursor) {
-        mCursor = cursor;
+        mCursorAdapter.changeCursor(cursor);
     }
 }

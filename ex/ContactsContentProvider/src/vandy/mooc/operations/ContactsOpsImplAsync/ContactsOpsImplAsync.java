@@ -1,72 +1,34 @@
 package vandy.mooc.operations.ContactsOpsImplAsync;
 
-import java.util.Iterator;
-
-import vandy.mooc.common.Command;
-import vandy.mooc.common.MutableInt;
+import vandy.mooc.common.AsyncProviderCommandAdapter;
 import vandy.mooc.operations.ContactsOpsImpl;
 import android.app.Activity;
-import android.database.ContentObserver;
 import android.database.Cursor;
-import android.os.Handler;
-import android.provider.ContactsContract;
 
 /**
- * Class that implements the operations for inserting, querying,
- * modifying, and deleting contacts from the Android Contacts
- * ContentProvider using Android AsyncQueryHanders.  It implements
- * ConfigurableOps so it can be managed by the GenericActivity
- * framework.  It plays the role of the "Concrete Implementor" in the
- * Bridge pattern and also applies an variant of the Command pattern
- * to asynchronous dispatch the various operations on the Contacts
- * ContentProvider.
+ * Implements operations for inserting, querying, modifying, and
+ * deleting contacts from the Android Contacts ContentProvider using
+ * Android AsyncQueryHanders.  It plays the role of the "Concrete
+ * Implementor" in the Bridge pattern and also applies an variant of
+ * the Command pattern to asynchronously dispatch the various
+ * operations on the Contacts ContentProvider.
  */
 public class ContactsOpsImplAsync
        extends ContactsOpsImpl {
     /**
-     * Contains the most recent result from a query so the display can
-     * be updated after a runtime configuration change.
+     * Provides the target for asynchronous operations on a
+     * ContentProvider and serves as the dispatcher of callbacks to
+     * the onCompletion methods of AsyncProviderCommands after those
+     * operations complete.
      */
-    private Cursor mCursor;
+    private AsyncProviderCommandAdapter<CommandArgs> mAdapter;
 
     /**
-     * The types of ContactCommands.
+     * Accessor method that returns the AsyncProviderCommandAdapter.
      */
-    private enum ContactsCommandType {
-        INSERT_COMMAND,
-        QUERY_COMMAND,
-        MODIFY_COMMAND,
-        DELETE_COMMAND,
+    public AsyncProviderCommandAdapter<CommandArgs> getAdapter() {
+        return mAdapter;
     }
-
-    /**
-     * An array of Commands that are used to dispatch user button
-     * presses to the right command.
-     */
-    @SuppressWarnings("unchecked")
-    private Command<Iterator<String>> mCommands[] = (Command<Iterator<String>>[]) 
-        new Command[ContactsCommandType.values().length];
-
-    /**
-     * Keeps track of the number of contacts inserted, deleted, and
-     * modified.
-     */
-    private MutableInt mCounter = new MutableInt(0);
-
-    /**
-     * Observer that's dispatched by the ContentResolver when Contacts
-     * change (e.g., are inserted or deleted).
-     */
-    private final ContentObserver contactsChangeContentObserver =
-        new ContentObserver(new Handler()) {
-            /**
-             * Trigger a query and display the results.
-             */
-            @Override
-            public void onChange (boolean selfChange) {
-                queryContacts();
-            }
-        };
 
     /**
      * Hook method dispatched by the GenericActivity framework to
@@ -84,11 +46,14 @@ public class ContactsOpsImplAsync
                               firstTimeIn);
 
         if (firstTimeIn) {
-            // Initialize the ContentObserver.
-            initializeContentObserver();
-
-            // Initialize the ContentObserver.
+            // Initialize the ContactsCommands.
             initializeCommands();
+
+            // Unregister the ContentObserver.
+            unregisterContentObserver();
+            
+            // Register the ContentObserver.
+            registerContentObserver();
         } else if (mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
@@ -99,6 +64,13 @@ public class ContactsOpsImplAsync
      * Initialize all the ContactsCommands.
      */
     private void initializeCommands() {
+        // Create the AsyncProviderCommandAdapter.  This call *must*
+        // come before the following calls that initialize the
+        // commands.
+        mAdapter =
+            new AsyncProviderCommandAdapter<CommandArgs>
+                (getActivity().getContentResolver());
+
         // Create a command that executes a GenericAsyncTask to
         // perform the insertions off the UI Thread.
         mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()] =
@@ -118,18 +90,6 @@ public class ContactsOpsImplAsync
         // perform the deletions off the UI Thread.
         mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()] =
             new DeleteContactsCommand(this);
-    }
-
-    /**
-     * Initialize the ContentObserver.
-     */
-    public void initializeContentObserver() {
-        // Register a ContentObserver that's notified when Contacts
-        // change (e.g., are inserted or deleted).
-        mActivity.get().getContentResolver().registerContentObserver
-            (ContactsContract.Contacts.CONTENT_URI,
-             true,
-             contactsChangeContentObserver);
     }
 
     /**
@@ -172,15 +132,12 @@ public class ContactsOpsImplAsync
      * Display the contents of the cursor as a ListView.
      */
     public void displayCursor(Cursor cursor) {
+        // Store the most recent result from a query so the display
+        // can be updated after a runtime configuration change.
+        mCursor = cursor;
+
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
-        mAdapter.changeCursor(cursor);
-    }
-
-    /**
-     * Set the cursor.
-     */
-    public void setCursor(Cursor cursor) {
-        mCursor = cursor;
+        mCursorAdapter.changeCursor(cursor);
     }
 }

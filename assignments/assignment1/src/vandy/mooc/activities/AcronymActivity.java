@@ -77,7 +77,7 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
         // consistent with what we get back from the Acronym web
         // service.
         final String acronym =
-            mEditText.getText().toString().toUpperCase(Locale.ENGLISH);
+            mEditText.getText().toString().trim().toUpperCase(Locale.ENGLISH);
 
         if (acronym.isEmpty())
             Utils.showToast(this,
@@ -89,6 +89,9 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
             // Expand the acronym.
             getOps().expandAcronym(acronym);
         }
+        
+        mEditText.requestFocus();
+        mEditText.selectAll();
     }
 
     /**

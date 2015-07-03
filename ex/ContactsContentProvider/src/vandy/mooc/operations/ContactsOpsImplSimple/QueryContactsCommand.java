@@ -39,16 +39,14 @@ public class QueryContactsCommand
      * Run the command.
      */
     @Override
-    public void execute(Iterator<String> ignore) {
+    public void execute(Iterator<String> unused) {
         // Query the Contacts ContentProvider for the contacts and
         // return them.
         Cursor cursor = queryAllContacts(mContentResolver);
 
         if (cursor != null
-            && cursor.getCount() != 0) {
-            mOps.setCursor(cursor);
+            && cursor.getCount() != 0) 
             mOps.displayCursor(cursor);
-        }
     }
 
     /**

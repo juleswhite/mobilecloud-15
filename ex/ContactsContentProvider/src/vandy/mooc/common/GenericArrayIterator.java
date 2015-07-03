@@ -105,6 +105,7 @@ public class GenericArrayIterator<T> implements java.util.Iterator<T> {
      * @throws NoSuchElementException if all the elements in the array
      *  have already been returned
      */
+    @SuppressWarnings("unchecked")
     public T next() {
         if (hasNext() == false) {
             throw new NoSuchElementException();

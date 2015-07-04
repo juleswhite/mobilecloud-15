@@ -1,14 +1,11 @@
-package vandy.mooc.activities;
+package vandy.mooc.view;
 
-import java.util.ArrayList;
 import java.util.List;
 
 import vandy.mooc.R;
 import vandy.mooc.common.LifecycleLoggingActivity;
-import vandy.mooc.retrofit.AcronymData;
-import vandy.mooc.retrofit.AcronymData.AcronymExpansion;
-import vandy.mooc.retrofit.ParcelableAcronymExpansion;
-import vandy.mooc.utils.AcronymDataArrayAdapter;
+import vandy.mooc.model.AcronymData.AcronymExpansion;
+import vandy.mooc.model.ParcelableAcronymExpansion;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.ListView;

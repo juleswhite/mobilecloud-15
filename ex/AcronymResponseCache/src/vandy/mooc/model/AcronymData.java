@@ -1,4 +1,4 @@
-package vandy.mooc.retrofit;
+package vandy.mooc.model;
 
 import java.util.List;
 

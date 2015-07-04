@@ -22,13 +22,16 @@ public class Utils {
 
     /**
      * Return an uppercase version of the input or null if user gave
-     * no input (in which case a toast is displayed to this effect).
+     * no input.  If user gave no input and @a showToast is true a
+     * toast is displayed to this effect.
      */
     public static String uppercaseInput(Context context, 
-                                        String input) {
+                                        String input,
+                                        boolean showToast) {
         if (input.isEmpty()) {
-            Utils.showToast(context,
-                            "no input provided");
+            if (showToast)
+                Utils.showToast(context,
+                                "no input provided");
             return null;
         } else
             // Convert the input entered by the user so it's in

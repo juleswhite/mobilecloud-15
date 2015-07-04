@@ -1,4 +1,4 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
@@ -10,14 +10,13 @@ import retrofit.RestAdapter.LogLevel;
 import retrofit.RetrofitError;
 import retrofit.client.OkClient;
 import retrofit.client.Response;
-import vandy.mooc.activities.AcronymActivity;
 import vandy.mooc.common.ConfigurableOps;
+import vandy.mooc.common.ContextView;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
-import vandy.mooc.retrofit.AcronymData;
-import vandy.mooc.retrofit.AcronymData.AcronymExpansion;
-import vandy.mooc.retrofit.AcronymWebServiceProxy;
-import android.app.Activity;
+import vandy.mooc.model.AcronymData;
+import vandy.mooc.model.AcronymData.AcronymExpansion;
+import vandy.mooc.model.AcronymWebServiceProxy;
 import android.content.Context;
 import android.util.Log;
 
@@ -34,13 +33,30 @@ import com.squareup.okhttp.OkHttpClient;
  */
 public class AcronymOps 
        implements GenericAsyncTaskOps<String, Void, List<AcronymExpansion>>,
-                  ConfigurableOps,
+                  ConfigurableOps<AcronymOps.View>,
                   Callback<List<AcronymData>> {
     /**
      * Debugging tag used by the Android logger.
      */
     protected final static String TAG =
         AcronymOps.class.getSimpleName();
+
+    /**
+     * This interface defines the minimum interface needed by the
+     * AcronymOps class in the "Presenter" layer to interact with the
+     * AcronymActivity in the "View" layer.
+     */
+    public interface View extends ContextView {
+        /**
+         * Start a new Activity that displays the Acronym Expansions
+         * to the user.
+         * 
+         * @param results
+         *            List of AcronymExpansions to display.
+         */
+        void displayResults(List<AcronymExpansion> results,
+                            String errorMessage);
+    }
     
     /**
      * Name of the filename used for the cache.
@@ -51,7 +67,7 @@ public class AcronymOps
     /**
      * Used to enable garbage collection.
      */
-    private WeakReference<AcronymActivity> mActivity;
+    private WeakReference<AcronymOps.View> mAcronymView;
 
     /**
      * HttpResponseCache that will cache responses from 
@@ -105,22 +121,28 @@ public class AcronymOps
     }
 
     /**
-     * Called at construction and after a runtime configuration change
-     * occurs to finish the initialization steps.
+     * Hook method dispatched by the GenericActivity framework to
+     * initialize the HobbitOps object after it's been created.
+     *
+     * @param view     The currently active HobbitView.
+     * @param firstTimeIn  Set to "true" if this is the first time the
+     *                     Ops class is initialized, else set to
+     *                     "false" if called after a runtime
+     *                     configuration change.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(AcronymOps.View view,
                                 boolean firstTimeIn) {
         Log.d(TAG,
               "onConfiguration() called");
 
-        // Reset the mActivity WeakReference.
-        mActivity =
-            new WeakReference<>((AcronymActivity) activity);
+        // Reset the mAcronymView WeakReference.
+        mAcronymView =
+            new WeakReference<>(view);
 
         if (firstTimeIn) {
             // Store the Application context to avoid problems with
             // the Activity context disappearing during a rotation.
-            mContext = activity.getApplicationContext();
+            mContext = view.getApplicationContext();
         
             // Set up the HttpResponse cache that will be used by
             // Retrofit.
@@ -264,10 +286,10 @@ public class AcronymOps
     private void handleResults(List<AcronymExpansion> results,
                                String acronym) {
         // Try to display the results.
-        mActivity.get().displayResults(results,
-                                      "no expansions for " 
-                                      + acronym 
-                                      + " found");
+        mAcronymView.get().displayResults(results,
+                                          "no expansions for " 
+                                          + acronym 
+                                          + " found");
         
         // Allow another call to proceed when this method returns.
         mCallInProgress = false;

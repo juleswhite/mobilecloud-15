@@ -1,9 +1,9 @@
-package vandy.mooc.retrofit;
+package vandy.mooc.model;
 
 import java.util.ArrayList;
 import java.util.List;
 
-import vandy.mooc.retrofit.AcronymData.AcronymExpansion;
+import vandy.mooc.model.AcronymData.AcronymExpansion;
 import android.os.Parcel;
 import android.os.Parcelable;
 

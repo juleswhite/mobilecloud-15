@@ -1,12 +1,13 @@
-package vandy.mooc.activities;
+package vandy.mooc.view;
 
 import java.util.List;
 
 import vandy.mooc.R;
 import vandy.mooc.common.GenericActivity;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.AcronymOps;
-import vandy.mooc.retrofit.AcronymData.AcronymExpansion;
+import vandy.mooc.model.AcronymData.AcronymExpansion;
+import vandy.mooc.presenter.AcronymOps;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
@@ -15,11 +16,17 @@ import android.widget.EditText;
 
 /**
  * This Activity prompts the user for Acronyms to expand via Retrofit
- * and view via the results.  It extends GenericActivity, which
- * provides a framework that automatically handles runtime
- * configuration changes.
+ * and view via the results via the DisplayAcronymActivity.  This
+ * class plays the role of the "View" in the Model-View-Presenter
+ * (MVP) pattern.  It extends GenericActivity that provides a
+ * framework for automatically handling runtime configuration changes
+ * of an AcronymOps object, which plays the role of the "Presenter" in
+ * the MVP pattern.  The AcronymOps.View interface is used to minimize
+ * dependencies between the View and Presenter layers.
  */
-public class AcronymActivity extends GenericActivity<AcronymOps> {
+public class AcronymActivity
+       extends GenericActivity<AcronymOps.View, AcronymOps>
+       implements AcronymOps.View {
     /**
      * Acronym entered by the user.
      */
@@ -41,11 +48,13 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
         // (if any).
         mEditText = (EditText) findViewById(R.id.editText1);
 
-        // Call up to the special onCreate() method in
-        // GenericActivity, passing in the AcronymOps class to
-        // instantiate and manage.
+        // Invoke the special onCreate() method in GenericActivity,
+        // passing in the AcronymOps class to instantiate/manage and
+        // "this" to provide AcronymOps with the AcronymOps.View
+        // instance.
         super.onCreate(savedInstanceState,
-                       AcronymOps.class);
+                       AcronymOps.class,
+                       this);
    }
 
     /**
@@ -56,7 +65,8 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
         // Try to get an acronym entered by the user.
         final String acronym =
             Utils.uppercaseInput(this,
-                                 mEditText.getText().toString().trim());
+                                 mEditText.getText().toString().trim(),
+                                 true);
 
         if (acronym != null) {
             Log.d(TAG,
@@ -79,7 +89,8 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
         // Try to get an acronym entered by the user.
         final String acronym =
             Utils.uppercaseInput(this,
-                                 mEditText.getText().toString().trim());
+                                 mEditText.getText().toString().trim(),
+                                 true);
 
         if (acronym != null) {
             Log.d(TAG,
@@ -99,8 +110,9 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
      * the user.
      * 
      * @param results
-     *            List of AcronymExapnsions to be displayed.
+     *            List of AcronymExpansions to display.
      */
+    @Override
     public void displayResults(List<AcronymExpansion> results,
                                String errorMessage) {
         if (results == null)
@@ -126,5 +138,21 @@ public class AcronymActivity extends GenericActivity<AcronymOps> {
                 Utils.showToast(this,
                                 "No Activity found to display Acronym Expansions");
         }
+    }
+
+    /**
+     * Return the Activity context.
+     */
+    @Override
+    public Context getActivityContext() {
+        return this;
+    }
+    
+    /**
+     * Return the Application context.
+     */
+    @Override
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
     }
 }

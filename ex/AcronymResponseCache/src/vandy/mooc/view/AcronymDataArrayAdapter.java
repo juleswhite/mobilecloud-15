@@ -1,10 +1,9 @@
-package vandy.mooc.utils;
+package vandy.mooc.view;
 
 import java.util.List;
 
 import vandy.mooc.R;
-import vandy.mooc.retrofit.AcronymData.AcronymExpansion;
-import vandy.mooc.retrofit.ParcelableAcronymExpansion;
+import vandy.mooc.model.ParcelableAcronymExpansion;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

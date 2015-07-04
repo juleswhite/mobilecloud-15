@@ -1,8 +1,8 @@
-package vandy.mooc.operations.ContactsOpsImplAsync;
+package vandy.mooc.presenter.ContactsOpsImplAsync;
 
 import vandy.mooc.common.AsyncProviderCommand;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
 
@@ -68,7 +68,7 @@ public class ModifyContactsCommand
                                       new String[] { originalName });
             } else 
                 // Otherwise, print a toast with summary info.
-                Utils.showToast(getArgs().getOps().getActivity(),
+                Utils.showToast(getArgs().getOps().getActivityContext(),
                                 getArgs().getCounter().getValue()
                                 +" contact(s) modified");
         }

@@ -1,9 +1,11 @@
-package vandy.mooc.activities;
+package vandy.mooc.view;
 
 import vandy.mooc.R;
 import vandy.mooc.common.GenericActivity;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOps;
+import vandy.mooc.presenter.ContactsOps;
+import android.app.LoaderManager;
+import android.content.Context;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuInflater;
@@ -16,13 +18,17 @@ import android.widget.ListView;
  * to insert, query, modify, and delete contacts via the Android
  * ContactsContentProvider.  The user can optionally select various
  * implementation techniques to perform these operations, including
- * the Android AsyncQueryHandler and LoaderManager classes.  It
- * extends GenericActivity that provides a framework for automatically
- * handling runtime configuration changes.  This class plays the role
- * of the "View" in the Model-View-Presenter pattern.
+ * the Android AsyncQueryHandler and LoaderManager classes.  This
+ * class plays the role of the "View" in the Model-View-Presenter
+ * (MVP) pattern.  It extends GenericActivity that provides a
+ * framework for automatically handling runtime configuration changes
+ * of a ContactsOps object, which plays the role of the "Presenter" in
+ * the MVP pattern.  The ContactsOps.View interface is used to
+ * minimize dependencies between the View and Presenter layers.
  */
 public class ContactsActivity
-       extends GenericActivity<ContactsOps> {
+       extends GenericActivity<ContactsOps.View, ContactsOps>
+       implements ContactsOps.View {
     /**
      * ListView displays the Contacts List.
      */
@@ -46,11 +52,13 @@ public class ContactsActivity
         // Set the layout of the MainActivity.
         setContentView(R.layout.contacts_activity);
 
-        // Call the special onCreate() method in GenericActivity,
-        // passing in the ContactsOps class to instantiate and
-        // manage.
+        // Invoke the special onCreate() method in GenericActivity,
+        // passing in the ContactsOps class to instantiate/manage and
+        // "this" to provide ContactsOps with the ContactsOps.View
+        // instance.
         super.onCreate(savedInstanceState, 
-                       ContactsOps.class);
+                       ContactsOps.class,
+                       this);
 
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);
@@ -140,5 +148,29 @@ public class ContactsActivity
         inflater.inflate(R.menu.ops_options_menu,
                          menu);
         return true;
+    }
+
+    /**
+     * Return the Activity context.
+     */
+    @Override
+    public Context getActivityContext() {
+        return this;
+    }
+    
+    /**
+     * Return the Application context.
+     */
+    @Override
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
+    }
+
+    /**
+     * Return the LoaderManager.
+     */
+    @Override
+    public LoaderManager getLoaderManager() {
+        return super.getLoaderManager();
     }
 }

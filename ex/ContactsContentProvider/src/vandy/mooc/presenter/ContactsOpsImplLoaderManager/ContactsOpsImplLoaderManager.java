@@ -1,76 +1,50 @@
-package vandy.mooc.operations.ContactsOpsImplAsync;
+package vandy.mooc.presenter.ContactsOpsImplLoaderManager;
 
-import vandy.mooc.common.AsyncProviderCommandAdapter;
-import vandy.mooc.operations.ContactsOpsImpl;
-import android.app.Activity;
+import vandy.mooc.presenter.ContactsOps;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.database.Cursor;
 
 /**
  * Implements operations for inserting, querying, modifying, and
  * deleting contacts from the Android Contacts ContentProvider using
- * Android AsyncQueryHanders.  It plays the role of the "Concrete
- * Implementor" in the Bridge pattern and also applies an variant of
- * the Command pattern to asynchronously dispatch the various
- * operations on the Contacts ContentProvider.
+ * the Android LoaderManager.  It plays the role of the "Concrete
+ * Implementor" in the Bridge pattern and also applies the Command
+ * pattern to dispatch the various operations on the Contacts
+ * ContentProvider.
  */
-public class ContactsOpsImplAsync
+public class ContactsOpsImplLoaderManager 
        extends ContactsOpsImpl {
-    /**
-     * Provides the target for asynchronous operations on a
-     * ContentProvider and serves as the dispatcher of callbacks to
-     * the onCompletion methods of AsyncProviderCommands after those
-     * operations complete.
-     */
-    private AsyncProviderCommandAdapter<CommandArgs> mAdapter;
-
-    /**
-     * Accessor method that returns the AsyncProviderCommandAdapter.
-     */
-    public AsyncProviderCommandAdapter<CommandArgs> getAdapter() {
-        return mAdapter;
-    }
-
     /**
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOps object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param view     The currently active ContactsOps.View.  
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(ContactsOps.View view,
                                 boolean firstTimeIn) {
-        super.onConfiguration(activity,
+        super.onConfiguration(view,
                               firstTimeIn);
 
         if (firstTimeIn) {
-            // Initialize the ContactsCommands.
+            // Initialize all the ContactsCommand objects.
             initializeCommands();
 
             // Unregister the ContentObserver.
             unregisterContentObserver();
-            
-            // Register the ContentObserver.
-            registerContentObserver();
-        } else if (mCursor != null)
-            // Redisplay the contents of the cursor after a runtime
-            // configuration change.
-            displayCursor(mCursor);
+        }        else
+            // Rerun the query to display anything relevant that's in
+            // the ContentsProvider.
+            queryContacts();
     }
 
     /**
      * Initialize all the ContactsCommands.
      */
     private void initializeCommands() {
-        // Create the AsyncProviderCommandAdapter.  This call *must*
-        // come before the following calls that initialize the
-        // commands.
-        mAdapter =
-            new AsyncProviderCommandAdapter<CommandArgs>
-                (getActivity().getContentResolver());
-
         // Create a command that executes a GenericAsyncTask to
         // perform the insertions off the UI Thread.
         mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()] =
@@ -96,7 +70,6 @@ public class ContactsOpsImplAsync
      * Insert the contacts.
      */
     public void insertContacts() {
-        // Execute the INSERT_COMMAND.
         mCommands[ContactsCommandType.INSERT_COMMAND.ordinal()].execute
             (mContacts.iterator());
     }
@@ -105,16 +78,14 @@ public class ContactsOpsImplAsync
      * Query the contacts.
      */
     public void queryContacts() {
-        // Execute the QUERY_COMMAND (which doesn't use the mContacts
-        // iterator).
-        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute(null);
+        mCommands[ContactsCommandType.QUERY_COMMAND.ordinal()].execute
+            (mContacts.iterator());
     }
 
     /**
      * Modify the contacts.
      */
     public void modifyContacts() {
-        // Execute the MODIFY_COMMAND.
         mCommands[ContactsCommandType.MODIFY_COMMAND.ordinal()].execute
             (mModifyContacts.iterator());
     }
@@ -123,7 +94,6 @@ public class ContactsOpsImplAsync
      * Delete the contacts.
      */
     public void deleteContacts() {
-        // Execute the DELETE_COMMAND.
         mCommands[ContactsCommandType.DELETE_COMMAND.ordinal()].execute
             (mModifyContacts.iterator());
     }
@@ -132,12 +102,8 @@ public class ContactsOpsImplAsync
      * Display the contents of the cursor as a ListView.
      */
     public void displayCursor(Cursor cursor) {
-        // Store the most recent result from a query so the display
-        // can be updated after a runtime configuration change.
-        mCursor = cursor;
-
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
-        mCursorAdapter.changeCursor(cursor);
+        mCursorAdapter.swapCursor(cursor);
     }
 }

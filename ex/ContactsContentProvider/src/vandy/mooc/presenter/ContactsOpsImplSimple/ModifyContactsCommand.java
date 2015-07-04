@@ -1,10 +1,10 @@
-package vandy.mooc.operations.ContactsOpsImplSimple;
+package vandy.mooc.presenter.ContactsOpsImplSimple;
 
 import java.util.Iterator;
 
 import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
@@ -32,7 +32,7 @@ public class ModifyContactsCommand
         // from the Application context.
         mOps = ops;
         mContentResolver =
-            ops.getActivity().getApplicationContext().getContentResolver();
+            ops.getApplicationContext().getContentResolver();
     }
 
     /**
@@ -43,7 +43,7 @@ public class ModifyContactsCommand
         // Modify all the contacts named by the iterator.
         int totalContactsModified = modifyAllContacts(contactsIter);
 
-        Utils.showToast(mOps.getActivity(),
+        Utils.showToast(mOps.getActivityContext(),
                         totalContactsModified
                         + " contact(s) modified");
     }

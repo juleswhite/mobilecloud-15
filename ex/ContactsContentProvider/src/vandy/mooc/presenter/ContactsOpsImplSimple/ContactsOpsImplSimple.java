@@ -1,7 +1,7 @@
-package vandy.mooc.operations.ContactsOpsImplSimple;
+package vandy.mooc.presenter.ContactsOpsImplSimple;
 
-import vandy.mooc.operations.ContactsOpsImpl;
-import android.app.Activity;
+import vandy.mooc.presenter.ContactsOps;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.database.Cursor;
 
 /**
@@ -18,15 +18,15 @@ public class ContactsOpsImplSimple
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOpsImpl object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param view     The currently active ContactsOps.View.  
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(ContactsOps.View view,
                                 boolean firstTimeIn) {
-        super.onConfiguration(activity, 
+        super.onConfiguration(view, 
                               firstTimeIn);
 
         if (firstTimeIn) {

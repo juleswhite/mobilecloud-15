@@ -1,10 +1,11 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import vandy.mooc.common.ConfigurableOps;
-import vandy.mooc.operations.ContactsOpsImplAsync.ContactsOpsImplAsync;
-import vandy.mooc.operations.ContactsOpsImplLoaderManager.ContactsOpsImplLoaderManager;
-import vandy.mooc.operations.ContactsOpsImplSimple.ContactsOpsImplSimple;
-import android.app.Activity;
+import vandy.mooc.common.ContextView;
+import vandy.mooc.presenter.ContactsOpsImplAsync.ContactsOpsImplAsync;
+import vandy.mooc.presenter.ContactsOpsImplLoaderManager.ContactsOpsImplLoaderManager;
+import vandy.mooc.presenter.ContactsOpsImplSimple.ContactsOpsImplSimple;
+import android.app.LoaderManager;
 import android.widget.SimpleCursorAdapter;
 
 /**
@@ -16,12 +17,24 @@ import android.widget.SimpleCursorAdapter;
  * directory also play the role of the "Presenter" in the
  * Model-View-Presenter pattern.
  */
-public class ContactsOps implements ConfigurableOps {
+public class ContactsOps implements ConfigurableOps<ContactsOps.View> {
     /**
      * Debugging tag used by the Android logger.
      */
     protected final static String TAG =
         ContactsOps.class.getSimpleName();
+
+    /**
+     * This interface defines the minimum interface needed by the
+     * ContactsOps class in the "Presenter" layer to interact with the
+     * ContactsActivity in the "View" layer.
+     */
+    public interface View extends ContextView {
+        /**
+         * Get the LoaderManager associated with the View.
+         */
+        LoaderManager getLoaderManager();
+    }
 
     /**
      * Defines the type of the ContactsOpsImpl (i.e., SIMPLE, ASYNC,
@@ -79,15 +92,15 @@ public class ContactsOps implements ConfigurableOps {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOps object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param instance     The currently active ContactsOps.View.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(ContactsOps.View view,
                                 boolean firstTimeIn) {
-        mImpl.onConfiguration(activity,
+        mImpl.onConfiguration(view,
                               firstTimeIn);
     }
 

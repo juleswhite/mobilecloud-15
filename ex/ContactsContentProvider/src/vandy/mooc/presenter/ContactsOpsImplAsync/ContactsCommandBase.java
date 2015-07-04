@@ -1,4 +1,4 @@
-package vandy.mooc.operations.ContactsOpsImplAsync;
+package vandy.mooc.presenter.ContactsOpsImplAsync;
 
 import java.util.Iterator;
 

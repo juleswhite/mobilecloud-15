@@ -1,7 +1,8 @@
 package vandy.mooc.presenter;
 
 import vandy.mooc.common.ConfigurableOps;
-import vandy.mooc.view.HobbitView;
+import vandy.mooc.common.ContextView;
+import android.database.Cursor;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.widget.SimpleCursorAdapter;
@@ -15,7 +16,7 @@ import android.widget.SimpleCursorAdapter;
  * abstracts play the role of the "Presenter" in the
  * Model-View-Presenter pattern.
  */
-public class HobbitOps implements ConfigurableOps<HobbitView> {
+public class HobbitOps implements ConfigurableOps<HobbitOps.View> {
     /**
      * Debugging tag used by the Android logger.
      */
@@ -23,12 +24,31 @@ public class HobbitOps implements ConfigurableOps<HobbitView> {
         HobbitOps.class.getSimpleName();
 
     /**
+     * This interface defines the minimum interface needed by the
+     * HobbitOps class in the "Presenter" layer to interact with the
+     * HobbitActivity in the "View" layer.
+     */
+    public interface View extends ContextView {
+        /**
+         * Display the contents of the cursor as a ListView.
+         */
+        void displayCursor(Cursor cursor);
+    }
+
+    /**
      * Type for accessing the ContentProvider (i.e., CONTENT_RESOLVER
      * or CONTENT_PROVIDER_CLIENT) for the HobbitOps implementation.
      */
     public enum ContentProviderAccessType {
-        CONTENT_RESOLVER,
-        CONTENT_PROVIDER_CLIENT
+        /**
+         * Select the ContentResolver implementation.
+         */
+        CONTENT_RESOLVER,       
+
+        /**
+         * Select the ContentProviderClient implementation.
+         */
+        CONTENT_PROVIDER_CLIENT 
     }
 
     /**
@@ -57,16 +77,16 @@ public class HobbitOps implements ConfigurableOps<HobbitView> {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the HobbitOps object after it's been created.
      *
-     * @param instance     The currently active HobbitView.
+     * @param view     The currently active HobbitView.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
     @Override
-    public void onConfiguration(HobbitView instance,
-                                boolean firstTimeIn) {
-        mHobbitOpsImpl.onConfiguration(instance,
+        public void onConfiguration(HobbitOps.View view,
+                                    boolean firstTimeIn) {
+        mHobbitOpsImpl.onConfiguration(view,
                                        firstTimeIn);
     }
     

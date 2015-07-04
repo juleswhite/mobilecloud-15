@@ -1,7 +1,7 @@
-package vandy.mooc.operations.ContactsOpsImplAsync;
+package vandy.mooc.presenter.ContactsOpsImplAsync;
 
 import vandy.mooc.common.AsyncProviderCommand;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.database.Cursor;
 import android.provider.ContactsContract;
 import android.provider.ContactsContract.Contacts;

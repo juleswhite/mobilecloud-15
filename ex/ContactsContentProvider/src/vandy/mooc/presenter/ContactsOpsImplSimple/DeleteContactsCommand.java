@@ -1,10 +1,10 @@
-package vandy.mooc.operations.ContactsOpsImplSimple;
+package vandy.mooc.presenter.ContactsOpsImplSimple;
 
 import java.util.Iterator;
 
 import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentResolver;
 import android.provider.ContactsContract;
 
@@ -31,7 +31,7 @@ public class DeleteContactsCommand
         // Application context.
         mOps = ops;
         mContentResolver =
-            ops.getActivity().getApplicationContext().getContentResolver();
+            ops.getApplicationContext().getContentResolver();
     }
 
     /**
@@ -41,7 +41,7 @@ public class DeleteContactsCommand
     public void execute (Iterator<String> contactsIter) {
         int totalContactsDeleted =
             deleteAllContacts(contactsIter);
-        Utils.showToast(mOps.getActivity(),
+        Utils.showToast(mOps.getActivityContext(),
                         totalContactsDeleted 
                         + " contact(s) deleted");
     }

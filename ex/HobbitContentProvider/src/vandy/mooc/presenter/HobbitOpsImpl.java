@@ -4,7 +4,6 @@ import java.lang.ref.WeakReference;
 
 import vandy.mooc.R;
 import vandy.mooc.model.CharacterContract;
-import vandy.mooc.view.HobbitView;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -30,7 +29,7 @@ public abstract class HobbitOpsImpl {
      * Stores a Weak Reference to the HobbitView so the garbage
      * collector can remove it when it's not in use.
      */
-    protected WeakReference<HobbitView> mHobbitView;
+    protected WeakReference<HobbitOps.View> mHobbitView;
 
     /**
      * Contains the most recent result from a query so the display can
@@ -42,17 +41,17 @@ public abstract class HobbitOpsImpl {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the HobbitOpsImpl object after it's been created.
      *
-     * @param instance     The currently active HobbitView.
+     * @param view     The currently active HobbitOps.View.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
 
-    public void onConfiguration(HobbitView instance,
+    public void onConfiguration(HobbitOps.View view,
                                 boolean firstTimeIn) {
         // Create a WeakReference to the HobbitView.
-        mHobbitView = new WeakReference<>(instance);
+        mHobbitView = new WeakReference<>(view);
         
         if (firstTimeIn == false 
             && mCursor != null)

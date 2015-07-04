@@ -1,6 +1,5 @@
 package vandy.mooc.presenter;
 
-import vandy.mooc.view.HobbitView;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.database.Cursor;
@@ -26,22 +25,22 @@ public class HobbitOpsContentResolver
      * initialize the HobbitOpsContentProviderClient object after it's
      * been created.
      *
-     * @param instance     The currently active HobbitView.
+     * @param view     The currently active HobbitOps.View.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
     @Override
-    public void onConfiguration(HobbitView instance,
+    public void onConfiguration(HobbitOps.View view,
                                 boolean firstTimeIn) {
-        super.onConfiguration(instance,
+        super.onConfiguration(view,
                               firstTimeIn);
         
         if (firstTimeIn) 
             // Store the Application context's ContentResolver.
             mCr = 
-                instance.getApplicationContext().getContentResolver();
+                view.getApplicationContext().getContentResolver();
     }
     
     /**

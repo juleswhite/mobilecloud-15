@@ -1,14 +1,12 @@
-package vandy.mooc.operations.ContactsOpsImplLoaderManager;
+package vandy.mooc.presenter.ContactsOpsImplSimple;
 
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 
 import vandy.mooc.common.Command;
-import vandy.mooc.common.GenericAsyncTask;
-import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentProviderOperation;
 import android.content.ContentProviderResult;
 import android.content.ContentResolver;
@@ -21,13 +19,12 @@ import android.provider.ContactsContract.Data;
 import android.provider.ContactsContract.RawContacts;
 
 /**
- * Insert all designated contacts in a background thread.
+ * Insert all designated contacts in the UI thread.
  */
 public class InsertContactsCommand
-       implements GenericAsyncTaskOps<Iterator<String>, Void, Integer>,
-                  Command<Iterator<String>> {
+       implements Command<Iterator<String>> {
     /**
-     * Store a reference to the ContactsOpsImpl object.
+     * Store a reference to the ContactsOps object.
      */
     private ContactsOpsImpl mOps;
 
@@ -44,45 +41,19 @@ public class InsertContactsCommand
         // Application context.
         mOps = ops;
         mContentResolver =
-            ops.getActivity().getApplicationContext().getContentResolver();
+            ops.getApplicationContext().getContentResolver();
     }
 
     /**
      * Run the command.
      */
-    @SuppressWarnings("unchecked")
     @Override
     public void execute(Iterator<String> contactsIter) {
-        // Create a GenericAsyncTask to insert the contacts off the UI
-        // Thread.
-        final GenericAsyncTask<Iterator<String>,
-                               Void,
-                               Integer,
-                               InsertContactsCommand> asyncTask =
-            new GenericAsyncTask<>(this);
+        int totalContactsInserted =
+            insertAllContacts(contactsIter);
 
-        // Execute the GenericAsyncTask.
-        asyncTask.execute(contactsIter);
-    }
-
-    /** 
-     * Run in a background Thread to avoid blocking the UI Thread.
-     */
-    @SuppressWarnings("unchecked")
-    @Override
-    public Integer doInBackground(Iterator<String>... contactsIter) {
-        // Insert all the contacts designated by the Iterator.
-        return insertAllContacts(contactsIter[0]);
-    }
-
-    /**
-     * A count of the number of results in the query are displayed in
-     * the UI Thread.
-     */
-    @Override
-    public void onPostExecute(Integer count) {
-        Utils.showToast(mOps.getActivity(),
-                        count
+        Utils.showToast(mOps.getActivityContext(),
+                        totalContactsInserted
                         + " contact(s) inserted");
     }
 

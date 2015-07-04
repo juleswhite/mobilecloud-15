@@ -21,12 +21,17 @@ import android.widget.Toast;
  * This Activity illustrates how to use the HobbitContentProvider to
  * perform various "CRUD" (i.e., insert, query, update, and delete)
  * operations using characters from Tolkien's classic book "The
- * Hobbit."  It plays the role of the "View" in the
- * Model-View-Presenter pattern.
+ * Hobbit."  This class plays the role of the "View" in the
+ * Model-View-Presenter (MVP) pattern.  It extends GenericActivity
+ * that provides a framework for automatically handling runtime
+ * configuration changes of a HobbitOps object, which plays the role
+ * of the "Presenter" in the MVP pattern.  The HobbitOps.View
+ * interface is used to minimize dependencies between the View and
+ * Presenter layers.
  */
 public class HobbitActivity 
-       extends GenericActivity<HobbitView, HobbitOps>
-       implements HobbitView {
+       extends GenericActivity<HobbitOps.View, HobbitOps>
+       implements HobbitOps.View {
     /**
      * ListView displays the Hobbit character information.
      */
@@ -64,10 +69,10 @@ public class HobbitActivity
         // Initialize the List View.
         mListView = (ListView) findViewById(R.id.list);
 
-        // Call up to the special onCreate() method in
-        // GenericActivity, passing in the HobbitOps class to
-        // instantiate/manage and "this" to provide HobbitOps with its
-        // HobbitView.
+        // Invoke the special onCreate() method in GenericActivity,
+        // passing in the HobbitOps class to instantiate/manage and
+        // "this" to provide HobbitOps with the HobbitOps.View
+        // instance.
         super.onCreate(savedInstanceState,
                        HobbitOps.class,
                        this);
@@ -226,32 +231,6 @@ public class HobbitActivity
     }
 
     /**
-     * Display the contents of the cursor as a ListView.
-     */
-    @Override
-    public void displayCursor(Cursor cursor) {
-    	// Display the designated columns in the cursor as a List in
-        // the ListView connected to the SimpleCursorAdapter.
-        mAdapter.changeCursor(cursor);
-    }
-
-    /**
-     * Return the Activity context.
-     */
-    @Override
-    public Context getActivityContext() {
-        return this;
-    }
-    
-    /**
-     * Return the Application context.
-     */
-    @Override
-    public Context getApplicationContext() {
-        return super.getApplicationContext();
-    }
-    
-    /**
      * Called by Android framework when menu option is clicked.
      * 
      * @param item
@@ -299,5 +278,31 @@ public class HobbitActivity
         inflater.inflate(R.menu.ops_options_menu,
                          menu);
         return true;
+    }
+
+    /**
+     * Display the contents of the cursor as a ListView.
+     */
+    @Override
+    public void displayCursor(Cursor cursor) {
+    	// Display the designated columns in the cursor as a List in
+        // the ListView connected to the SimpleCursorAdapter.
+        mAdapter.changeCursor(cursor);
+    }
+
+    /**
+     * Return the Activity context.
+     */
+    @Override
+    public Context getActivityContext() {
+        return this;
+    }
+    
+    /**
+     * Return the Application context.
+     */
+    @Override
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
     }
 }

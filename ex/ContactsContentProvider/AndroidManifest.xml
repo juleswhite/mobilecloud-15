@@ -18,7 +18,7 @@
      android:allowBackup="true">
 
     <activity
-       android:name=".activities.ContactsActivity"
+       android:name=".view.ContactsActivity"
        android:label="@string/app_name">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />

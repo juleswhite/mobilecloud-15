@@ -10,7 +10,7 @@ import android.util.Log;
  * also extends LifecycleLoggingActivity so that all lifecycle hook
  * method calls are automatically logged.
  */
-public class GenericActivity<OpsType extends ConfigurableOps> 
+public class GenericActivity<Interface, OpsType extends ConfigurableOps<Interface>>
        extends LifecycleLoggingActivity {
     /**
      * Used to retain the OpsType state between runtime configuration
@@ -36,7 +36,8 @@ public class GenericActivity<OpsType extends ConfigurableOps>
      *            ("Ops") object.  
      */
     public void onCreate(Bundle savedInstanceState,
-                         Class<OpsType> opsType) {
+                         Class<OpsType> opsType,
+                         Interface instance) {
         // Call up to the super class.
         super.onCreate(savedInstanceState);
 
@@ -44,7 +45,8 @@ public class GenericActivity<OpsType extends ConfigurableOps>
             // Handle configuration-related events, including the
             // initial creation of an Activity and any subsequent
             // runtime configuration changes.
-            handleConfiguration(opsType);
+            handleConfiguration(opsType,
+                                instance);
         } catch (InstantiationException
                  | IllegalAccessException e) {
             Log.d(TAG, 
@@ -62,7 +64,8 @@ public class GenericActivity<OpsType extends ConfigurableOps>
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
-    public void handleConfiguration(Class<OpsType> opsType)
+    public void handleConfiguration(Class<OpsType> opsType,
+                                    Interface instance)
         throws InstantiationException, IllegalAccessException {
 
         // If this method returns true it's the first time the
@@ -72,7 +75,8 @@ public class GenericActivity<OpsType extends ConfigurableOps>
                   "First time onCreate() call");
 
             // Initialize the GenericActivity fields.
-            initialize(opsType);
+            initialize(opsType,
+                       instance);
         } else {
             // The RetainedFragmentManager was previously initialized,
             // which means that a runtime configuration change
@@ -90,11 +94,12 @@ public class GenericActivity<OpsType extends ConfigurableOps>
             // crash!
             if (mOpsInstance == null) 
                 // Initialize the GenericActivity fields.
-                initialize(opsType);
+                initialize(opsType,
+                           instance);
             else
                 // Inform it that the runtime configuration change has
                 // completed.
-                mOpsInstance.onConfiguration(this,
+                mOpsInstance.onConfiguration(instance,
                                              false);
         }
     }
@@ -104,7 +109,8 @@ public class GenericActivity<OpsType extends ConfigurableOps>
      * @throws IllegalAccessException 
      * @throws InstantiationException 
      */
-    private void initialize(Class<OpsType> opsType) 
+    private void initialize(Class<OpsType> opsType,
+                            Interface instance) 
             throws InstantiationException, IllegalAccessException {
         // Create the OpsType object.
         mOpsInstance = opsType.newInstance();
@@ -115,7 +121,7 @@ public class GenericActivity<OpsType extends ConfigurableOps>
                                      mOpsInstance);
 
         // Perform the first initialization.
-        mOpsInstance.onConfiguration(this,
+        mOpsInstance.onConfiguration(instance,
                                      true);
     }
 

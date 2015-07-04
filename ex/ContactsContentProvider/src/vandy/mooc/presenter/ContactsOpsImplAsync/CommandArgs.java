@@ -1,10 +1,10 @@
-package vandy.mooc.operations.ContactsOpsImplAsync;
+package vandy.mooc.presenter.ContactsOpsImplAsync;
 
 import java.util.Iterator;
 
 import vandy.mooc.common.AsyncProviderCommandAdapter;
 import vandy.mooc.common.MutableInt;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 
 /**
  * Holds the arguments passed to an AsyncCommand.

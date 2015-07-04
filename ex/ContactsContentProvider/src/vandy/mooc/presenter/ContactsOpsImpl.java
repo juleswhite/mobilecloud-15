@@ -1,4 +1,4 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -7,12 +7,12 @@ import java.util.Iterator;
 import java.util.List;
 
 import vandy.mooc.R;
-import vandy.mooc.activities.ContactsActivity;
 import vandy.mooc.common.Command;
 import vandy.mooc.common.Utils;
 import android.accounts.Account;
 import android.accounts.AccountManager;
-import android.app.Activity;
+import android.app.LoaderManager;
+import android.content.Context;
 import android.database.ContentObserver;
 import android.database.Cursor;
 import android.os.Handler;
@@ -37,7 +37,7 @@ public abstract class ContactsOpsImpl {
      * Stores a Weak Reference to the ContactsActivity so the garbage
      * collector can remove it when it's not in use.
      */
-    private WeakReference<ContactsActivity> mActivity;
+    private WeakReference<ContactsOps.View> mContactsView;
 
     /**
      * The types of ContactCommands.
@@ -174,17 +174,17 @@ public abstract class ContactsOpsImpl {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the ContactsOpsImpl object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param view     The currently active ContactsOps.View.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(ContactsOps.View view,
                                 boolean firstTimeIn) {
-        // Create a WeakReference to the activity.
-        mActivity = 
-            new WeakReference<>((ContactsActivity) activity);
+        // Create a WeakReference to the ContactsOps.View.
+        mContactsView = 
+            new WeakReference<>(view);
 
         if (firstTimeIn) {
             // Initialize the Google account information.
@@ -192,12 +192,12 @@ public abstract class ContactsOpsImpl {
 
             // Initialize the SimpleCursorAdapter.
             mCursorAdapter =
-                new SimpleCursorAdapter(activity.getApplicationContext(),
-                                               R.layout.list_layout, 
-                                               null,
-                                               sColumnsToDisplay, 
-                                               sColumnResIds,
-                                               1);
+                new SimpleCursorAdapter(view.getApplicationContext(),
+                                        R.layout.list_layout, 
+                                        null,
+                                        sColumnsToDisplay, 
+                                        sColumnResIds,
+                                        1);
         } 
     }
 
@@ -207,7 +207,7 @@ public abstract class ContactsOpsImpl {
     protected void registerContentObserver() {
         // Register a ContentObserver that's notified when Contacts
         // change (e.g., are inserted, modified, or deleted).
-        getActivity().getContentResolver().registerContentObserver
+        getActivityContext().getContentResolver().registerContentObserver
             (ContactsContract.Contacts.CONTENT_URI,
              true,
              contactsChangeContentObserver);
@@ -219,7 +219,7 @@ public abstract class ContactsOpsImpl {
     protected void unregisterContentObserver() {
         // Unregister a ContentObserver so it won't be notified when
         // Contacts change (e.g., are inserted, modified, or deleted).
-        getActivity().getContentResolver().unregisterContentObserver
+        getActivityContext().getContentResolver().unregisterContentObserver
             (contactsChangeContentObserver);
     }
 
@@ -257,11 +257,10 @@ public abstract class ContactsOpsImpl {
         // Get Account information.  Must have a Google account
         // configured on the device.
         mAccountList = 
-            AccountManager.get(mActivity.get()
-                               .getApplicationContext())
+            AccountManager.get(getApplicationContext())
             .getAccountsByType("com.google");
         if (mAccountList == null)
-            Utils.showToast(mActivity.get(),
+            Utils.showToast(getActivityContext(),
                             "google account not configured");
         else {
             try {
@@ -294,10 +293,24 @@ public abstract class ContactsOpsImpl {
     }
 
     /**
-     * Get the ContactsActivity.
+     * Get the Activity Context.
      */
-    public ContactsActivity getActivity() {
-        return mActivity.get();
+    public Context getActivityContext() {
+        return mContactsView.get().getActivityContext();
+    }
+
+    /**
+     * Get the Application Context.
+     */
+    public Context getApplicationContext() {
+        return mContactsView.get().getApplicationContext();
+    }
+
+    /**
+     * Get the LoaderManager.
+     */
+    public LoaderManager getLoaderManager() {
+        return mContactsView.get().getLoaderManager();
     }
 
     /**

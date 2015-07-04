@@ -1,9 +1,9 @@
-package vandy.mooc.operations.ContactsOpsImplSimple;
+package vandy.mooc.presenter.ContactsOpsImplSimple;
 
 import java.util.Iterator;
 
 import vandy.mooc.common.Command;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentResolver;
 import android.database.Cursor;
 import android.provider.ContactsContract;
@@ -32,7 +32,7 @@ public class QueryContactsCommand
         // Application context.
         mOps = ops;
         mContentResolver =
-            ops.getActivity().getApplicationContext().getContentResolver();
+            ops.getApplicationContext().getContentResolver();
     }
 
     /**

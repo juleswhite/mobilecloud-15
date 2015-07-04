@@ -1,9 +1,9 @@
-package vandy.mooc.operations.ContactsOpsImplLoaderManager;
+package vandy.mooc.presenter.ContactsOpsImplLoaderManager;
 
 import java.util.Iterator;
 
 import vandy.mooc.common.Command;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.app.LoaderManager;
 import android.content.CursorLoader;
 import android.content.Loader;
@@ -36,9 +36,9 @@ public class QueryContactsCommand
      */
     public void execute(Iterator<String> ignored) {
         // Initialize the LoaderManager. 
-        mOps.getActivity().getLoaderManager().initLoader(0,
-                                                         null,
-                                                         this);
+        mOps.getLoaderManager().initLoader(0,
+                                           null,
+                                           this);
     }
 
     /**
@@ -67,7 +67,7 @@ public class QueryContactsCommand
 
         // Create a new CursorLoader that will perform the query
         // asynchronously.
-        return new CursorLoader(mOps.getActivity(),
+        return new CursorLoader(mOps.getActivityContext(),
                                 ContactsContract.Contacts.CONTENT_URI,
                                 columnsToQuery,
                                 selection,

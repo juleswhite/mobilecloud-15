@@ -1,4 +1,4 @@
-package vandy.mooc.operations.ContactsOpsImplLoaderManager;
+package vandy.mooc.presenter.ContactsOpsImplLoaderManager;
 
 import java.util.Iterator;
 
@@ -6,7 +6,7 @@ import vandy.mooc.common.Command;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
-import vandy.mooc.operations.ContactsOpsImpl;
+import vandy.mooc.presenter.ContactsOpsImpl;
 import android.content.ContentResolver;
 import android.content.ContentValues;
 import android.provider.ContactsContract;
@@ -35,7 +35,7 @@ public class ModifyContactsCommand
         // Application context.
         mOps = ops;
         mContentResolver =
-            ops.getActivity().getApplicationContext().getContentResolver();
+            ops.getApplicationContext().getContentResolver();
     }
 
     /**
@@ -72,7 +72,7 @@ public class ModifyContactsCommand
      */
     @Override
     public void onPostExecute(Integer totalContactsModified) {
-        Utils.showToast(mOps.getActivity(),
+        Utils.showToast(mOps.getActivityContext(),
                         totalContactsModified
                         + " contact(s) modified");
     }

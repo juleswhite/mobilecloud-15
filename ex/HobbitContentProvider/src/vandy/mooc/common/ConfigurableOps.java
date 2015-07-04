@@ -1,13 +1,12 @@
 package vandy.mooc.common;
 
-import android.app.Activity;
 
 /**
  * The base interface that an operations ("Ops") class must implement
  * so that it can be notified automatically by the GenericActivity
  * framework when runtime configuration changes occur.
  */
-public interface ConfigurableOps {
+public interface ConfigurableOps<Interface> {
     /**
      * Hook method dispatched by the GenericActivity framework to
      * initialize an operations ("Ops") object after it's been
@@ -19,6 +18,6 @@ public interface ConfigurableOps {
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-    void onConfiguration(Activity activity, 
+    void onConfiguration(Interface instance, 
                          boolean firstTimeIn);
 }

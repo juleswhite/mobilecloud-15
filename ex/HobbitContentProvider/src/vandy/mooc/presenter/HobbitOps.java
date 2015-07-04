@@ -1,7 +1,7 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import vandy.mooc.common.ConfigurableOps;
-import android.app.Activity;
+import vandy.mooc.view.HobbitView;
 import android.net.Uri;
 import android.os.RemoteException;
 import android.widget.SimpleCursorAdapter;
@@ -15,7 +15,7 @@ import android.widget.SimpleCursorAdapter;
  * abstracts play the role of the "Presenter" in the
  * Model-View-Presenter pattern.
  */
-public class HobbitOps implements ConfigurableOps {
+public class HobbitOps implements ConfigurableOps<HobbitView> {
     /**
      * Debugging tag used by the Android logger.
      */
@@ -57,16 +57,16 @@ public class HobbitOps implements ConfigurableOps {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the HobbitOps object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param instance     The currently active HobbitView.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
     @Override
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(HobbitView instance,
                                 boolean firstTimeIn) {
-        mHobbitOpsImpl.onConfiguration(activity,
+        mHobbitOpsImpl.onConfiguration(instance,
                                        firstTimeIn);
     }
     

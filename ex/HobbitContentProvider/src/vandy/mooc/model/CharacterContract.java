@@ -1,4 +1,4 @@
-package vandy.mooc.provider;
+package vandy.mooc.model;
 
 import vandy.mooc.R;
 import android.content.ContentUris;

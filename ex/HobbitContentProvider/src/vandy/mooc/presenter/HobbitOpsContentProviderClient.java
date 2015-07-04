@@ -1,7 +1,7 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
-import vandy.mooc.provider.CharacterContract;
-import android.app.Activity;
+import vandy.mooc.model.CharacterContract;
+import vandy.mooc.view.HobbitView;
 import android.content.ContentProviderClient;
 import android.content.ContentResolver;
 import android.content.ContentValues;
@@ -29,22 +29,22 @@ public class HobbitOpsContentProviderClient
      * initialize the HobbitOpsContentProviderClient object after it's
      * been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param instance     The currently active HobbitView.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
     @Override
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(HobbitView instance,
                                 boolean firstTimeIn) {
-        super.onConfiguration(activity,
+        super.onConfiguration(instance,
                               firstTimeIn);
         
         if (firstTimeIn) {
             // Get this Application context's ContentResolver.
             ContentResolver cr =
-                activity.getApplicationContext().getContentResolver();
+                instance.getApplicationContext().getContentResolver();
 
             // Get the ContentProviderClient associated with this
             // ContentResolver.

@@ -1,4 +1,4 @@
-package vandy.mooc.provider;
+package vandy.mooc.model;
 
 import java.io.File;
 

@@ -1,11 +1,10 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import java.lang.ref.WeakReference;
 
 import vandy.mooc.R;
-import vandy.mooc.activities.HobbitActivity;
-import vandy.mooc.provider.CharacterContract;
-import android.app.Activity;
+import vandy.mooc.model.CharacterContract;
+import vandy.mooc.view.HobbitView;
 import android.content.ContentValues;
 import android.database.Cursor;
 import android.net.Uri;
@@ -28,10 +27,10 @@ public abstract class HobbitOpsImpl {
         HobbitOpsImpl.class.getSimpleName();
 
     /**
-     * Stores a Weak Reference to the HobbitActivity so the garbage
+     * Stores a Weak Reference to the HobbitView so the garbage
      * collector can remove it when it's not in use.
      */
-    protected WeakReference<HobbitActivity> mActivity;
+    protected WeakReference<HobbitView> mHobbitView;
 
     /**
      * Contains the most recent result from a query so the display can
@@ -43,23 +42,23 @@ public abstract class HobbitOpsImpl {
      * Hook method dispatched by the GenericActivity framework to
      * initialize the HobbitOpsImpl object after it's been created.
      *
-     * @param activity     The currently active Activity.  
+     * @param instance     The currently active HobbitView.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime
      *                     configuration change.
      */
 
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(HobbitView instance,
                                 boolean firstTimeIn) {
-        // Create a WeakReference to the activity.
-        mActivity = new WeakReference<>((HobbitActivity) activity);
+        // Create a WeakReference to the HobbitView.
+        mHobbitView = new WeakReference<>(instance);
         
         if (firstTimeIn == false 
             && mCursor != null)
             // Redisplay the contents of the cursor after a runtime
             // configuration change.
-            mActivity.get().displayCursor(mCursor);
+            mHobbitView.get().displayCursor(mCursor);
     }
     
     /**
@@ -75,7 +74,7 @@ public abstract class HobbitOpsImpl {
      */
     public SimpleCursorAdapter makeCursorAdapter() {
         return new SimpleCursorAdapter
-            (mActivity.get(),
+            (mHobbitView.get().getActivityContext(),
              R.layout.list_layout, 
              null,
              CharacterContract.CharacterEntry.sColumnsToDisplay,
@@ -285,15 +284,15 @@ public abstract class HobbitOpsImpl {
                         */
                         null);
         if (mCursor.getCount() == 0) {
-            Toast.makeText(mActivity.get(), 
+            Toast.makeText(mHobbitView.get().getActivityContext(), 
                            "No items to display",
                            Toast.LENGTH_SHORT).show();
             // Remove the display if there's nothing left to show.
-            mActivity.get().displayCursor
+            mHobbitView.get().displayCursor
                 (mCursor = null);
         } else
             // Display the results of the query.
-            mActivity.get().displayCursor
+            mHobbitView.get().displayCursor
                 (mCursor);
     }
 }

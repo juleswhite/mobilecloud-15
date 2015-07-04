@@ -1,4 +1,4 @@
-package vandy.mooc.provider;
+package vandy.mooc.model;
 
 /**
  * A simple POJO that stores information about Hobbit characters.

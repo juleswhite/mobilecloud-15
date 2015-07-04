@@ -1,8 +1,8 @@
-package vandy.mooc.provider;
+package vandy.mooc.model;
 
 import java.util.HashMap;
 
-import vandy.mooc.provider.CharacterContract.CharacterEntry;
+import vandy.mooc.model.CharacterContract.CharacterEntry;
 import android.content.ContentUris;
 import android.content.ContentValues;
 import android.content.Context;

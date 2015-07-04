@@ -1,8 +1,9 @@
-package vandy.mooc.activities;
+package vandy.mooc.view;
 
 import vandy.mooc.R;
 import vandy.mooc.common.GenericActivity;
-import vandy.mooc.operations.HobbitOps;
+import vandy.mooc.presenter.HobbitOps;
+import android.content.Context;
 import android.database.Cursor;
 import android.net.Uri;
 import android.os.Bundle;
@@ -23,7 +24,9 @@ import android.widget.Toast;
  * Hobbit."  It plays the role of the "View" in the
  * Model-View-Presenter pattern.
  */
-public class HobbitActivity extends GenericActivity<HobbitOps> {
+public class HobbitActivity 
+       extends GenericActivity<HobbitView, HobbitOps>
+       implements HobbitView {
     /**
      * ListView displays the Hobbit character information.
      */
@@ -63,9 +66,11 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
 
         // Call up to the special onCreate() method in
         // GenericActivity, passing in the HobbitOps class to
-        // instantiate and manage.
+        // instantiate/manage and "this" to provide HobbitOps with its
+        // HobbitView.
         super.onCreate(savedInstanceState,
-                       HobbitOps.class);
+                       HobbitOps.class,
+                       this);
 
         // Initialize the SimpleCursorAdapter.
         mAdapter = getOps().makeCursorAdapter();
@@ -223,12 +228,29 @@ public class HobbitActivity extends GenericActivity<HobbitOps> {
     /**
      * Display the contents of the cursor as a ListView.
      */
+    @Override
     public void displayCursor(Cursor cursor) {
     	// Display the designated columns in the cursor as a List in
         // the ListView connected to the SimpleCursorAdapter.
         mAdapter.changeCursor(cursor);
     }
 
+    /**
+     * Return the Activity context.
+     */
+    @Override
+    public Context getActivityContext() {
+        return this;
+    }
+    
+    /**
+     * Return the Application context.
+     */
+    @Override
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
+    }
+    
     /**
      * Called by Android framework when menu option is clicked.
      * 

@@ -369,7 +369,7 @@ public class WeatherTimeoutCache
         try (Cursor cursor =
              mContext.getContentResolver().query
              (WeatherContract.WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
-              new String[] {WeatherValuesEntry._ID}, 
+              new String[] {WeatherValuesEntry._ID},
               null,
               null,
               null)) {

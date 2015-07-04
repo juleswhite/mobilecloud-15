@@ -1,4 +1,4 @@
-package vandy.mooc.provider;
+package vandy.mooc.model;
 
 import android.content.ContentProvider;
 import android.content.ContentValues;

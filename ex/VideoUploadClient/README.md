@@ -52,6 +52,10 @@ The following are instructions for running the client portion of the Video Uploa
 	b) Change the constant SERVER_URL in vandy/mooc/utils/Constants.java in the client app:
 		    
 			SERVER_URL = "http://10.0.2.2:8080";
+			
+	   For Genymotion/VirtualBox emulators:
+		
+			SERVER_URL = "http://192.168.56.1:8080";
     
 	c) Camera may or may not work in Emulator for recording videos. 
 	

@@ -289,20 +289,4 @@ public class HobbitActivity
         // the ListView connected to the SimpleCursorAdapter.
         mAdapter.changeCursor(cursor);
     }
-
-    /**
-     * Return the Activity context.
-     */
-    @Override
-    public Context getActivityContext() {
-        return this;
-    }
-    
-    /**
-     * Return the Application context.
-     */
-    @Override
-    public Context getApplicationContext() {
-        return super.getApplicationContext();
-    }
 }

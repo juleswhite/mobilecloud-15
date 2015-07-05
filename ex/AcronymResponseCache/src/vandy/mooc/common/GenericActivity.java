@@ -1,5 +1,6 @@
 package vandy.mooc.common;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 
@@ -139,6 +140,20 @@ public class GenericActivity<Interface, OpsType extends ConfigurableOps<Interfac
      */
     public RetainedFragmentManager getRetainedFragmentManager() {
         return mRetainedFragmentManager;
+    }
+
+    /**
+     * Return the Activity context.
+     */
+    public Context getActivityContext() {
+        return this;
+    }
+    
+    /**
+     * Return the Application context.
+     */
+    public Context getApplicationContext() {
+        return super.getApplicationContext();
     }
 }
 

@@ -78,6 +78,11 @@ public class AcronymActivity
                 // Show error message to user.
                 Utils.showToast(this,
                                 "Call already in progress");
+
+            // Return focus to edit box and select all text in it
+            // after query.
+            mEditText.requestFocus();
+            mEditText.selectAll();
         }
     }
 
@@ -102,6 +107,11 @@ public class AcronymActivity
                 // Show error message to user.
                 Utils.showToast(this,
                                 "Call already in progress");
+
+            // Return focus to edit box and select all text in it
+            // after query.
+            mEditText.requestFocus();
+            mEditText.selectAll();
         }
     }
 
@@ -138,21 +148,5 @@ public class AcronymActivity
                 Utils.showToast(this,
                                 "No Activity found to display Acronym Expansions");
         }
-    }
-
-    /**
-     * Return the Activity context.
-     */
-    @Override
-    public Context getActivityContext() {
-        return this;
-    }
-    
-    /**
-     * Return the Application context.
-     */
-    @Override
-    public Context getApplicationContext() {
-        return super.getApplicationContext();
     }
 }

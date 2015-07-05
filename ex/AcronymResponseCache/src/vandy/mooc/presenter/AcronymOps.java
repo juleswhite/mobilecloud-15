@@ -122,9 +122,9 @@ public class AcronymOps
 
     /**
      * Hook method dispatched by the GenericActivity framework to
-     * initialize the HobbitOps object after it's been created.
+     * initialize the AcronymOps object after it's been created.
      *
-     * @param view     The currently active HobbitView.
+     * @param view         The currently active AcronymOps.View.
      * @param firstTimeIn  Set to "true" if this is the first time the
      *                     Ops class is initialized, else set to
      *                     "false" if called after a runtime

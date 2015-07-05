@@ -1,7 +1,7 @@
-package vandy.mooc.provider;
+package vandy.mooc.model.provider;
 
-import vandy.mooc.provider.WeatherContract.WeatherConditionsEntry;
-import vandy.mooc.provider.WeatherContract.WeatherValuesEntry;
+import vandy.mooc.model.provider.WeatherContract.WeatherConditionsEntry;
+import vandy.mooc.model.provider.WeatherContract.WeatherValuesEntry;
 import android.content.ContentProvider;
 import android.content.ContentUris;
 import android.content.ContentValues;

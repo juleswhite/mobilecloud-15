@@ -1,15 +1,15 @@
-package vandy.mooc.provider.cache;
+package vandy.mooc.model.cache;
 
 import java.util.ArrayList;
 
-import vandy.mooc.provider.WeatherContract;
-import vandy.mooc.provider.WeatherContract.WeatherConditionsEntry;
-import vandy.mooc.provider.WeatherContract.WeatherValuesEntry;
-import vandy.mooc.retrofitWeather.WeatherData;
-import vandy.mooc.retrofitWeather.WeatherData.Main;
-import vandy.mooc.retrofitWeather.WeatherData.Sys;
-import vandy.mooc.retrofitWeather.WeatherData.Weather;
-import vandy.mooc.retrofitWeather.WeatherData.Wind;
+import vandy.mooc.model.provider.WeatherContract;
+import vandy.mooc.model.provider.WeatherContract.WeatherConditionsEntry;
+import vandy.mooc.model.provider.WeatherContract.WeatherValuesEntry;
+import vandy.mooc.model.webdata.WeatherData;
+import vandy.mooc.model.webdata.WeatherData.Main;
+import vandy.mooc.model.webdata.WeatherData.Sys;
+import vandy.mooc.model.webdata.WeatherData.Weather;
+import vandy.mooc.model.webdata.WeatherData.Wind;
 import android.app.AlarmManager;
 import android.content.ContentValues;
 import android.content.Context;

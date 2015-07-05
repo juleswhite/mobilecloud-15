@@ -1,4 +1,4 @@
-package vandy.mooc.provider.cache;
+package vandy.mooc.model.cache;
 
 /**
  * This is common interface for all caches.

@@ -1,4 +1,4 @@
-package vandy.mooc.provider;
+package vandy.mooc.model.provider;
 
 import android.content.ContentUris;
 import android.content.UriMatcher;

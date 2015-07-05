@@ -24,7 +24,7 @@ import android.widget.EditText;
  * the MVP pattern.  The AcronymOps.View interface is used to minimize
  * dependencies between the View and Presenter layers.
  */
-public class AcronymActivity
+public class AcronymExpansionActivity
        extends GenericActivity<AcronymOps.View, AcronymOps>
        implements AcronymOps.View {
     /**

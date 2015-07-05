@@ -1,7 +1,9 @@
-package vandy.mooc.retrofitWeather;
+package vandy.mooc.model.webdata;
 
 import java.util.ArrayList;
 import java.util.List;
+import android.os.Parcel;
+import android.os.Parcelable;
 
 import com.google.gson.annotations.SerializedName;
 
@@ -29,7 +31,7 @@ import com.google.gson.annotations.SerializedName;
  * functionality.
  *
  */
-public class WeatherData {
+public class WeatherData implements Parcelable {
     /*
      * These fields store the WeatherData's state.  We use
      * the @SerializedName annotation to make an explicit mapping
@@ -283,4 +285,89 @@ public class WeatherData {
 	    return mDeg;
 	}
     }
+
+    /*
+     * BELOW THIS is related to Parcelable Interface.
+     */
+
+    /**
+     * A bitmask indicating the set of special object types marshaled
+     * by the Parcelable.
+     */
+    @Override
+    public int describeContents() {
+        return 0;
+    }
+
+    /**
+     * Write this instance out to byte contiguous memory.
+     */
+    @Override
+    public void writeToParcel(Parcel dest,
+                              int flags) {
+        dest.writeString(mName);
+        dest.writeLong(mDate);
+        dest.writeLong(mCod);
+        final Weather weather = mWeathers.get(0);
+        dest.writeLong(weather.getId());
+        dest.writeString(weather.getMain());
+        dest.writeString(weather.getDescription());
+        dest.writeString(weather.getIcon());
+        dest.writeLong(mSys.getSunrise());
+        dest.writeLong(mSys.getSunset());
+        dest.writeString(mSys.getCountry());
+        dest.writeDouble(mMain.getTemp());
+        dest.writeLong(mMain.getHumidity());
+        dest.writeDouble(mMain.getPressure());
+        dest.writeDouble(mWind.getSpeed());
+        dest.writeDouble(mWind.getDeg());
+    }
+
+    /**
+     * Private constructor provided for the CREATOR interface, which
+     * is used to de-marshal an WeatherData from the Parcel of data.
+     * <p>
+     * The order of reading in variables HAS TO MATCH the order in
+     * writeToParcel(Parcel, int)
+     *
+     * @param in
+     */
+    private WeatherData(Parcel in) {
+        mName = in.readString();
+        mDate = in.readLong();
+        mCod = in.readLong();
+
+        mWeathers.add(new Weather(in.readLong(),
+                                  in.readString(),
+                                  in.readString(),
+                                  in.readString()));
+
+        mSys = new Sys(in.readLong(),
+                       in.readLong(),
+                       in.readString());
+
+        mMain = new Main(in.readDouble(),
+                         in.readLong(),
+                         in.readDouble());
+
+        mWind = new Wind(in.readDouble(),
+                         in.readDouble());
+    }
+
+    /**
+     * public Parcelable.Creator for WeatherData, which is an
+     * interface that must be implemented and provided as a public
+     * CREATOR field that generates instances of your Parcelable class
+     * from a Parcel.
+     */
+    public static final Parcelable.Creator<WeatherData> CREATOR =
+        new Parcelable.Creator<WeatherData>() {
+        public WeatherData createFromParcel(Parcel in) {
+            return new WeatherData(in);
+        }
+
+        public WeatherData[] newArray(int size) {
+            return new WeatherData[size];
+        }
+    };
 }

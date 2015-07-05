@@ -13,35 +13,12 @@ import android.widget.Toast;
 /**
  * Useful helper methods and fields.
  */
-public class Utils {
+public class WeatherUtils {
     /**
      * Logging tag.
      */
-    private final static String TAG = Utils.class.getCanonicalName();
-
-    /**
-     * This method is used to hide a keyboard after a user has finished typing
-     * the url.
-     */
-    public static void hideKeyboard(Activity activity, IBinder windowToken) {
-	InputMethodManager mgr = (InputMethodManager) activity
-		.getSystemService(Context.INPUT_METHOD_SERVICE);
-	mgr.hideSoftInputFromWindow(windowToken, 0);
-    }
-
-    /**
-     * Show a toast message.
-     */
-    public static void showToast(Context context, String message) {
-	Toast.makeText(context, message, Toast.LENGTH_SHORT).show();
-    }
-
-    /**
-     * Make Utils a utility class by preventing instantiation.
-     */
-    private Utils() {
-	throw new AssertionError();
-    }
+    private final static String TAG =
+        WeatherUtils.class.getCanonicalName();
 
     /**
      * Helper method to format the Temprature returned by the OpenWeatherMap
@@ -169,5 +146,12 @@ public class Utils {
 	    return R.drawable.art_clouds;
 
 	return -1;
+    }
+
+    /**
+     * Make WeatherUtils a utility class by preventing instantiation.
+     */
+    private WeatherUtils() {
+	throw new AssertionError();
     }
 }

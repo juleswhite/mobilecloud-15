@@ -16,7 +16,8 @@ import android.widget.SimpleCursorAdapter;
  * abstracts play the role of the "Presenter" in the
  * Model-View-Presenter pattern.
  */
-public class HobbitOps implements ConfigurableOps<HobbitOps.View> {
+public class HobbitOps 
+             implements ConfigurableOps<HobbitOps.View> {
     /**
      * Debugging tag used by the Android logger.
      */

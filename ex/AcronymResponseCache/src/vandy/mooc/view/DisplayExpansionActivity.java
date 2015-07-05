@@ -17,7 +17,7 @@ import android.widget.ListView;
  * LifecycleLoggingActivity so its its lifecycle hook methods are logged
  * automatically.
  */
-public class DisplayAcronymActivity extends LifecycleLoggingActivity {
+public class DisplayExpansionActivity extends LifecycleLoggingActivity {
     /**
      * Custom Action used by Implicit Intent to call this Activity.
      */

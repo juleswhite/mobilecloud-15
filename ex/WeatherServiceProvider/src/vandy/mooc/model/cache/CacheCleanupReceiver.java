@@ -1,4 +1,4 @@
-package vandy.mooc.provider.cache;
+package vandy.mooc.model.cache;
 
 import android.app.PendingIntent;
 import android.content.BroadcastReceiver;

@@ -1,4 +1,4 @@
-package vandy.mooc.utils;
+package vandy.mooc.common;
 
 import android.os.AsyncTask;
 
@@ -17,11 +17,6 @@ public class GenericAsyncTask<Params,
     protected final String TAG = getClass().getSimpleName();
     
     /**
-     * Params instance.
-     */
-    private Params mParam;
-
-    /**
      * Reference to the enclosing Ops object.
      */
     protected Ops mOps;
@@ -34,20 +29,27 @@ public class GenericAsyncTask<Params,
     }
 
     /**
-     * Run in a background thread to avoid blocking the UI thread.
+     * Called in the UI thread prior to running doInBackground() in a
+     * background thread.
+     */
+    // @@ Omit until Android supports default methods in interfaces..
+    // @Override
+    // protected void onPreExecute() {
+    //     mOps.onPreExecute();
+    // }
+
+    /**
+     * Called in a background thread to process the @a params.
      */
     @SuppressWarnings("unchecked")
     protected Result doInBackground(Params... params) {
-        mParam = params[0];
-
-        return mOps.doInBackground(mParam);
+        return mOps.doInBackground(params);
     }
 
     /**
-     * Process results in the UI Thread.
+     * Called in the UI thread to process the @a result.
      */
     protected void onPostExecute(Result result) {
-        mOps.onPostExecute(result,
-                           mParam);
+        mOps.onPostExecute(result);
     }
 }

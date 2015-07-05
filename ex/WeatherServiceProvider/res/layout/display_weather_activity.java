@@ -1,40 +1,11 @@
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:tools="http://schemas.android.com/tools"
-    android:id="@+id/container"
-    android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    android:orientation="vertical"
-    tools:ignore="MergeRootFrame" >
-
-    <EditText
-        android:id="@+id/editText"
-        android:layout_width="match_parent"
-        android:layout_height="50dp"
-        android:inputType="text|textMultiLine|textUri" 
-        android:ems="10"
-        android:hint="@string/query">
-    </EditText>
-
-    <Button
-         android:id="@+id/button"
-		 style="?android:attr/buttonBarButtonStyle"
-		 android:textColor="@color/white"
-         android:layout_width="fill_parent"
-         android:layout_height="wrap_content"
-         android:onClick="getWeather"
-         android:background="@drawable/edit_text_border"
-         android:ems="15"
-         android:padding="10dp"
-         android:text="@string/button_hint"></Button>    
-    
-    <!-- ScrollView used to display the current weather results -->
-    <ScrollView
+<!-- Master layout. -->
+<ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent">
-    
+ 
     <LinearLayout
         android:gravity="center_vertical"
-        android:layout_gravity="start"
+        android:layout_gravity="left"
         android:layout_height="wrap_content"
         android:layout_width="match_parent"
         android:orientation="vertical"
@@ -78,7 +49,7 @@
             android:orientation="horizontal">
 
             <LinearLayout
-                android:gravity="start"
+                android:gravity="left"
                 android:layout_height="wrap_content"
                 android:layout_width="wrap_content"
                 android:orientation="vertical">
@@ -163,4 +134,3 @@
         </LinearLayout>
     </LinearLayout>
 </ScrollView>
-</LinearLayout>

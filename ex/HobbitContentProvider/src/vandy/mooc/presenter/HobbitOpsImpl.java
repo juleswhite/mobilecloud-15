@@ -26,7 +26,7 @@ public abstract class HobbitOpsImpl {
         HobbitOpsImpl.class.getSimpleName();
 
     /**
-     * Stores a Weak Reference to the HobbitView so the garbage
+     * Stores a Weak Reference to the HobbitOps.View so the garbage
      * collector can remove it when it's not in use.
      */
     protected WeakReference<HobbitOps.View> mHobbitView;
@@ -47,7 +47,6 @@ public abstract class HobbitOpsImpl {
      *                     "false" if called after a runtime
      *                     configuration change.
      */
-
     public void onConfiguration(HobbitOps.View view,
                                 boolean firstTimeIn) {
         // Create a WeakReference to the HobbitView.

@@ -136,7 +136,7 @@ public class AcronymExpansionActivity
             // Create an intent that will start an Activity to display
             // the Acronym Expansions to the user.
             final Intent intent =
-                DisplayAcronymActivity.makeIntent(results);
+                DisplayExpansionActivity.makeIntent(results);
 
             // Verify that the intent will resolve to an Activity.
             if (intent.resolveActivity(getPackageManager()) != null)

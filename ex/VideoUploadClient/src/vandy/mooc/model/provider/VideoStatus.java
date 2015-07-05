@@ -1,5 +1,4 @@
-
-package vandy.mooc.data.model;
+package vandy.mooc.model.provider;
 
 /**
  * This "Plain Ol' Java Object" (POJO) class represents data of

@@ -1,4 +1,4 @@
-package vandy.mooc.data;
+package vandy.mooc.model.provider;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -6,17 +6,14 @@ import java.util.List;
 
 import retrofit.RestAdapter;
 import retrofit.mime.TypedFile;
-import vandy.mooc.data.model.Video;
-import vandy.mooc.data.model.VideoStatus;
-import vandy.mooc.data.model.VideoStatus.VideoState;
-import vandy.mooc.data.provider.AndroidVideoCache;
-import vandy.mooc.data.retrofit.VideoServiceProxy;
+import vandy.mooc.model.provider.VideoStatus.VideoState;
+import vandy.mooc.model.webdata.VideoServiceProxy;
 import vandy.mooc.utils.Constants;
 import android.content.Context;
 
 /**
  * VideoController mediates the communication between the Video
- * Service and Android Storage.
+ * Service and Android storage.
  */
 public class VideoController {
     /**

@@ -1,4 +1,4 @@
-package vandy.mooc.activities.ui;
+package vandy.mooc.view.ui;
 
 import vandy.mooc.R;
 import android.app.Activity;

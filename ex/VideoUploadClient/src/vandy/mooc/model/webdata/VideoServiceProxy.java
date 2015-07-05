@@ -1,4 +1,4 @@
-package vandy.mooc.data.retrofit;
+package vandy.mooc.model.webdata;
 
 import java.util.Collection;
 
@@ -11,8 +11,8 @@ import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Streaming;
 import retrofit.mime.TypedFile;
-import vandy.mooc.data.model.Video;
-import vandy.mooc.data.model.VideoStatus;
+import vandy.mooc.model.provider.Video;
+import vandy.mooc.model.provider.VideoStatus;
 
 /**
  * This interface defines an API for a Video Service web service. The

@@ -1,7 +1,7 @@
-package vandy.mooc.services;
+package vandy.mooc.model.services;
 
 import vandy.mooc.R;
-import vandy.mooc.data.VideoController;
+import vandy.mooc.model.provider.VideoController;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;

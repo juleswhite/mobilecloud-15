@@ -1,11 +1,10 @@
-package vandy.mooc.activities.ui;
+package vandy.mooc.view.ui;
 
 import java.util.ArrayList;
 import java.util.List;
 
 import vandy.mooc.R;
-import vandy.mooc.data.model.Video;
-
+import vandy.mooc.model.provider.Video;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;

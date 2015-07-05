@@ -1,6 +1,5 @@
-package vandy.mooc.data.provider;
+package vandy.mooc.model.provider;
 
-import vandy.mooc.data.model.Video;
 import android.content.ContentUris;
 import android.content.Context;
 import android.database.Cursor;

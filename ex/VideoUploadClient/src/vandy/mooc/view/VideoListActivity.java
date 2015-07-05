@@ -1,16 +1,16 @@
-package vandy.mooc.activities;
+package vandy.mooc.view;
 
 import java.util.List;
 
 import vandy.mooc.R;
-import vandy.mooc.activities.ui.FloatingActionButton;
-import vandy.mooc.activities.ui.UploadVideoDialogFragment;
-import vandy.mooc.activities.ui.VideoAdapter;
 import vandy.mooc.common.GenericActivity;
 import vandy.mooc.common.Utils;
-import vandy.mooc.data.model.Video;
-import vandy.mooc.operations.VideoOps;
-import vandy.mooc.services.UploadVideoService;
+import vandy.mooc.model.provider.Video;
+import vandy.mooc.model.services.UploadVideoService;
+import vandy.mooc.presenter.VideoOps;
+import vandy.mooc.view.ui.FloatingActionButton;
+import vandy.mooc.view.ui.UploadVideoDialogFragment;
+import vandy.mooc.view.ui.VideoAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;

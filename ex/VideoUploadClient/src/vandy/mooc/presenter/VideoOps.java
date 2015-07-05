@@ -1,15 +1,15 @@
-package vandy.mooc.operations;
+package vandy.mooc.presenter;
 
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import vandy.mooc.activities.VideoListActivity;
 import vandy.mooc.common.ConfigurableOps;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
-import vandy.mooc.data.VideoController;
-import vandy.mooc.data.model.Video;
-import vandy.mooc.services.UploadVideoService;
+import vandy.mooc.model.provider.Video;
+import vandy.mooc.model.provider.VideoController;
+import vandy.mooc.model.services.UploadVideoService;
+import vandy.mooc.view.VideoListActivity;
 import android.app.Activity;
 import android.content.Context;
 import android.util.Log;

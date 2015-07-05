@@ -1,5 +1,4 @@
-
-package vandy.mooc.data.model;
+package vandy.mooc.model.provider;
 
 import java.util.Objects;
 import com.fasterxml.jackson.annotation.JsonIgnore;

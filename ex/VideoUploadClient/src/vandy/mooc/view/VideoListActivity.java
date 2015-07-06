@@ -80,7 +80,7 @@ public class VideoListActivity
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., storing Views.
      * 
-     * @param Bundle
+     * @param savedInstanceState
      *            object that contains saved state information.
      */
     @Override
@@ -306,8 +306,6 @@ public class VideoListActivity
     private void createPlusFabButton() {
         final DisplayMetrics metrics =
             getResources().getDisplayMetrics();
-        final int position =
-            (metrics.widthPixels / 4) + 5;
 
         mUploadVideoButton =
             new FloatingActionButton
@@ -317,10 +315,7 @@ public class VideoListActivity
             .withButtonColor(getResources()
                              .getColor(R.color.theme_primary))
             .withGravity(Gravity.BOTTOM | Gravity.END)
-            .withMargins(0, 
-                         0,
-                         position,
-                         0)
+            .withMargins(0, 0, 0, 0) // not necessary
             .create();
 
         // Show the UploadVideoDialog Fragment when user clicks the

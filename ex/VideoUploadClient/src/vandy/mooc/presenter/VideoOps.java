@@ -3,16 +3,21 @@ package vandy.mooc.presenter;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
+import vandy.mooc.R;
 import vandy.mooc.common.ConfigurableOps;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
+import vandy.mooc.common.Utils;
 import vandy.mooc.model.provider.Video;
 import vandy.mooc.model.provider.VideoController;
 import vandy.mooc.model.services.UploadVideoService;
 import vandy.mooc.view.VideoListActivity;
+import vandy.mooc.view.ui.VideoAdapter;
 import android.app.Activity;
 import android.content.Context;
+import android.net.Uri;
 import android.util.Log;
+import android.widget.ListView;
 
 /**
  * This class implements all the Video-related operations.  It
@@ -54,6 +59,18 @@ public class VideoOps
     VideoController mVideoController;
     
     /**
+     * The ListView that contains a list of Videos available from
+     * Server.
+     */
+    private ListView mVideosList;
+    
+    /**
+     * The Adapter that is needed by ListView to show the list of
+     * Videos.
+     */
+    private VideoAdapter mAdapter;
+    
+    /**
      * Default constructor that's needed by the GenericActivity
      * framework.
      */
@@ -80,22 +97,54 @@ public class VideoOps
         // (Re)set the mActivity WeakReference.
         mActivity =
             new WeakReference<>((VideoListActivity) activity);
+        
+        // Get reference to the ListView for displaying the results
+        // entered.
+        mVideosList =
+            (ListView) mActivity.get().findViewById(R.id.videoList);
 
         if (firstTimeIn) {
             // Get the Application Context.
             mApplicationContext =
                 activity.getApplicationContext();
             
-            // Create VideoController that will mediate the 
+            // Create VideoController that will mediate the
             // communication between Server and Android Storage.
             mVideoController =
                 new VideoController(mApplicationContext);
             
+            // Create a local instance of our custom Adapter for our
+            // ListView.
+            mAdapter = new VideoAdapter(mApplicationContext);
+            
             // Get the VideoList from Server. 
             getVideoList();
         }
+        
+       // Set the adapter to the ListView.
+       mVideosList.setAdapter(mAdapter);
     }
 
+    /**
+     * Display the Videos in ListView
+     * 
+     * @param videos
+     */
+    public void displayVideoList(List<Video> videos) {
+        if (videos != null) {
+            // Update the adapter with the List of Videos.
+            mAdapter.setVideos(videos);
+            Utils.showToast(mActivity.get(),
+                            "Video meta-data loaded from Video Service");
+        } else {
+            Utils.showToast(mActivity.get(),
+                           "Please connect to the Video Service");
+            
+            mActivity.get().finish();
+        }
+
+    }
+    
     /**
      * Gets the VideoList from Server by executing the AsyncTask to
      * expand the acronym without blocking the caller.
@@ -110,11 +159,12 @@ public class VideoOps
      *   
      * @param videoId
      */
-    public void uploadVideo(Long videoId){
+    public void uploadVideo(Long videoId, Uri videoUri){
         mApplicationContext.startService
             (UploadVideoService.makeIntent 
                  (mApplicationContext,
-                  videoId));
+                  videoId,
+                  videoUri));
     }
     
     /**
@@ -132,6 +182,6 @@ public class VideoOps
      */
     @Override
     public void onPostExecute(List<Video> videos) {
-        mActivity.get().displayVideoList(videos);
+        displayVideoList(videos);
     }
 }

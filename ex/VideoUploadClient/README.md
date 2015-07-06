@@ -57,7 +57,7 @@ The following are instructions for running the client portion of the Video Uploa
 		
 			SERVER_URL = "http://192.168.56.1:8080";
     
-	c) Camera may or may not work in Emulator for recording videos. 
+	c) Camera will not work in Emulator for recording videos. 
 	
 	d) To get the Video from Gallery:
 	    -> Open DDMS Perspective.

@@ -6,7 +6,8 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
  * This "Plain Ol' Java Object" (POJO) class represents data of
- * interest downloaded in Json from the VideoServiceProxy.
+ * interest downloaded in Json from the Video Service via the
+ * VideoServiceProxy.
  */
 public class Video {
     /**
@@ -19,7 +20,7 @@ public class Video {
     private String contentType;
 	
     /**
-     * Stores the path to stream the video from. 
+     * Stores the path to stream the video from.
      * @JsonIgnore is used to completely exclude a member from
      *  the process of serialization and de-serialization.
      */

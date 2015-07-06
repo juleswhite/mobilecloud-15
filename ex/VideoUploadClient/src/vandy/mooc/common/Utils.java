@@ -14,12 +14,7 @@ import android.widget.Toast;
  * @brief Helper methods shared by various Activities.
  */
 public class Utils {
-    /**
-     * Debugging tag.
-     */
-    private static final String TAG =
-        Utils.class.getCanonicalName();
-
+    
     /**
      * Return an uppercase version of the input or null if user gave
      * no input (in which case a toast is displayed to this effect).

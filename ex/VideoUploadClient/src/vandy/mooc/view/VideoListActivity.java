@@ -1,24 +1,21 @@
 package vandy.mooc.view;
 
-import java.util.List;
-
 import vandy.mooc.R;
 import vandy.mooc.common.GenericActivity;
 import vandy.mooc.common.Utils;
-import vandy.mooc.model.provider.Video;
 import vandy.mooc.model.services.UploadVideoService;
 import vandy.mooc.presenter.VideoOps;
+import vandy.mooc.utils.VideoGalleryUtils;
 import vandy.mooc.view.ui.FloatingActionButton;
 import vandy.mooc.view.ui.UploadVideoDialogFragment;
-import vandy.mooc.view.ui.VideoAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
 import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.net.Uri;
 import android.os.Bundle;
-import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
@@ -26,7 +23,6 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ListView;
 
 /**
  * This Activity can be used upload a selected video to a Video
@@ -54,28 +50,16 @@ public class VideoListActivity
 
     /**
      * The Broadcast Receiver that registers itself to receive result
-     * from UploadVideoService.
+     * from UploadVideoService when a video upload completes.
      */
     private UploadResultReceiver mUploadResultReceiver;
-
-    /**
-     * The ListView that contains a list of Videos available from
-     * Server.
-     */
-    private ListView mVideosList;
 
     /**
      * The Floating Action Button that will show a Dialog Fragment to
      * upload Video when user clicks on it.
      */
     private FloatingActionButton mUploadVideoButton;
-
-    /**
-     * The Adapter that is needed by ListView to show the list of
-     * Videos.
-     */
-    private VideoAdapter mAdapter;
-
+    
     /**
      * Hook method called when a new instance of Activity is created.
      * One time initialization code goes here, e.g., storing Views.
@@ -84,26 +68,13 @@ public class VideoListActivity
      *            object that contains saved state information.
      */
     @Override
-        protected void onCreate(Bundle savedInstanceState) {
+    protected void onCreate(Bundle savedInstanceState) {
         // Initialize the default layout.
         setContentView(R.layout.activity_video_list);
 
-        mUploadResultReceiver = new UploadResultReceiver();
-
         // Register BroadcastReceiver that receives result from
-        // UploadVideoService.
+        // UploadVideoService when a video upload completes.
         registerReceiver();
-
-        // Get reference to the ListView for displaying the results
-        // entered.
-        mVideosList = (ListView) findViewById(R.id.videoList);
-
-        // Create a local instance of our custom Adapter for our
-        // ListView.
-        mAdapter = new VideoAdapter(getApplicationContext());
-
-        // Set the adapter to the ListView.
-        mVideosList.setAdapter(mAdapter);
 
         // Show the Floating Action Button.
         createPlusFabButton();
@@ -136,9 +107,12 @@ public class VideoListActivity
 
     /**
      * Register a BroadcastReceiver that receives a result from the
-     * UploadVideoService.
+     * UploadVideoService when a video upload completes.
      */
     private void registerReceiver() {
+        // Receiver for the notification.
+        mUploadResultReceiver = new UploadResultReceiver();
+
         // Create an Intent filter that handles Intents from the
         // UploadVideoService.
         IntentFilter intentFilter =
@@ -157,6 +131,7 @@ public class VideoListActivity
      */
     @Override
     protected void onDestroy() {
+        // Call destroy in superclass.
         super.onDestroy();
 
         // Unregister BroadcastReceiver.
@@ -164,9 +139,9 @@ public class VideoListActivity
     }
 
     /**
-     * The user selected the option to get Video from the
-     * UploadVideoDialog Fragment.  Based on what the user selects
-     * either record a Video or get a Video from the Video Gallery.
+     * The user selected option to get Video from UploadVideoDialog
+     * Fragment.  Based on what the user selects either record a Video
+     * or get a Video from the Video Gallery.
      */
     @Override
     public void onVideoSelected(int which) {
@@ -205,8 +180,8 @@ public class VideoListActivity
         // get Record Video.
         final Intent intent =
             new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-
-         // Verify that the intent will resolve to an Activity.
+        
+        // Verify that the intent will resolve to an Activity.
         if (intent.resolveActivity(getPackageManager()) != null) 
             startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
     }
@@ -224,78 +199,31 @@ public class VideoListActivity
     public void onActivityResult(int requestCode,
                                  int resultCode,
                                  Intent data) {
-        // Check if the Result is Ok and upload the recorded Video to
-        // server.
-        if (requestCode == REQUEST_VIDEO_CAPTURE
-            && resultCode == Activity.RESULT_OK) {
-            Long videoId = ContentUris.parseId(data.getData());
-            getOps().uploadVideo(videoId);
+        // Check if the Result is Ok and upload the Video to server.
+        if (resultCode == Activity.RESULT_OK) {
+            // Get the Uri of recorded video.
+            Uri videoUri = data.getData();
+            Long videoId = null;
 
-        } 
-        // Check if the Result is Ok and upload the Video from
-        // Gallery to server.
-        else if (requestCode == REQUEST_GET_VIDEO
-                 && resultCode == Activity.RESULT_OK) {
-            String wholeID = 
-                DocumentsContract.getDocumentId(data.getData());
-            Long videoId = Long.parseLong(wholeID.split(":")[1]);
+            if (requestCode == REQUEST_VIDEO_CAPTURE) 
+                // Get the Video Id of the recorded video from Uri.
+                videoId = 
+                    ContentUris.parseId(videoUri);
+            else if (requestCode == REQUEST_GET_VIDEO) 
+                // Get the Video Id of the Gallery video from Uri.
+                videoId = 
+                    VideoGalleryUtils.getVideoId(getApplicationContext(),
+                                                 videoUri);
+
             Utils.showToast(this,
                             "Uploading video");
-            getOps().uploadVideo(videoId);
-        }
-    }
-
-    /**
-     * Display the Videos in ListView
-     * 
-     * @param videos
-     */
-    public void displayVideoList(List<Video> videos) {
-        if (videos != null) {
-            // Update the adapter with the List of Videos.
-            mAdapter.setVideos(videos);
-            Utils.showToast(this,
-                            "Video meta-data loaded from Video Service");
-        } else {
-            Utils.showToast(this,
-                           "Please connect to the Video Service");
             
-            finish();
-        }
-
-    }
-
-    /**
-     * Hook method called to initialize the contents of the Activity's
-     * standard options menu.
-     * 
-     * @param menu
-     */
-    @Override
-    public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it
-        // is present.
-        getMenuInflater().inflate(R.menu.video_list,
-                                  menu);
-        return true;
-    }
-
-    /**
-     * Hook method called whenever an item in your options menu is
-     * selected
-     * 
-     * @param item
-     */
-    @Override
-    public boolean onOptionsItemSelected(MenuItem item) {
-        // Handle action bar item clicks here. The action bar will
-        // automatically handle clicks on the Home/Up button, so long
-        // as you specify a parent activity in AndroidManifest.xml.
-        int id = item.getItemId();
-        if (id == R.id.action_settings) {
-            return true;
-        }
-        return super.onOptionsItemSelected(item);
+            // Upload the Video.
+            getOps().uploadVideo(videoId,
+                                 videoUri);
+        } else 
+            Utils.showToast(this,
+                            "Could not get video to upload");
     }
 
     /**
@@ -331,5 +259,39 @@ public class VideoListActivity
                                                          "uploadVideo");
                 }
             });
+    }
+
+
+    /**
+     * Hook method called to initialize the contents of the Activity's
+     * standard options menu.
+     * 
+     * @param menu
+     */
+    @Override
+    public boolean onCreateOptionsMenu(Menu menu) {
+        // Inflate the menu; this adds items to the action bar if it
+        // is present.
+        getMenuInflater().inflate(R.menu.video_list,
+                                  menu);
+        return true;
+    }
+
+    /**
+     * Hook method called whenever an item in your options menu is
+     * selected
+     * 
+     * @param item
+     */
+    @Override
+    public boolean onOptionsItemSelected(MenuItem item) {
+        // Handle action bar item clicks here. The action bar will
+        // automatically handle clicks on the Home/Up button, so long
+        // as you specify a parent activity in AndroidManifest.xml.
+        int id = item.getItemId();
+        if (id == R.id.action_settings) {
+            return true;
+        }
+        return super.onOptionsItemSelected(item);
     }
 }

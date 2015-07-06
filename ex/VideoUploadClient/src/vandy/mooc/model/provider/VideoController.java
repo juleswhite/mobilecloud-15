@@ -9,11 +9,13 @@ import retrofit.mime.TypedFile;
 import vandy.mooc.model.provider.VideoStatus.VideoState;
 import vandy.mooc.model.webdata.VideoServiceProxy;
 import vandy.mooc.utils.Constants;
+import vandy.mooc.utils.VideoGalleryUtils;
 import android.content.Context;
+import android.net.Uri;
 
 /**
- * VideoController mediates the communication between the Video
- * Service and Android storage.
+ * Mediates communication between the Video Service and the
+ * local storage on the Android device. 
  */
 public class VideoController {
     /**
@@ -28,7 +30,7 @@ public class VideoController {
     private AndroidVideoCache mAndroidVideoCache;
 
     /**
-     * Defines methods that communicates with Video Service.
+     * Defines methods that communicate with the Video Service.
     */
     private VideoServiceProxy mVideoServiceProxy;
     
@@ -65,13 +67,14 @@ public class VideoController {
      *         False- If there was a failure while 
      *                Uploading Video.
      */
-    public boolean uploadVideo(long videoId) {
+    public boolean uploadVideo(long videoId,
+                               Uri videoUri) {
         // Get the Video from Android Video Content Provider having
         // the given Id.
         Video androidVideo = 
             mAndroidVideoCache.getVideoById(videoId);
         
-        // Check if we get any Video from Android Video Content
+        // Check if any such Video exists in Android Video Content
         // Provider.
         if (androidVideo != null) {
             // Add the metadata of the Video to Server and get the
@@ -84,10 +87,10 @@ public class VideoController {
             if (receivedVideo != null) {
                 // Prepare to Upload the Video data.
                 
-                // Get the file path of the Video to be uploaded from
-                // the Android Video Content Provider.
+                // Get the path of video from videoUri.
                 String filePath = 
-                     mAndroidVideoCache.getVideoFilePath(videoId);
+                      VideoGalleryUtils.getPath(mContext,
+                                                videoUri);
                 
                 // Create an instance of the file to be uploaded.
                 File videoFile = new File(filePath);
@@ -112,7 +115,9 @@ public class VideoController {
                         // Video successfully uploaded.
                         return true;
                     }
-                }
+                } else 
+                    // @@ Show a toast indicating the video was too
+                    // large to upload.
             }
         }
         // Error occured while uploading the video.

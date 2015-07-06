@@ -68,7 +68,7 @@ public class UploadVideoDialogFragment extends DialogFragment {
      * implementation simply instantiates and returns a Dialog class.
      */
     @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = 
             new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_upload_video)

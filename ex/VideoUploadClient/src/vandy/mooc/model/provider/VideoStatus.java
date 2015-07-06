@@ -2,7 +2,8 @@ package vandy.mooc.model.provider;
 
 /**
  * This "Plain Ol' Java Object" (POJO) class represents data of
- * interest downloaded in Json from the VideoServiceProxy.
+ * interest downloaded in Json from the Video Service via the
+ * VideoServiceProxy.
  */
 public class VideoStatus {
     /**

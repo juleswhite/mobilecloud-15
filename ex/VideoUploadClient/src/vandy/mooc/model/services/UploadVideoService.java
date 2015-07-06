@@ -6,12 +6,13 @@ import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
 
 /**
  * Intent Service that will run in background and Uploads the Video
- * having a given Id. After the operation, it will send broadcast the
+ * having a given Id.  After the operation, it will send broadcast the
  * Intent that will send the result of the Upload to the
  * VideoListActivity.
  */
@@ -29,7 +30,7 @@ public class UploadVideoService
      */
     private static final String KEY_UPLOAD_VIDEO_ID =
         "upload_videoId";
-
+    
     /**
      * Default Id , if no Id is present in Extras of the received
      * Intent.
@@ -84,15 +85,17 @@ public class UploadVideoService
      * @return
      */
     public static Intent makeIntent(Context context,
-                                    long videoId) {
+                                    long videoId,
+                                    Uri videoUri) {
         return new Intent(context, 
                           UploadVideoService.class)
             .putExtra(KEY_UPLOAD_VIDEO_ID,
-                      videoId);
+                      videoId)
+            .setData(videoUri);
     }
     
     /**
-     * Hook method that is invoked on the worker thread with a request 
+     * Hook method that is invoked on the worker thread with a request
      * to process. Only one Intent is processed at a time, but the
      * processing happens on a worker thread that runs independently
      * from other application logic.
@@ -101,8 +104,8 @@ public class UploadVideoService
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        //Starts the Notification to show the progress
-        // of video upload.
+        // Starts the Notification to show the progress of video
+        // upload.
         startNotification();
         
         // Create VideoController that will mediates the communication
@@ -116,13 +119,14 @@ public class UploadVideoService
                                 DEFAULT_VIDEO_ID);
         
         // Check if Video Upload is successful.
-        if (mController.uploadVideo(videoId))
+        if (mController.uploadVideo(videoId,
+                                    intent.getData()))
             finishNotification("Upload complete");
         else
             finishNotification("Upload failed");
         
-        //Send the Broadcast to Activity that the Video 
-        // Upload is completed.
+        // Send the Broadcast to Activity that the Video Upload is
+        // completed.
         sendBroadcast();
     }
     
@@ -145,14 +149,15 @@ public class UploadVideoService
         mBuilder.setContentText(status) ;
         
         // Removes the progress bar.
-        mBuilder.setProgress (0, 0, false); 
+        mBuilder.setProgress (0,
+                              0,
+                              false); 
         mNotifyManager.notify(NOTIFICATION_ID,
                               mBuilder.build());
     }
     
     /**
-     * Starts the Notification to show the progress
-     * of video upload.
+     * Starts the Notification to show the progress of video upload.
      */
     private void startNotification() {
         //Gets the access to System Notification Services.
@@ -166,7 +171,9 @@ public class UploadVideoService
                        .setContentTitle("Video Upload") 
                        .setContentText("Upload in progress") 
                        .setSmallIcon(R.drawable.ic_notify_file_upload)
-                       .setProgress(0, 0, true);
+                       .setProgress(0,
+                                    0,
+                                    true);
  
         // Issues the notification
         mNotifyManager.notify(NOTIFICATION_ID,

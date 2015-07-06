@@ -6,7 +6,6 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-
 import org.apache.commons.io.IOUtils;
 import retrofit.client.Response;
 
@@ -20,6 +19,7 @@ import android.os.Environment;
  * Downloads directory in Android.
  */
 public class VideoStorageUtils {
+    
     /**
      * Stores the Video in External Downloads directory in Android.
      */

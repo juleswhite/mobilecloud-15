@@ -274,16 +274,17 @@ public class WeatherTimeoutCache
 		// to the location, check to see if it has expired.
 		// If it has, delete it concurrently, else return the
 		// data.
-		if (wdCursor.getLong
+		final long expirationTime = wdCursor.getLong
                         (wdCursor.getColumnIndex
-                             (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME)) 
-                    < System.currentTimeMillis()) {
+                             (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME));
+		
+		if (expirationTime < System.currentTimeMillis()) {
 
 		    // Concurrently delete the stale data from the db
 		    // in a new thread.
 		    new Thread(new Runnable() {
 			public void run() {
-			    remove(locationKey);
+			    remove(locationKey, expirationTime);
 			}
 		    }).start();
 

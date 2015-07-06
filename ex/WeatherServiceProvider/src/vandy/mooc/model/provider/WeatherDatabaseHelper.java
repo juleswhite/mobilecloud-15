@@ -95,6 +95,8 @@ public class WeatherDatabaseHelper extends SQLiteOpenHelper {
         + " TEXT, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY
         + " TEXT, "
+        + WeatherContract.WeatherConditionsEntry.COLUMN_EXPIRATION_TIME
+        + " INTEGER, "
         + WeatherContract.WeatherConditionsEntry.COLUMN_ICON
         + " TEXT) ";
 

@@ -261,6 +261,8 @@ public final class WeatherContract {
             "icon";
         public static final String COLUMN_LOCATION_KEY =
             "loc_key_sub";
+        public static final String COLUMN_EXPIRATION_TIME = 
+                    "expiration_time_sub";
 
         /**
          * Return a URI that points to the row containing the given ID.

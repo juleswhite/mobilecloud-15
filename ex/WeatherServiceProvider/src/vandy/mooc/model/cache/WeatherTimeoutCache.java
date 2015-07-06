@@ -391,18 +391,25 @@ public class WeatherTimeoutCache
      * Delete the Weather Values and Weather Conditions associated
      * with a @a locationKey with a specific expiration time.
      */
-    private void remove(String locationKey, long expirationTime) {
+    private void remove(String locationKey,
+                        long expirationTime) {
         // Delete expired entries from the WeatherValues table.
     mContext.getContentResolver().delete
             (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
              WEATHER_VALUES_LOCATION_TIME_KEY_SELECTION,
-             new String[] { locationKey, Long.toString(expirationTime) });
+             new String[] { 
+                locationKey,
+                Long.toString(expirationTime) 
+            });
 
         // Delete expired entries from the WeatherConditions table.
     mContext.getContentResolver().delete
             (WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI,
              WEATHER_CONDITIONS_LOCATION_TIME_KEY_SELECTION,
-             new String[] { locationKey, Long.toString(expirationTime) });
+             new String[] { 
+                locationKey,
+                Long.toString(expirationTime) 
+            });
     }
 
     /**
@@ -460,7 +467,8 @@ public class WeatherTimeoutCache
 		                expiredData.getLong
                             (expiredData.getColumnIndex
                                     (WeatherValuesEntry.COLUMN_EXPIRATION_TIME));
-                    remove(deleteLocation, expirationTime);
+                    remove(deleteLocation,
+                           expirationTime);
 		} while (expiredData.moveToNext());
 	    }
 	}

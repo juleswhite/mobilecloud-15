@@ -204,7 +204,8 @@ public class VideoListActivity
         case RECORD_VIDEO:
             // Create a file to save the video.
             mRecordVideoUri =
-                VideoStorageUtils.getRecordedVideoUri();  
+                VideoStorageUtils.getRecordedVideoUri
+                                   (getApplicationContext());  
             
             // Create an intent that will start an Activity to get
             // Record Video.

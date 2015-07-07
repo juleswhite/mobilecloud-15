@@ -27,7 +27,7 @@ public class VideoStorageUtils {
      * Create a file Uri for saving a recorded video
      */ 
     @SuppressLint("SimpleDateFormat")
-    public static Uri getRecordedVideoUri() {
+    public static Uri getRecordedVideoUri(Context context) {
 
         // Check to see if external SDCard is mounted or not.
         if (isExternalStorageWritable()) {
@@ -51,12 +51,17 @@ public class VideoStorageUtils {
                 new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
             
             // Create a video file name from the TimeStamp.
-            final File mediaFile =
+            final File videoFile =
                 new File(videoStorageDir.getPath() + File.separator + "VID_"
                          + timeStamp + ".mp4");
 
+            // Always notify the MediaScanners after storing
+            // the Video, so that it is immediately available to
+            // the user.
+            notifyMediaScanners(context, videoFile);
+            
             //Return Uri from Video file.
-            return Uri.fromFile(mediaFile);
+            return Uri.fromFile(videoFile);
 
         } else 
             //Return null if no SDCard is mounted.

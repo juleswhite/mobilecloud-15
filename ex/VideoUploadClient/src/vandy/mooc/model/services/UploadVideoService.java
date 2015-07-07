@@ -1,6 +1,5 @@
 package vandy.mooc.model.services;
 
-import vandy.mooc.R;
 import vandy.mooc.model.mediator.VideoDataMediator;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -126,12 +125,14 @@ public class UploadVideoService
      */
     private void finishNotification(String status) {
         // When the loop is finished, updates the notification.
-        mBuilder.setContentText(status) ;
-        
-        // Removes the progress bar.
-        mBuilder.setProgress (0,
+        mBuilder.setContentText(status)
+                // Removes the progress bar.
+                .setProgress (0,
                               0,
-                              false); 
+                              false)
+                .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+                .setContentText("") 
+                .setTicker(status);
 
         // Build the Notification with the given
         // Notification Id.
@@ -153,7 +154,8 @@ public class UploadVideoService
                        .Builder(this)
                        .setContentTitle("Video Upload") 
                        .setContentText("Upload in progress") 
-                       .setSmallIcon(R.drawable.ic_notify_file_upload)
+                       .setSmallIcon(android.R.drawable.stat_sys_upload)
+                       .setTicker("Uploading video")
                        .setProgress(0,
                                     0,
                                     true);

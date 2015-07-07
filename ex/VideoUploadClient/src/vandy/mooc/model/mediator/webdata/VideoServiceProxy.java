@@ -12,8 +12,6 @@ import retrofit.http.Path;
 import retrofit.http.Streaming;
 import retrofit.mime.TypedFile;
 
-
-
 /**
  * This interface defines an API for a Video Service web service.  The
  * interface is used to provide a contract for client/server
@@ -56,21 +54,24 @@ public interface VideoServiceProxy {
      * Sends a POST request to add the Video metadata to the Video 
      * Web service using a two-way Retrofit RPC call.
      *
-     * @param video
-     * @return video 
+     * @param video meta-data
+     * @return Updated video meta-data returned from the Video Service.
      */
     @POST(VIDEO_SVC_PATH)
     public Video addVideo(@Body Video video);
 	
     /**
      * Sends a POST request to Upload the Video data to the Video Web
-     * service using a two-way Retrofit RPC call. Multipart is used
-     * to send large video files to Video Service.
-     *
+     * service using a two-way Retrofit RPC call.  @Multipart is used
+     * to transfer multiple content (i.e. several files in case of a
+     * file upload to a server) within one request entity.  When doing
+     * so, a REST client can save the overhead of sending a sequence
+     * of single requests to the server, thereby reducing network
+     * latency.
+     * 
      * @param id
      * @param videoData
-     * @return videoStatus indicating status of video 
-     *          uploaded.
+     * @return videoStatus indicating status of the uploaded video.
      */
     @Multipart
     @POST(VIDEO_DATA_PATH)

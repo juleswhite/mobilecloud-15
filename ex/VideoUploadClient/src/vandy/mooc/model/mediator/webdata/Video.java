@@ -16,8 +16,7 @@ public class Video {
     private String title;
     private long duration;
     private String contentType;
-	private String dataUrl;
-	
+    private String dataUrl;
 	
     /**
      * No-op constructor

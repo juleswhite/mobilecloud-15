@@ -12,7 +12,7 @@ import vandy.mooc.model.mediator.webdata.VideoServiceProxy;
 import vandy.mooc.model.mediator.webdata.VideoStatus;
 import vandy.mooc.model.mediator.webdata.VideoStatus.VideoState;
 import vandy.mooc.utils.Constants;
-import vandy.mooc.utils.VideoMediastoreUtils;
+import vandy.mooc.utils.VideoMediaStoreUtils;
 import android.content.Context;
 import android.net.Uri;
 
@@ -22,36 +22,31 @@ import android.net.Uri;
  * they should be called from a background thread (e.g., via an
  * AsyncTask).
  */
-
 public class VideoDataMediator {
-    
     /**
      * Status code to indicate that file is successfully
      * uploaded.
      */
     public static final String STATUS_UPLOAD_SUCCESSFUL =
-                "Upload succeeded";
+        "Upload succeeded";
     
     /**
      * Status code to indicate that file upload failed 
      * due to large video size.
      */
     public static final String STATUS_UPLOAD_ERROR_FILE_TOO_LARGE =
-                "Upload failed: File too big";
+        "Upload failed: File too big";
     
     /**
      * Status code to indicate that file upload failed.
      */
     public static final String STATUS_UPLOAD_ERROR =
-                "Upload failed";
+        "Upload failed";
     
-     
     /**
      * Defines methods that communicate with the Video Service.
-    */
+     */
     private VideoServiceProxy mVideoServiceProxy;
-    
-    
     
     /**
      * Constructor that initializes the VideoDataMediator.
@@ -73,23 +68,20 @@ public class VideoDataMediator {
      * 
      * @param videoId
      *            Id of the Video to be uploaded.
-     *  
-     * @return result of the video upload operation.
-     *         True - If the Video is successfully uploaded.
-     *         False- If there was a failure while 
-     *                Uploading Video.
+     *
+     * @return A String indicating the status of the video upload operation.
      */
     public String uploadVideo(Context context,
                               Uri videoUri) {
-        
         // Get the path of video file from videoUri.
-        String filePath = VideoMediastoreUtils.getPath(context,
+        String filePath = VideoMediaStoreUtils.getPath(context,
                                                        videoUri);
         
         // Get the Video from Android Video Content Provider having
         // the given filePath.
         Video androidVideo = 
-            VideoMediastoreUtils.getVideo(context, filePath);
+            VideoMediaStoreUtils.getVideo(context,
+                                          filePath);
         
         // Check if any such Video exists in Android Video Content
         // Provider.
@@ -101,7 +93,7 @@ public class VideoDataMediator {
             Video receivedVideo = 
                 mVideoServiceProxy.addVideo(androidVideo);
 
-            // Check if the Server returns any Video metadata.
+            // Check if the Video Service returned any Video metadata.
             if (receivedVideo != null) {
                 // Prepare to Upload the Video data.
                               
@@ -109,26 +101,26 @@ public class VideoDataMediator {
                 File videoFile = new File(filePath);
                       
                 // Check if the file size is less than the size of the
-                // video that can be uploaded to the server.
+                // video that can be uploaded to the Video Service.
                 if (videoFile.length() < Constants.MAX_SIZE_MEGA_BYTE) {
-                    // Finally, upload the Video data to the server
-                    // and get the status of the uploaded video data.
+                    // Upload the Video data to the Video Service and get the
+                    // status of the uploaded video data.
                     VideoStatus status =
                         mVideoServiceProxy.setVideoData
-                             (receivedVideo.getId(),
-                              new TypedFile(receivedVideo.getContentType(),
-                                            videoFile));
+                            (receivedVideo.getId(),
+                             new TypedFile(receivedVideo.getContentType(),
+                                           videoFile));
 
-                    // Check if the Status of the Video or not.
-                    if (status.getState() == VideoState.READY) {
+                    // Check if the Status of the Video is ready or not.
+                    if (status.getState() == VideoState.READY) 
                         // Video successfully uploaded.
                         return STATUS_UPLOAD_SUCCESSFUL;
-                    }
                 } else 
                     // Video can't be uploaded due to large video size.
                     return STATUS_UPLOAD_ERROR_FILE_TOO_LARGE;
             }
         }
+
         // Error occured while uploading the video.
         return STATUS_UPLOAD_ERROR;
     }

@@ -1,6 +1,5 @@
 package vandy.mooc.model.services;
 
-import vandy.mooc.R;
 import vandy.mooc.model.mediator.VideoDataMediator;
 import android.app.IntentService;
 import android.app.NotificationManager;
@@ -12,10 +11,9 @@ import android.support.v4.app.NotificationCompat.Builder;
 import android.support.v4.content.LocalBroadcastManager;
 
 /**
- * Intent Service that will run in background and Uploads the Video
- * having a given Id.  After the operation, it will send broadcast the
- * Intent that will send the result of the Upload to the
- * VideoListActivity.
+ * Intent Service that runs in background and uploads the Video with a
+ * given Id.  After the operation, it broadcasts the Intent to send
+ * the result of the upload to the VideoListActivity.
  */
 public class UploadVideoService 
        extends IntentService {
@@ -113,9 +111,11 @@ public class UploadVideoService
      * completed.
      */
     private void sendBroadcast(){
+        // Use a LocalBroadcastManager to restrict the scope of this
+        // Intent to the VideoUploadClient application.
         LocalBroadcastManager.getInstance(this)
              .sendBroadcast(new Intent(ACTION_UPLOAD_SERVICE_RESPONSE)
-                      .addCategory(Intent.CATEGORY_DEFAULT));
+                            .addCategory(Intent.CATEGORY_DEFAULT));
     }
     
     /**
@@ -125,12 +125,14 @@ public class UploadVideoService
      */
     private void finishNotification(String status) {
         // When the loop is finished, updates the notification.
-        mBuilder.setContentText(status) ;
-        
-        // Removes the progress bar.
-        mBuilder.setProgress (0,
+        mBuilder.setContentText(status)
+                // Removes the progress bar.
+                .setProgress (0,
                               0,
-                              false); 
+                              false)
+                .setSmallIcon(android.R.drawable.stat_sys_upload_done)
+                .setContentText("") 
+                .setTicker(status);
 
         // Build the Notification with the given
         // Notification Id.
@@ -142,22 +144,23 @@ public class UploadVideoService
      * Starts the Notification to show the progress of video upload.
      */
     private void startNotification() {
-        // Gets the access to System Notification Services.
+        // Gets access to the Android Notification Service.
         mNotifyManager = (NotificationManager)
             getSystemService(Context.NOTIFICATION_SERVICE); 
 
-        // Build the Notification and sets an activity indicator
-        // for an operation of indeterminate length.
+        // Create the Notification and set a progress indicator for an
+        // operation of indeterminate length.
         mBuilder = new NotificationCompat
                        .Builder(this)
                        .setContentTitle("Video Upload") 
                        .setContentText("Upload in progress") 
-                       .setSmallIcon(R.drawable.ic_notify_file_upload)
+                       .setSmallIcon(android.R.drawable.stat_sys_upload)
+                       .setTicker("Uploading video")
                        .setProgress(0,
                                     0,
                                     true);
  
-        // Builds and Issues the notification
+        // Build and issue the notification.
         mNotifyManager.notify(NOTIFICATION_ID,
                               mBuilder.build());
     }

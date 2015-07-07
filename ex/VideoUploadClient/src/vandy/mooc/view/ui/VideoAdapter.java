@@ -13,7 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 /**
- * VideoAdapter is used to show view for each Video metadata in ListView.
+ * Show the view for each Video's meta-data in a ListView.
  */
 public class VideoAdapter
        extends BaseAdapter {

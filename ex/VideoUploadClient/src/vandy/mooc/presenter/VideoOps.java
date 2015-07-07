@@ -16,12 +16,12 @@ import android.net.Uri;
 import android.util.Log;
 
 /**
- * This class implements all the Video-related operations.  It
- * implements ConfigurableOps so it can be created/managed by the
- * GenericActivity framework.  It extends GenericAsyncTaskOps so its
- * doInBackground() method runs in a background task.  It plays the
- * role of the "Abstraction" in Bridge pattern.  It plays the role of
- * the "Presenter" in the Model-View-Presenter pattern.
+ * Provides all the Video-related operations.  It implements
+ * ConfigurableOps so it can be created/managed by the GenericActivity
+ * framework.  It extends GenericAsyncTaskOps so its doInBackground()
+ * method runs in a background task.  It plays the role of the
+ * "Abstraction" in Bridge pattern and the role of the "Presenter" in
+ * the Model-View-Presenter pattern.
  */
 public class VideoOps
        implements GenericAsyncTaskOps<Void, Void, List<Video>>,
@@ -49,7 +49,6 @@ public class VideoOps
          */
         void setAdapter(VideoAdapter videoAdapter);
     }
-
         
     /**
      * Used to enable garbage collection.
@@ -173,6 +172,7 @@ public class VideoOps
         if (videos != null) {
             // Update the adapter with the List of Videos.
             mAdapter.setVideos(videos);
+
             Utils.showToast(mVideoView.get().getActivityContext(),
                             "Videos available from the Video Service");
         } else {
@@ -182,6 +182,5 @@ public class VideoOps
             // Close down the Activity.
             mVideoView.get().finish();
         }
-
     }
 }

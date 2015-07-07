@@ -14,15 +14,16 @@ import android.provider.DocumentsContract;
 import android.provider.MediaStore;
 
 /**
- * VideoMediaStoreUtils contains helper methods to access 
- * VideoMediaStore to get metadata of Video. It will work
- * with all Uri schemes.
+ * VideoMediaStoreUtils contains helper methods to access
+ * VideoMediaStore to get metadata of Video.  It works with all Uri
+ * schemes.
  */
-public class VideoMediastoreUtils {
-    
-    
+public class VideoMediaStoreUtils {
+    /**
+     * Content Uri scheme for Downloads Provider.
+     */
     public static final String DOWNLOADS_PROVIDER_PATH =
-                "content://downloads/public_downloads";   
+        "content://downloads/public_downloads";   
        
     /**
      * Gets the Video from MediaMetadataRetriever
@@ -32,32 +33,35 @@ public class VideoMediastoreUtils {
      * @param filePath of video
      * @return Video having the given filePath
      */
-    public static Video getVideo(Context context, String filePath) {
-        
+    public static Video getVideo(Context context,
+                                 String filePath) {
         // Get the MediaMetadataRetriever for retrieving
         // meta data from an input media file.
-        MediaMetadataRetriever retriever = new MediaMetadataRetriever();
+        final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
         
         //Set the dataSource to the video file path.
         retriever.setDataSource(filePath);
         
         // Get the video video file name.
-        String title = new File(filePath).getName();
+        final String title =
+            new File(filePath).getName();
         
         //Get the duration of the Video.
-        long duration = 
-             Long.parseLong
-               (retriever.extractMetadata
-                  (MediaMetadataRetriever.METADATA_KEY_DURATION));
+        final long duration = 
+            Long.parseLong
+            (retriever.extractMetadata
+             (MediaMetadataRetriever.METADATA_KEY_DURATION));
         
         // Get the MimeType of the Video.
-        String contentType =
-               retriever.extractMetadata
-                    (MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+        final String contentType =
+            retriever.extractMetadata
+            (MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
        
-        return new Video(title, duration, contentType);
+        // Create a new Video containing the meta-data.
+        return new Video(title,
+                         duration,
+                         contentType);
     }
-    
     
     /** 
      * Get a Video file path from a Uri. This will get the the path
@@ -71,12 +75,15 @@ public class VideoMediastoreUtils {
      */ 
     public static String getPath(final Context context,
                                  final Uri uri) {
+        // Check if the version of current device is greater 
+        // than API 19 (KitKat).
         final boolean isKitKat =
             Build.VERSION.SDK_INT >= Build.VERSION_CODES.KITKAT;
      
-        // DocumentProvider 
+        // DocumentProvider.
         if (isKitKat
-            && DocumentsContract.isDocumentUri(context, uri)) {
+            && DocumentsContract.isDocumentUri(context,
+                                               uri)) {
             // ExternalStorageProvider 
             if (isExternalStorageDocument(uri)) {
                 final String docId =
@@ -91,8 +98,6 @@ public class VideoMediastoreUtils {
                         + "/" 
                         + split[1];
                 } 
-     
-                
             } 
             // DownloadsProvider 
             else if (isDownloadsDocument(uri)) {
@@ -100,8 +105,8 @@ public class VideoMediastoreUtils {
                     DocumentsContract.getDocumentId(uri);
                 final Uri contentUri =
                     ContentUris.withAppendedId
-                        (Uri.parse(DOWNLOADS_PROVIDER_PATH),
-                         Long.valueOf(id));
+                    (Uri.parse(DOWNLOADS_PROVIDER_PATH),
+                     Long.valueOf(id));
      
                 return getVideoDataColumn(context,
                                           contentUri,
@@ -115,38 +120,38 @@ public class VideoMediastoreUtils {
                 final String[] split =
                     docId.split(":");
                 
-                Uri contentUri = 
-                   MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
+                final Uri contentUri = 
+                    MediaStore.Video.Media.EXTERNAL_CONTENT_URI;
                
-                final String selection = "_id=?";
+                final String selection = "_id = ?";
                 final String[] selectionArgs = new String[] {
-                        split[1]
+                    split[1]
                 }; 
      
+                // Get the FilePath from Video MediStore
+                // for given Uri, selection, selectionArgs.
                 return getVideoDataColumn(context,
                                           contentUri,
                                           selection,
                                           selectionArgs);
             } 
         } 
-        // MediaStore (and general) 
-        else if ("content".equalsIgnoreCase(uri.getScheme())) {
+        // MediaStore (and general) .
+        else if ("content".equalsIgnoreCase(uri.getScheme())) 
             return getVideoDataColumn(context,
                                       uri,
                                       null,
                                       null);
-        }
         // File 
-        else if ("file".equalsIgnoreCase(uri.getScheme())) {
+        else if ("file".equalsIgnoreCase(uri.getScheme())) 
             return uri.getPath();
-        } 
      
         return null; 
     } 
      
     /** 
-     * Get the value of the data column for this Uri. This is useful for 
-     * MediaStore Uris, and other file-based ContentProviders. 
+     * Get the value of the data column for this Uri. This is useful
+     * for MediaStore Uris, and other file-based ContentProviders.
      * 
      * @param context The context. 
      * @param uri The Uri to query. 
@@ -158,11 +163,9 @@ public class VideoMediastoreUtils {
                                              Uri uri,
                                              String selection,
                                              String[] selectionArgs) {
-        
-        // Projection used to query Android Video
-        // Content Provider.
+        // Projection used to query Android Video Content Provider.
         final String[] projection = {
-                MediaStore.Video.Media.DATA
+            MediaStore.Video.Media.DATA
         }; 
      
         //Query and get a cursor to Android Video
@@ -173,19 +176,16 @@ public class VideoMediastoreUtils {
                                                     selection,
                                                     selectionArgs,
                                                     null)) {
-            
-            //If video is present, get the file path of the video.
-            if (cursor != null && cursor.moveToFirst()) {
-                final int index =
-                    cursor.getColumnIndexOrThrow
-                        (MediaStore.Video.Media.DATA);
-                return cursor.getString(index);
+                // If video is present, get the file path of the video.
+                if (cursor != null 
+                    && cursor.moveToFirst()) 
+                    return cursor.getString(cursor.getColumnIndexOrThrow
+                                            (MediaStore.Video.Media.DATA));
             } 
-        } 
+
         // No video present. returns null.
         return null; 
     } 
-   
     
     /** 
      * @param uri The Uri to check. 
@@ -213,6 +213,4 @@ public class VideoMediastoreUtils {
         return "com.android.providers.media.documents"
             .equals(uri.getAuthority());
     } 
-    
-   
 }

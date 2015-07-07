@@ -122,7 +122,7 @@ public class WeatherProvider extends ContentProvider {
         // Query the SQLite database using the all-locations Uri,
         // which returns a Cursor joining the Weather Values and
         // Conditions table entries for one WeatherData object for the
-        // target location
+        // target location.
         Cursor result = db.rawQuery(selectQuery,
                            new String[] { locationKey });
         
@@ -130,7 +130,6 @@ public class WeatherProvider extends ContentProvider {
         // to listen for changes.
         result.setNotificationUri(getContext().getContentResolver(),
                                   uri);
-        
         return result;
     }
 
@@ -402,7 +401,7 @@ public class WeatherProvider extends ContentProvider {
         // Register to watch a content URI for changes.
         getContext().getContentResolver().notifyChange(uri,
                                                        null);
-        // Register a change to the all-data uri
+        // Register a change to the all-data uri.
         getContext().getContentResolver()
             .notifyChange
                 (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,
@@ -465,7 +464,7 @@ public class WeatherProvider extends ContentProvider {
         // Register to watch a content URI for changes.
         getContext().getContentResolver().notifyChange(uri, 
                                                        null);
-        // Register a change to the all-data uri
+        // Register a change to the all-data uri.
         getContext().getContentResolver()
             .notifyChange
                 (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,

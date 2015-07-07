@@ -1,11 +1,9 @@
-package vandy.mooc.model.provider;
+package vandy.mooc.model.mediator.webdata;
 
 import java.util.Objects;
-import com.fasterxml.jackson.annotation.JsonIgnore;
-import com.fasterxml.jackson.annotation.JsonProperty;
 
 /**
- * This "Plain Ol' Java Object" (POJO) class represents data of
+ * This "Plain Ol' Java Object" (POJO) class represents meta-data of
  * interest downloaded in Json from the Video Service via the
  * VideoServiceProxy.
  */
@@ -18,13 +16,7 @@ public class Video {
     private String title;
     private long duration;
     private String contentType;
-	
-    /**
-     * Stores the path to stream the video from.
-     * @JsonIgnore is used to completely exclude a member from
-     *  the process of serialization and de-serialization.
-     */
-    @JsonIgnore private String dataUrl;
+    private String dataUrl;
 	
     /**
      * No-op constructor
@@ -33,7 +25,7 @@ public class Video {
     }
     
     /**
-     * Constructor that initializes title, duration and contentType.
+     * Constructor that initializes title, duration, and contentType.
      */
     public Video(String title,
                  long duration,
@@ -117,7 +109,6 @@ public class Video {
      * 
      * @return dataUrl of Video
      */
-    @JsonProperty
     public String getDataUrl() {
         return dataUrl;
     }
@@ -125,7 +116,6 @@ public class Video {
     /**
      * Set the DataUrl of the Video.
      */
-    @JsonIgnore
     public void setDataUrl(String dataUrl) {
         this.dataUrl = dataUrl;
     }

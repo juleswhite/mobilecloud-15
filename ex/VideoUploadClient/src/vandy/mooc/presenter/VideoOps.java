@@ -3,33 +3,29 @@ package vandy.mooc.presenter;
 import java.lang.ref.WeakReference;
 import java.util.List;
 
-import vandy.mooc.R;
 import vandy.mooc.common.ConfigurableOps;
+import vandy.mooc.common.ContextView;
 import vandy.mooc.common.GenericAsyncTask;
 import vandy.mooc.common.GenericAsyncTaskOps;
 import vandy.mooc.common.Utils;
-import vandy.mooc.model.provider.Video;
-import vandy.mooc.model.provider.VideoController;
+import vandy.mooc.model.mediator.VideoDataMediator;
+import vandy.mooc.model.mediator.webdata.Video;
 import vandy.mooc.model.services.UploadVideoService;
-import vandy.mooc.view.VideoListActivity;
 import vandy.mooc.view.ui.VideoAdapter;
-import android.app.Activity;
-import android.content.Context;
 import android.net.Uri;
 import android.util.Log;
-import android.widget.ListView;
 
 /**
- * This class implements all the Video-related operations.  It
- * implements ConfigurableOps so it can be created/managed by the
- * GenericActivity framework.  It implements Callback so it can serve
- * as the target of an asynchronous Retrofit RPC call.  It extends
- * GenericAsyncTaskOps so its doInBackground() method runs in a
- * background task.
+ * Provides all the Video-related operations.  It implements
+ * ConfigurableOps so it can be created/managed by the GenericActivity
+ * framework.  It extends GenericAsyncTaskOps so its doInBackground()
+ * method runs in a background task.  It plays the role of the
+ * "Abstraction" in Bridge pattern and the role of the "Presenter" in
+ * the Model-View-Presenter pattern.
  */
 public class VideoOps
-       implements ConfigurableOps,
-                  GenericAsyncTaskOps<Void, Void, List<Video>> {
+       implements GenericAsyncTaskOps<Void, Void, List<Video>>,
+                  ConfigurableOps<VideoOps.View> {
     /**
      * Debugging tag used by the Android logger.
      */
@@ -37,32 +33,42 @@ public class VideoOps
         VideoOps.class.getSimpleName();
     
     /**
+     * This interface defines the minimum interface needed by the
+     * VideoOps class in the "Presenter" layer to interact with the
+     * VideoListActivity in the "View" layer.
+     */
+    public interface View extends ContextView {
+        /**
+         * Finishes the Activity the VideoOps is
+         * associated with.
+         */
+        void finish();
+
+        /**
+         * Sets the Adapter that contains List of Videos.
+         */
+        void setAdapter(VideoAdapter videoAdapter);
+    }
+        
+    /**
      * Used to enable garbage collection.
      */
-    private WeakReference<VideoListActivity> mActivity;
-    
-    /**
-     *  It allows access to application-specific resources.
-     */
-    private Context mApplicationContext;
+    private WeakReference<VideoOps.View> mVideoView;
     
     /**
      * The GenericAsyncTask used to expand an Video in a background
      * thread via the Video web service.
      */
-    private GenericAsyncTask<Void, Void, List<Video>, VideoOps> mAsyncTask;
+    private GenericAsyncTask<Void,
+                             Void,
+                             List<Video>,
+                             VideoOps> mAsyncTask;
     
     /**
-     * VideoController mediates the communication between Server and
-     * Android Storage.
+     * VideoDataMediator mediates the communication between Video
+     * Service and local storage on the Android device.
      */
-    VideoController mVideoController;
-    
-    /**
-     * The ListView that contains a list of Videos available from
-     * Server.
-     */
-    private ListView mVideosList;
+    VideoDataMediator mVideoMediator;
     
     /**
      * The Adapter that is needed by ListView to show the list of
@@ -81,7 +87,7 @@ public class VideoOps
      * Called after a runtime configuration change occurs to finish
      * the initialisation steps.
      */
-    public void onConfiguration(Activity activity,
+    public void onConfiguration(VideoOps.View view,
                                 boolean firstTimeIn) {
         final String time =
             firstTimeIn 
@@ -91,60 +97,45 @@ public class VideoOps
         Log.d(TAG,
               "onConfiguration() called the "
               + time
-              + " with activity = "
-              + activity);
+              + " with view = "
+              + view);
 
-        // (Re)set the mActivity WeakReference.
-        mActivity =
-            new WeakReference<>((VideoListActivity) activity);
+        // (Re)set the mVideoView WeakReference.
+        mVideoView =
+            new WeakReference<>(view);
         
-        // Get reference to the ListView for displaying the results
-        // entered.
-        mVideosList =
-            (ListView) mActivity.get().findViewById(R.id.videoList);
-
         if (firstTimeIn) {
-            // Get the Application Context.
-            mApplicationContext =
-                activity.getApplicationContext();
-            
-            // Create VideoController that will mediate the
+            // Create VideoDataMediator that will mediate the
             // communication between Server and Android Storage.
-            mVideoController =
-                new VideoController(mApplicationContext);
+            mVideoMediator =
+                new VideoDataMediator();
             
             // Create a local instance of our custom Adapter for our
             // ListView.
-            mAdapter = new VideoAdapter(mApplicationContext);
-            
+            mAdapter = 
+                 new VideoAdapter(mVideoView.get().getApplicationContext());
+
             // Get the VideoList from Server. 
             getVideoList();
         }
         
-       // Set the adapter to the ListView.
-       mVideosList.setAdapter(mAdapter);
+        // Set the adapter to the ListView.
+        mVideoView.get().setAdapter(mAdapter);
     }
 
     /**
-     * Display the Videos in ListView
-     * 
-     * @param videos
+     * Start a service that Uploads the Video having given Id.
+     *   
+     * @param videoId
      */
-    public void displayVideoList(List<Video> videos) {
-        if (videos != null) {
-            // Update the adapter with the List of Videos.
-            mAdapter.setVideos(videos);
-            Utils.showToast(mActivity.get(),
-                            "Video meta-data loaded from Video Service");
-        } else {
-            Utils.showToast(mActivity.get(),
-                           "Please connect to the Video Service");
-            
-            mActivity.get().finish();
-        }
-
+    public void uploadVideo(Uri videoUri){
+        // Sends an Intent command to the UploadVideoService.
+        mVideoView.get().getApplicationContext().startService
+            (UploadVideoService.makeIntent 
+                 (mVideoView.get().getApplicationContext(),
+                  videoUri));
     }
-    
+
     /**
      * Gets the VideoList from Server by executing the AsyncTask to
      * expand the acronym without blocking the caller.
@@ -155,26 +146,13 @@ public class VideoOps
     }
     
     /**
-     * Start a service that Uploads the Video having given Id.
-     *   
-     * @param videoId
-     */
-    public void uploadVideo(Long videoId, Uri videoUri){
-        mApplicationContext.startService
-            (UploadVideoService.makeIntent 
-                 (mApplicationContext,
-                  videoId,
-                  videoUri));
-    }
-    
-    /**
-     * Retrieve the List of Videos by help of VideoController via a
+     * Retrieve the List of Videos by help of VideoDataMediator via a
      * synchronous two-way method call, which runs in a background
      * thread to avoid blocking the UI thread.
      */
     @Override
     public List<Video> doInBackground(Void... params) {
-        return mVideoController.getVideoList();
+        return mVideoMediator.getVideoList();
     }
 
     /**
@@ -183,5 +161,26 @@ public class VideoOps
     @Override
     public void onPostExecute(List<Video> videos) {
         displayVideoList(videos);
+    }
+
+    /**
+     * Display the Videos in ListView.
+     * 
+     * @param videos
+     */
+    public void displayVideoList(List<Video> videos) {
+        if (videos != null) {
+            // Update the adapter with the List of Videos.
+            mAdapter.setVideos(videos);
+
+            Utils.showToast(mVideoView.get().getActivityContext(),
+                            "Videos available from the Video Service");
+        } else {
+            Utils.showToast(mVideoView.get().getActivityContext(),
+                           "Please connect to the Video Service");
+
+            // Close down the Activity.
+            mVideoView.get().finish();
+        }
     }
 }

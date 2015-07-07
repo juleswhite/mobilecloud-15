@@ -5,37 +5,43 @@ import vandy.mooc.common.GenericActivity;
 import vandy.mooc.common.Utils;
 import vandy.mooc.model.services.UploadVideoService;
 import vandy.mooc.presenter.VideoOps;
-import vandy.mooc.utils.VideoGalleryUtils;
+import vandy.mooc.utils.VideoStorageUtils;
 import vandy.mooc.view.ui.FloatingActionButton;
 import vandy.mooc.view.ui.UploadVideoDialogFragment;
+import vandy.mooc.view.ui.VideoAdapter;
 import android.app.Activity;
 import android.content.BroadcastReceiver;
-import android.content.ContentUris;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
+import android.support.v4.content.LocalBroadcastManager;
 import android.util.DisplayMetrics;
 import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.widget.ListView;
 
 /**
  * This Activity can be used upload a selected video to a Video
  * Service and also displays a list of videos available at the Video
  * Service.  The user can record a video or get a video from gallery
- * and upload it.  This Activity extends GenericActivity, which
- * provides a framework that automatically handles runtime
- * configuration changes.  It implements OnVideoSelectedListener that
- * will handle callbacks from the UploadVideoDialog Fragment.
+ * and upload it.  It implements OnVideoSelectedListener that will
+ * handle callbacks from the UploadVideoDialog Fragment.  It extends
+ * GenericActivity that provides a framework for automatically
+ * handling runtime configuration changes of an VideoOps object, which
+ * plays the role of the "Presenter" in the MVP pattern.  The
+ * VideoOps.View interface is used to minimize dependencies between
+ * the View and Presenter layers.
  */
 public class VideoListActivity 
-       extends GenericActivity<VideoOps> 
-       implements UploadVideoDialogFragment.OnVideoSelectedListener {
+       extends GenericActivity<VideoOps.View, VideoOps>
+       implements UploadVideoDialogFragment.OnVideoSelectedListener,
+                  VideoOps.View {
     /**
      * The Request Code needed in Implicit Intent start Video
      * Recording Activity.
@@ -49,8 +55,8 @@ public class VideoListActivity
     private final int REQUEST_GET_VIDEO = 1;
 
     /**
-     * The Broadcast Receiver that registers itself to receive result
-     * from UploadVideoService when a video upload completes.
+     * The Broadcast Receiver that registers itself to receive the
+     * result from UploadVideoService when a video upload completes.
      */
     private UploadResultReceiver mUploadResultReceiver;
 
@@ -59,6 +65,17 @@ public class VideoListActivity
      * upload Video when user clicks on it.
      */
     private FloatingActionButton mUploadVideoButton;
+    
+    /**
+     * The ListView that contains a list of Videos available from
+     * the Video Service.
+     */
+    private ListView mVideosList;
+
+    /**
+     * Uri to store the Recorded Video.
+     */
+    private Uri mRecordVideoUri;
     
     /**
      * Hook method called when a new instance of Activity is created.
@@ -70,28 +87,82 @@ public class VideoListActivity
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         // Initialize the default layout.
-        setContentView(R.layout.activity_video_list);
+        setContentView(R.layout.video_list_activity);
 
-        // Register BroadcastReceiver that receives result from
-        // UploadVideoService when a video upload completes.
-        registerReceiver();
+        // Receiver for the notification.
+        mUploadResultReceiver =
+            new UploadResultReceiver();
+        
+        // Get reference to the ListView for displaying the results
+        // entered.
+        mVideosList =
+            (ListView) findViewById(R.id.videoList);
 
         // Show the Floating Action Button.
         createPlusFabButton();
 
-        // Call up to the special onCreate() method in
-        // GenericActivity, passing in the VideoOps class to
-        // instantiate and manage.
+        // Invoke the special onCreate() method in GenericActivity,
+        // passing in the VideoOps class to instantiate/manage and
+        // "this" to provide VideoOps with the VideoOps.View instance.
         super.onCreate(savedInstanceState,
-                       VideoOps.class);
+                       VideoOps.class,
+                       this);
+    }
+
+    /**
+     *  Hook method that is called when user resumes activity
+     *  from paused state, onPause(). 
+     */
+    @Override
+    protected void onResume() {
+        // Call up to the superclass.
+        super.onResume();
+
+        // Register BroadcastReceiver that receives result from
+        // UploadVideoService when a video upload completes.
+        registerReceiver();
+    }
+    
+    /**
+     * Register a BroadcastReceiver that receives a result from the
+     * UploadVideoService when a video upload completes.
+     */
+    private void registerReceiver() {
+        
+        // Create an Intent filter that handles Intents from the
+        // UploadVideoService.
+        IntentFilter intentFilter =
+            new IntentFilter(UploadVideoService.ACTION_UPLOAD_SERVICE_RESPONSE);
+        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
+
+        // Register the BroadcastReceiver.
+        LocalBroadcastManager.getInstance(this)
+               .registerReceiver(mUploadResultReceiver,
+                                 intentFilter);
+    }
+
+    
+    /**
+     * Hook method that gives a final chance to release resources and
+     * stop spawned threads. onDestroy() may not always be called-when
+     * system kills hosting process
+     */
+    @Override
+    protected void onPause() {
+        // Call onPause() in superclass.
+        super.onPause();
+        
+        // Unregister BroadcastReceiver.
+        LocalBroadcastManager.getInstance(this)
+          .unregisterReceiver(mUploadResultReceiver);
     }
 
     /**
      * The Broadcast Receiver that registers itself to receive result
-     * from UploadVideoService. 
+     * from UploadVideoService.
      */
-    public class UploadResultReceiver 
-           extends BroadcastReceiver {
+    private class UploadResultReceiver 
+            extends BroadcastReceiver {
         /**
          * Hook method that's dispatched when the UploadService has
          * uploaded the Video.
@@ -106,84 +177,49 @@ public class VideoListActivity
     }
 
     /**
-     * Register a BroadcastReceiver that receives a result from the
-     * UploadVideoService when a video upload completes.
-     */
-    private void registerReceiver() {
-        // Receiver for the notification.
-        mUploadResultReceiver = new UploadResultReceiver();
-
-        // Create an Intent filter that handles Intents from the
-        // UploadVideoService.
-        IntentFilter intentFilter =
-            new IntentFilter(UploadVideoService.ACTION_UPLOAD_SERVICE_RESPONSE);
-        intentFilter.addCategory(Intent.CATEGORY_DEFAULT);
-
-        // Register the BroadcastReceiver.
-        registerReceiver(mUploadResultReceiver,
-                         intentFilter);
-    }
-
-    /**
-     * Hook method that gives a final chance to release resources and
-     * stop spawned threads. onDestroy() may not always be called-when
-     * system kills hosting process
-     */
-    @Override
-    protected void onDestroy() {
-        // Call destroy in superclass.
-        super.onDestroy();
-
-        // Unregister BroadcastReceiver.
-        unregisterReceiver(mUploadResultReceiver);
-    }
-
-    /**
      * The user selected option to get Video from UploadVideoDialog
      * Fragment.  Based on what the user selects either record a Video
      * or get a Video from the Video Gallery.
      */
     @Override
-    public void onVideoSelected(int which) {
-        if (which == UploadVideoDialogFragment.VIDEO_GALLERY) 
-            // Get the Video from Video Gallery.
-            getVideoFromGallery();
-        else if (which == UploadVideoDialogFragment.RECORD_VIDEO) 
-            // Record a video.
-            selectRecordVideo();
-    }
+    public void onVideoSelected(UploadVideoDialogFragment.OperationType which) {
+        switch (which) {
+        case VIDEO_GALLERY:
+            // Create an intent that will start an Activity to get
+            // Video from Gallery.
+            final Intent videoGalleryIntent = 
+                new Intent(Intent.ACTION_GET_CONTENT)
+                .setType("video/*")
+                .putExtra(Intent.EXTRA_LOCAL_ONLY,
+                          true);
 
-    /**
-     * Start an Activity by implicit Intent to get the Video from
-     * Android Video Gallery.
-     */
-    private void getVideoFromGallery() {
-        // Create an intent that will start an Activity to
-        // get Video from Gallery.
-        final Intent intent = 
-            new Intent(Intent.ACTION_GET_CONTENT)
-            .setType("video/*")
-            .putExtra(Intent.EXTRA_LOCAL_ONLY,
-                      true);
+            // Verify the intent will resolve to an Activity.
+            if (videoGalleryIntent.resolveActivity(getPackageManager()) != null) 
+                // Start an Activity to get the Video from Video
+                // Gallery.
+                startActivityForResult(videoGalleryIntent,
+                                       REQUEST_GET_VIDEO);
+            break;
+            
+        case RECORD_VIDEO:
+            // Create a file to save the video.
+            mRecordVideoUri =
+                VideoStorageUtils.getRecordedVideoUri();  
+            
+            // Create an intent that will start an Activity to get
+            // Record Video.
+            final Intent recordVideoIntent =
+                new Intent(MediaStore.ACTION_VIDEO_CAPTURE)
+                .putExtra(MediaStore.EXTRA_OUTPUT,
+                          mRecordVideoUri);
 
-        // Verify that the intent will resolve to an Activity.
-        if (intent.resolveActivity(getPackageManager()) != null) 
-            startActivityForResult(intent,
-                                   REQUEST_GET_VIDEO);
-    }
-
-    /**
-     * Start an Activity by Implicit Intent to Record the Video.
-     */
-    private void selectRecordVideo() {
-        // Create an intent that will start an Activity to
-        // get Record Video.
-        final Intent intent =
-            new Intent(MediaStore.ACTION_VIDEO_CAPTURE);
-        
-        // Verify that the intent will resolve to an Activity.
-        if (intent.resolveActivity(getPackageManager()) != null) 
-            startActivityForResult(intent, REQUEST_VIDEO_CAPTURE);
+            // Verify the intent will resolve to an Activity.
+            if (recordVideoIntent.resolveActivity(getPackageManager()) != null) 
+                // Start an Activity to record a video.
+                startActivityForResult(recordVideoIntent,
+                                       REQUEST_VIDEO_CAPTURE);
+            break;
+        }
     }
 
     /**
@@ -199,29 +235,30 @@ public class VideoListActivity
     public void onActivityResult(int requestCode,
                                  int resultCode,
                                  Intent data) {
-        // Check if the Result is Ok and upload the Video to server.
+        Uri videoUri = null; 
+
+        // Check if the Result is Ok and upload the Video to the Video
+        // Service.
         if (resultCode == Activity.RESULT_OK) {
-            // Get the Uri of recorded video.
-            Uri videoUri = data.getData();
-            Long videoId = null;
-
-            if (requestCode == REQUEST_VIDEO_CAPTURE) 
-                // Get the Video Id of the recorded video from Uri.
-                videoId = 
-                    ContentUris.parseId(videoUri);
-            else if (requestCode == REQUEST_GET_VIDEO) 
-                // Get the Video Id of the Gallery video from Uri.
-                videoId = 
-                    VideoGalleryUtils.getVideoId(getApplicationContext(),
-                                                 videoUri);
-
-            Utils.showToast(this,
-                            "Uploading video");
+            // Video picked from the Gallery.
+            if (requestCode == REQUEST_GET_VIDEO)
+                videoUri = data.getData();
+                
+            // Video is recorded.
+            else if (requestCode == REQUEST_VIDEO_CAPTURE)
+                videoUri = mRecordVideoUri;
+              
+            if (videoUri != null){
+                Utils.showToast(this,
+                                "Uploading video"); 
             
-            // Upload the Video.
-            getOps().uploadVideo(videoId,
-                                 videoUri);
-        } else 
+                // Upload the Video.
+                getOps().uploadVideo(videoUri);
+            }
+        }
+
+        // Pop a toast if we couldn't get a video to upload.
+        if (videoUri == null)
             Utils.showToast(this,
                             "Could not get video to upload");
     }
@@ -237,6 +274,7 @@ public class VideoListActivity
         final int position =
             (metrics.widthPixels / 4) + 5;
 
+        // Create Floating Action Button using the Builder pattern.
         mUploadVideoButton =
             new FloatingActionButton
             .Builder(this)
@@ -252,7 +290,7 @@ public class VideoListActivity
             .create();
 
         // Show the UploadVideoDialog Fragment when user clicks the
-        // Button.
+        // button.
         mUploadVideoButton.setOnClickListener(new OnClickListener() {
                 public void onClick(View v) {
                     new UploadVideoDialogFragment().show(getFragmentManager(),
@@ -261,7 +299,22 @@ public class VideoListActivity
             });
     }
 
+    /**
+     * Sets the Adapter that contains List of Videos to the ListView.
+     */
+    @Override
+    public void setAdapter(VideoAdapter videoAdapter) {
+        mVideosList.setAdapter(videoAdapter);
+    }
 
+    /**
+     * Finishes this Activity.
+     */
+    @Override
+    public void finish() {
+        super.finish();
+    }
+    
     /**
      * Hook method called to initialize the contents of the Activity's
      * standard options menu.

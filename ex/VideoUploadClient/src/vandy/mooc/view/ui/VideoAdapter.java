@@ -4,7 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import vandy.mooc.R;
-import vandy.mooc.model.provider.Video;
+import vandy.mooc.model.mediator.webdata.Video;
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -13,9 +13,7 @@ import android.widget.BaseAdapter;
 import android.widget.TextView;
 
 /**
- * Custom Adapter for the Video class, which makes each row of the
- * ListView have a more complex layout than just a single textview
- * (which is the default for ListViews).
+ * Show the view for each Video's meta-data in a ListView.
  */
 public class VideoAdapter
        extends BaseAdapter {
@@ -28,16 +26,16 @@ public class VideoAdapter
      * ArrayList to hold list of Videos that is shown in ListView.
      */
     private List<Video> videoList =
-        new ArrayList<Video>();
+        new ArrayList<>();
 
     /**
      * Construtor that stores the Application Context.
      * 
      * @param Context
      */
-    public VideoAdapter(Context mContext) {
+    public VideoAdapter(Context context) {
         super();
-        this.mContext = mContext;
+        mContext = context;
     }
 
     /**
@@ -70,8 +68,7 @@ public class VideoAdapter
             LayoutInflater mInflater = (LayoutInflater)
                 mContext.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
             convertView =
-                mInflater.inflate(R.layout.video_list_item,
-                                  null);
+                mInflater.inflate(R.layout.video_list_item,null);
         }
 
         TextView titleText =

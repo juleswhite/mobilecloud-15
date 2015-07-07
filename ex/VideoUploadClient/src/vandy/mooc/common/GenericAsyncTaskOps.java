@@ -7,6 +7,13 @@ package vandy.mooc.common;
  */
 public interface GenericAsyncTaskOps<Params, Progress, Result> {
     /**
+     * Called in the UI thread prior to running doInBackground() in a
+     * background thread.
+     */
+    // @@ Commented out until Android supports default methods in interfaces..
+    // default void onPreExecute() {}
+    
+    /**
      * Called in a background thread to process the @a params.
      */
     @SuppressWarnings("unchecked")
@@ -17,3 +24,4 @@ public interface GenericAsyncTaskOps<Params, Progress, Result> {
      */
     void onPostExecute(Result result);
 }
+

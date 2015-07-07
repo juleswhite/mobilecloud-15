@@ -1,6 +1,5 @@
 package vandy.mooc.common;
 
-
 import java.lang.ref.WeakReference;
 import java.util.HashMap;
 
@@ -11,8 +10,9 @@ import android.os.Bundle;
 import android.util.Log;
 
 /**
- * Retains and manages state information between runtime configuration changes
- * to an Activity. Plays the role of the "Originator" in the Memento pattern.
+ * Retains and manages state information between runtime configuration
+ * changes to an Activity.  Plays the role of the "Originator" in the
+ * Memento pattern.
  */
 public class RetainedFragmentManager {
     /**
@@ -24,7 +24,7 @@ public class RetainedFragmentManager {
      * Name used to identify the RetainedFragment.
      */
     private final String mRetainedFragmentTag;
-
+        
     /**
      * WeakReference to the FragmentManager.
      */
@@ -37,11 +37,12 @@ public class RetainedFragmentManager {
 
     /**
      * Constructor initializes fields.
-     */
+     */ 
     public RetainedFragmentManager(FragmentManager fragmentManager,
                                    String retainedFragmentTag) {
         // Store a WeakReference to the Activity.
-        mFragmentManager = new WeakReference<FragmentManager>(fragmentManager);
+        mFragmentManager =
+            new WeakReference<FragmentManager>(fragmentManager);
 
         // Store the tag used to identify the RetainedFragment.
         mRetainedFragmentTag = retainedFragmentTag;
@@ -49,39 +50,44 @@ public class RetainedFragmentManager {
 
     /**
      * Initializes the RetainedFragment the first time it's called.
-     * 
-     * @returns true if it's first time the method's been called, else false.
+     *
+     * @returns true if it's first time the method's been called, else
+     *          false.
      */
     public boolean firstTimeIn() {
         try {
-            // Find the RetainedFragment on Activity restarts. The
+            // Find the RetainedFragment on Activity restarts.  The
             // RetainedFragment has no UI so it must be referenced via
             // a tag.
-            mRetainedFragment = (RetainedFragment) mFragmentManager.get()
-                .findFragmentByTag(mRetainedFragmentTag);
+            mRetainedFragment = (RetainedFragment) 
+                mFragmentManager.get().findFragmentByTag(mRetainedFragmentTag);
 
             // A value of null means it's the first time in, so there's
             // extra work to do.
             if (mRetainedFragment == null) {
-                Log.d(TAG, "Creating new RetainedFragment "
+                Log.d(TAG,
+                      "Creating new RetainedFragment "
                       + mRetainedFragmentTag);
 
                 // Create a new RetainedFragment.
                 mRetainedFragment = new RetainedFragment();
 
                 // Commit this RetainedFragment to the FragmentManager.
-                mFragmentManager.get().beginTransaction()
-                    .add(mRetainedFragment, mRetainedFragmentTag).commit();
+                mFragmentManager.get().beginTransaction().
+                    add(mRetainedFragment,
+                        mRetainedFragmentTag).commit();
                 return true;
-            }
+            } 
             // A value of non-null means it's not first time in.
             else {
-                Log.d(TAG, "Returning existing RetainedFragment "
+                Log.d(TAG,
+                      "Returning existing RetainedFragment "
                       + mRetainedFragmentTag);
                 return false;
             }
         } catch (NullPointerException e) {
-            Log.d(TAG, "NPE in firstTimeIn()");
+            Log.d(TAG,
+                  "NPE in firstTimeIn()");
             return false;
         }
     }
@@ -104,38 +110,41 @@ public class RetainedFragmentManager {
      * Get the object with @a key.
      */
     @SuppressWarnings("unchecked")
-	public <T> T get(String key) {
+    public <T> T get(String key) {
         return (T) mRetainedFragment.get(key);
     }
 
     /**
-     * Return the Activity the RetainedFragment is attached to or null if it's
-     * not currently attached.
+     * Return the Activity the RetainedFragment is attached to or null
+     * if it's not currently attached.
      */
     public Activity getActivity() {
         return mRetainedFragment.getActivity();
     }
 
     /**
-     * "Headless" Fragment that retains state information between configuration
-     * changes. Plays the role of the "Memento" in the Memento pattern.
+     * "Headless" Fragment that retains state information between
+     * configuration changes.  Plays the role of the "Memento" in the
+     * Memento pattern.
      */
     public static class RetainedFragment extends Fragment {
         /**
          * Maps keys to objects.
          */
-        private HashMap<String, Object> mData = new HashMap<String, Object>();
+        private HashMap<String, Object> mData =
+            new HashMap<String, Object>();
 
         /**
-         * Hook method called when a new instance of Fragment is created.
-         * 
+         * Hook method called when a new instance of Fragment is
+         * created.
+         *
          * @param savedInstanceState
          *            object that contains saved state information.
          */
         @Override
-            public void onCreate(Bundle savedInstanceState) {
+        public void onCreate(Bundle savedInstanceState) {
             super.onCreate(savedInstanceState);
-
+            
             // Ensure the data survives runtime configuration changes.
             setRetainInstance(true);
         }
@@ -158,7 +167,7 @@ public class RetainedFragmentManager {
          * Get the object with @a key.
          */
         @SuppressWarnings("unchecked")
-            public <T> T get(String key) {
+        public <T> T get(String key) {
             return (T) mData.get(key);
         }
     }

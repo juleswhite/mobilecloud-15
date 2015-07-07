@@ -1,7 +1,7 @@
-package vandy.mooc.model.provider;
+package vandy.mooc.model.mediator.webdata;
 
 /**
- * This "Plain Ol' Java Object" (POJO) class represents data of
+ * This "Plain Ol' Java Object" (POJO) class represents meta-data of
  * interest downloaded in Json from the Video Service via the
  * VideoServiceProxy.
  */

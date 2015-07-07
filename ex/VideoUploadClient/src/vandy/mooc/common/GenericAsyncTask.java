@@ -28,10 +28,18 @@ public class GenericAsyncTask<Params,
 	mOps = ops;
     }
 
-    
-    
     /**
-     * Run in a background thread to avoid blocking the UI thread.
+     * Called in the UI thread prior to running doInBackground() in a
+     * background thread.
+     */
+    // @@ Omit until Android supports default methods in interfaces..
+    // @Override
+    // protected void onPreExecute() {
+    //     mOps.onPreExecute();
+    // }
+
+    /**
+     * Called in a background thread to process the @a params.
      */
     @SuppressWarnings("unchecked")
     protected Result doInBackground(Params... params) {
@@ -39,10 +47,9 @@ public class GenericAsyncTask<Params,
     }
 
     /**
-     * Process results in the UI Thread.
+     * Called in the UI thread to process the @a result.
      */
     protected void onPostExecute(Result result) {
-        super.onPostExecute(result);
         mOps.onPostExecute(result);
     }
 }

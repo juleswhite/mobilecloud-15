@@ -2,6 +2,7 @@ package vandy.mooc.model.cache;
 
 import java.util.ArrayList;
 
+import vandy.mooc.common.TimeoutCache;
 import vandy.mooc.model.provider.WeatherContract;
 import vandy.mooc.model.provider.WeatherContract.WeatherConditionsEntry;
 import vandy.mooc.model.provider.WeatherContract.WeatherValuesEntry;
@@ -375,7 +376,7 @@ public class WeatherTimeoutCache
      * Delete the Weather Values and Weather Conditions associated
      * with a @a locationKey and a specific @a expirationTime.
      */
-    private void remove(String locationKey,
+    public void remove(String locationKey,
                         long expirationTime) {
         // Delete expired entries from the WeatherValues table.
     mContext.getContentResolver().delete
@@ -433,7 +434,10 @@ public class WeatherTimeoutCache
 	try (Cursor expiredData =
              mContext.getContentResolver().query
                  (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI, 
-                  new String[] { WeatherValuesEntry.COLUMN_LOCATION_KEY },
+                  new String[] { 
+                     WeatherValuesEntry.COLUMN_LOCATION_KEY,
+                     WeatherValuesEntry.COLUMN_EXPIRATION_TIME
+                  },
                   EXPIRATION_SELECTION, 
                   new String[] {String.valueOf(System.currentTimeMillis())}, 
                   null)) { 

@@ -82,7 +82,7 @@ public class WeatherProvider extends ContentProvider {
      * will have a row for each Weather object corresponding to the
      * location, with the Weather Values columns repeated.
      */
-    private Cursor getAllLocationsData(String locationKey) {
+    private Cursor getAllLocationsData(String locationKey, Uri uri) {
         /**
          * Constant defining the FROM and WHERE clauses for a
          * statement working on all the data for a single Weather
@@ -123,8 +123,15 @@ public class WeatherProvider extends ContentProvider {
         // which returns a Cursor joining the Weather Values and
         // Conditions table entries for one WeatherData object for the
         // target location
-        return db.rawQuery(selectQuery,
+        Cursor result = db.rawQuery(selectQuery,
                            new String[] { locationKey });
+        
+        // Set the cursor's notification to enable CursorAdapters
+        // to listen for changes.
+        result.setNotificationUri(getContext().getContentResolver(),
+                                  uri);
+        
+        return result;
     }
 
     /**
@@ -168,7 +175,7 @@ public class WeatherProvider extends ContentProvider {
         case WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_ITEM:
             // This is a special Uri that is querying for an entire
             // WeatherData object.
-            return getAllLocationsData(whereStatementArgs[0]);
+            return getAllLocationsData(whereStatementArgs[0], uri);
         default:
             throw new IllegalArgumentException("Unknown URI " + uri);
         }
@@ -200,7 +207,7 @@ public class WeatherProvider extends ContentProvider {
     	// for and return the appropriate MIME type
         switch (WeatherContract.sUriMatcher.match(uri)) {
         case WeatherContract.WEATHER_VALUES_ITEMS:
-            return WeatherConditionsEntry.WEATHER_CONDITIONS_ITEMS;
+            return WeatherValuesEntry.WEATHER_VALUES_ITEM;
         case WeatherContract.WEATHER_VALUES_ITEM:
             return WeatherValuesEntry.WEATHER_VALUES_ITEM;
         case WeatherContract.WEATHER_CONDITIONS_ITEMS:
@@ -264,6 +271,11 @@ public class WeatherProvider extends ContentProvider {
             // Register to watch a content URI for changes.
             getContext().getContentResolver().notifyChange(newUri,
                                                            null);
+            // Register a change to the all-data uri
+            getContext().getContentResolver()
+                .notifyChange
+                    (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,
+                            null);
             return newUri;
         } else
             throw new SQLException("Fail to add a new record into " 
@@ -322,6 +334,12 @@ public class WeatherProvider extends ContentProvider {
         // attempt to sync changes to the network.
         getContext().getContentResolver().notifyChange(uri,
                                                        null);
+        // Register a change to the all-data URI
+        getContext().getContentResolver()
+            .notifyChange
+                (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,
+                        null);
+        
         return returnCount;
     } 
 
@@ -384,6 +402,11 @@ public class WeatherProvider extends ContentProvider {
         // Register to watch a content URI for changes.
         getContext().getContentResolver().notifyChange(uri,
                                                        null);
+        // Register a change to the all-data uri
+        getContext().getContentResolver()
+            .notifyChange
+                (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,
+                        null);
 
         return rowsUpdated;
     }
@@ -442,6 +465,12 @@ public class WeatherProvider extends ContentProvider {
         // Register to watch a content URI for changes.
         getContext().getContentResolver().notifyChange(uri, 
                                                        null);
+        // Register a change to the all-data uri
+        getContext().getContentResolver()
+            .notifyChange
+                (WeatherContract.ACCESS_ALL_DATA_FOR_LOCATION_URI,
+                        null);
+        
         return rowsDeleted;
     }
  }

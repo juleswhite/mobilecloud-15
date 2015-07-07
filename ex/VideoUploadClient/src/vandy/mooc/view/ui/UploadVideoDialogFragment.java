@@ -9,19 +9,22 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 
 /**
- * UploadVideoDialog Fragment shows user a Dialog that has a list of
- * option to get Video from.
+ * UploadVideoDialog Fragment shows user a Dialog that lists
+ * various ways to upload a Video.
  */
 public class UploadVideoDialogFragment extends DialogFragment {
-    /**
-     * Position of Video Gallery Option in List.
-     */
-    public static final int VIDEO_GALLERY = 0;
+    
+    public enum OperationType {
+        /**
+         * Position of Video Gallery Option in List.
+         */
+        VIDEO_GALLERY,
 
-    /**
-     * Position of Record Video Option in List.
-     */
-    public static final int RECORD_VIDEO = 1;
+        /**
+         * Position of Record Video Option in List.
+         */
+        RECORD_VIDEO
+    };
 
     /**
      * Array to hold List items.
@@ -41,7 +44,7 @@ public class UploadVideoDialogFragment extends DialogFragment {
      * Container Activity must implement this interface
      */
     public interface OnVideoSelectedListener {
-        public void onVideoSelected(int which);
+        public void onVideoSelected(OperationType which);
     }
 
     /**
@@ -68,17 +71,21 @@ public class UploadVideoDialogFragment extends DialogFragment {
      * implementation simply instantiates and returns a Dialog class.
      */
     @Override
-        public Dialog onCreateDialog(Bundle savedInstanceState) {
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
         AlertDialog.Builder builder = 
             new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.title_upload_video)
-               .setItems(listItems,
-                         new DialogInterface.OnClickListener() {
-                             public void onClick(DialogInterface dialog,
-                                                 int which) {
-                                 mListener.onVideoSelected(which);
-                             }
-                         });
+               .setItems
+                    (listItems,
+                     //Set OnClick listener for the Dialog.
+                     new DialogInterface.OnClickListener() {
+                         public void onClick(DialogInterface dialog,
+                                             int which) {
+                             UploadVideoDialogFragment.OperationType type =
+                                 UploadVideoDialogFragment.OperationType.values()[which];
+                             mListener.onVideoSelected(type);
+                         }
+                     });
         return builder.create();
     }
 }

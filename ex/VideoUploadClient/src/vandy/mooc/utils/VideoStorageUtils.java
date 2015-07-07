@@ -6,20 +6,66 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 import org.apache.commons.io.IOUtils;
 import retrofit.client.Response;
 
+import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
 import android.os.Environment;
 
 /**
- * Helper class that contains methods to store Video in External
- * Downloads directory in Android.
+ * Helper class that contains methods to store and get Video 
+ * from Android Local Storage.
  */
 public class VideoStorageUtils {
+    
+    /** 
+     * Create a file Uri for saving a recorded video
+    */ 
+    @SuppressLint("SimpleDateFormat")
+    public static Uri getRecordedVideoUri(){
+
+        // Check to see if external SDCard is mounted or not.
+        if (isExternalStorageWritable()) {
+            // Create a path where we will place our recorded video in the
+            // user's public DCIM directory. Note that you should be
+            // careful about what you place here, since the user often 
+            // manages these files.
+            File videoStorageDir =
+                Environment.getExternalStoragePublicDirectory
+                  (Environment.DIRECTORY_DCIM);
+
+            // Create the storage directory if it does not exist
+            if (!videoStorageDir.exists()) {
+                if (!videoStorageDir.mkdirs()) {
+                    return null;
+                }
+            }
+
+            // Create a TimeStamp for the video file.
+            String timeStamp =
+                new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
+            
+            // Create a video file name from the TimeStamp.
+            File mediaFile =
+                new File(videoStorageDir.getPath() + File.separator + "VID_"
+                    + timeStamp + ".mp4");
+
+            //Return Uri from Video file.
+            return Uri.fromFile(mediaFile);
+
+        } else {
+            //Return null if no SDCard is mounted.
+            return null;
+        }
+    } 
+    
+    
     /**
      * Stores the Video in External Downloads directory in Android.
      */
@@ -61,7 +107,6 @@ public class VideoStorageUtils {
             } catch (IOException e) {
                 e.printStackTrace();
             }
-
         }
         
         return null;
@@ -72,7 +117,7 @@ public class VideoStorageUtils {
      * so that it is immediately available to the user.
      */
     private static void notifyMediaScanners(Context context,
-                                           File videoFile) {
+                                            File videoFile) {
         // Tell the media scanner about the new file so that it is
         // immediately available to the user.
         MediaScannerConnection.scanFile
@@ -102,14 +147,15 @@ public class VideoStorageUtils {
      * @param videoName
      */
     private static File getVideoStorageDir(String videoName) {
+        //Check to see if external SDCard is mounted or not.
         if (isExternalStorageWritable()) {
-            // Create a path where we will place our picture in the
-            // user's public pictures directory. Note that you should be
+            // Create a path where we will place our video in the
+            // user's public Downloads directory. Note that you should be
             // careful about what you place here, since the user often 
             // manages these files.
             File path =
                 Environment.getExternalStoragePublicDirectory
-                    (Environment.DIRECTORY_DOWNLOADS);
+                (Environment.DIRECTORY_DOWNLOADS);
             File file = new File(path,
                                  videoName);
             // Make sure the Downloads directory exists.

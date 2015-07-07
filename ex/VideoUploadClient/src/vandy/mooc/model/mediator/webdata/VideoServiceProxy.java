@@ -1,4 +1,4 @@
-package vandy.mooc.model.webdata;
+package vandy.mooc.model.mediator.webdata;
 
 import java.util.Collection;
 
@@ -11,13 +11,13 @@ import retrofit.http.Part;
 import retrofit.http.Path;
 import retrofit.http.Streaming;
 import retrofit.mime.TypedFile;
-import vandy.mooc.model.provider.Video;
-import vandy.mooc.model.provider.VideoStatus;
+
+
 
 /**
- * This interface defines an API for a Video Service web service. The
+ * This interface defines an API for a Video Service web service.  The
  * interface is used to provide a contract for client/server
- * interactions. The interface is annotated with Retrofit annotations
+ * interactions.  The interface is annotated with Retrofit annotations
  * to send Requests and automatically convert the Video.
  */
 public interface VideoServiceProxy {
@@ -55,13 +55,22 @@ public interface VideoServiceProxy {
     /**
      * Sends a POST request to add the Video metadata to the Video 
      * Web service using a two-way Retrofit RPC call.
+     *
+     * @param video
+     * @return video 
      */
     @POST(VIDEO_SVC_PATH)
-    public Video addVideo(@Body Video v);
+    public Video addVideo(@Body Video video);
 	
     /**
-     * Sends a POST request to Upload the Video data to the Video 
-     * Web service using a two-way Retrofit RPC call.
+     * Sends a POST request to Upload the Video data to the Video Web
+     * service using a two-way Retrofit RPC call. Multipart is used
+     * to send large video files to Video Service.
+     *
+     * @param id
+     * @param videoData
+     * @return videoStatus indicating status of video 
+     *          uploaded.
      */
     @Multipart
     @POST(VIDEO_DATA_PATH)
@@ -71,16 +80,16 @@ public interface VideoServiceProxy {
     /**
      * This method uses Retrofit's @Streaming annotation to indicate
      * that the method is going to access a large stream of data
-     * (e.g., the mpeg video data on the server). The client can
+     * (e.g., the mpeg video data on the server).  The client can
      * access this stream of data by obtaining an InputStream from the
      * Response as shown below:
      * 
-     * VideoSvcApi client = ... // use retrofit to create the client
-     * Response response = client.getData(someVideoId); InputStream
-     * videoDataStream = response.getBody().in();
+     * VideoServiceProxy client = ... // use retrofit to create the client
+     * Response response = client.getData(someVideoId); 
+     * InputStream videoDataStream = response.getBody().in();
      * 
      * @param id
-     * @return
+     * @return Response which contains the actual Video data.
      */
     @Streaming
     @GET(VIDEO_DATA_PATH)

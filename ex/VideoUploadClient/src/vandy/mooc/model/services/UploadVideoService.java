@@ -1,17 +1,19 @@
 package vandy.mooc.model.services;
 
 import vandy.mooc.R;
-import vandy.mooc.model.provider.VideoController;
+import vandy.mooc.model.mediator.VideoDataMediator;
 import android.app.IntentService;
 import android.app.NotificationManager;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.NotificationCompat.Builder;
+import android.support.v4.content.LocalBroadcastManager;
 
 /**
  * Intent Service that will run in background and Uploads the Video
- * having a given Id. After the operation, it will send broadcast the
+ * having a given Id.  After the operation, it will send broadcast the
  * Intent that will send the result of the Upload to the
  * VideoListActivity.
  */
@@ -25,27 +27,15 @@ public class UploadVideoService
                 "vandy.mooc.services.UploadVideoService.RESPONSE";
     
     /**
-     * Key, used to store the videoId as an EXTRA in Intent.
-     */
-    private static final String KEY_UPLOAD_VIDEO_ID =
-        "upload_videoId";
-
-    /**
-     * Default Id , if no Id is present in Extras of the received
-     * Intent.
-     */
-    private static final long DEFAULT_VIDEO_ID = 0;
-    
-    /**
      * It is used by Notification Manager to send Notifications.
      */
     private static final int NOTIFICATION_ID = 1;
     
     /**
-     * VideoController mediates the communication between Server and
-     * Android Storage.
+     * VideoDataMediator mediates the communication between Video
+     * Service and local storage in the Android device.
      */
-    private VideoController mController;
+    private VideoDataMediator mVideoMediator;
     
     /**
      * Manages the Notification displayed in System UI.
@@ -76,23 +66,22 @@ public class UploadVideoService
     }
     
     /**
-     * Factory method that makes the implicit intent another Activity 
-     * uses to call this Service. 
+     * Factory method that makes the explicit intent another Activity
+     * uses to call this Service.
      * 
      * @param context
      * @param videoId
      * @return
      */
     public static Intent makeIntent(Context context,
-                                    long videoId) {
+                                    Uri videoUri) {
         return new Intent(context, 
                           UploadVideoService.class)
-            .putExtra(KEY_UPLOAD_VIDEO_ID,
-                      videoId);
+                   .setData(videoUri);
     }
     
     /**
-     * Hook method that is invoked on the worker thread with a request 
+     * Hook method that is invoked on the worker thread with a request
      * to process. Only one Intent is processed at a time, but the
      * processing happens on a worker thread that runs independently
      * from other application logic.
@@ -101,37 +90,31 @@ public class UploadVideoService
      */
     @Override
     protected void onHandleIntent(Intent intent) {
-        //Starts the Notification to show the progress
-        // of video upload.
+        // Starts the Notification to show the progress of video
+        // upload.
         startNotification();
         
-        // Create VideoController that will mediates the communication
+        // Create VideoDataMediator that will mediate the communication
         // between Server and Android Storage.
-        mController =
-            new VideoController(getApplicationContext()); 
+        mVideoMediator =
+            new VideoDataMediator(); 
 
-        // Get the videoId from the Extras of Intent.
-        long videoId =
-            intent.getLongExtra(KEY_UPLOAD_VIDEO_ID,
-                                DEFAULT_VIDEO_ID);
-        
         // Check if Video Upload is successful.
-        if (mController.uploadVideo(videoId))
-            finishNotification("Upload complete");
-        else
-            finishNotification("Upload failed");
-        
-        //Send the Broadcast to Activity that the Video 
+        finishNotification(mVideoMediator.uploadVideo(getApplicationContext(),
+                                                   intent.getData()));
+             
+        // Send the Broadcast to VideoListActivity that the Video
         // Upload is completed.
         sendBroadcast();
     }
     
     /**
-     * Send the Broadcast to Activity that the Video 
-     * Upload is completed.
+     * Send the Broadcast to Activity that the Video Upload is
+     * completed.
      */
     private void sendBroadcast(){
-        sendBroadcast(new Intent(ACTION_UPLOAD_SERVICE_RESPONSE)
+        LocalBroadcastManager.getInstance(this)
+             .sendBroadcast(new Intent(ACTION_UPLOAD_SERVICE_RESPONSE)
                       .addCategory(Intent.CATEGORY_DEFAULT));
     }
     
@@ -145,17 +128,21 @@ public class UploadVideoService
         mBuilder.setContentText(status) ;
         
         // Removes the progress bar.
-        mBuilder.setProgress (0, 0, false); 
+        mBuilder.setProgress (0,
+                              0,
+                              false); 
+
+        // Build the Notification with the given
+        // Notification Id.
         mNotifyManager.notify(NOTIFICATION_ID,
                               mBuilder.build());
     }
     
     /**
-     * Starts the Notification to show the progress
-     * of video upload.
+     * Starts the Notification to show the progress of video upload.
      */
     private void startNotification() {
-        //Gets the access to System Notification Services.
+        // Gets the access to System Notification Services.
         mNotifyManager = (NotificationManager)
             getSystemService(Context.NOTIFICATION_SERVICE); 
 
@@ -166,9 +153,11 @@ public class UploadVideoService
                        .setContentTitle("Video Upload") 
                        .setContentText("Upload in progress") 
                        .setSmallIcon(R.drawable.ic_notify_file_upload)
-                       .setProgress(0, 0, true);
+                       .setProgress(0,
+                                    0,
+                                    true);
  
-        // Issues the notification
+        // Builds and Issues the notification
         mNotifyManager.notify(NOTIFICATION_ID,
                               mBuilder.build());
     }

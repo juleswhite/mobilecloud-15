@@ -125,7 +125,7 @@ public class UploadVideoService
      */
     private void finishNotification(String status) {
         // When the loop is finished, updates the notification.
-        mBuilder.setContentText(status)
+        mBuilder.setContentTitle(status)
                 // Removes the progress bar.
                 .setProgress (0,
                               0,

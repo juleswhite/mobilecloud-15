@@ -279,12 +279,14 @@ public class WeatherTimeoutCache
                              (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME));
 		
 		if (expirationTime < System.currentTimeMillis()) {
-
 		    // Concurrently delete the stale data from the db
 		    // in a new thread.
 		    new Thread(new Runnable() {
 			public void run() {
-			    remove(locationKey, expirationTime);
+                            // Remove the key that has the designated
+                            // expiration time.
+			    remove(locationKey,
+                                   expirationTime);
 			}
 		    }).start();
 
@@ -371,26 +373,7 @@ public class WeatherTimeoutCache
 
     /**
      * Delete the Weather Values and Weather Conditions associated
-     * with a @a locationKey.
-     */
-    @Override
-    public void remove(String locationKey) {
-        // Delete expired entries from the WeatherValues table.
-	mContext.getContentResolver().delete
-            (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
-             WEATHER_VALUES_LOCATION_KEY_SELECTION,
-             new String[] { locationKey });
-
-        // Delete expired entries from the WeatherConditions table.
-	mContext.getContentResolver().delete
-            (WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI,
-             WEATHER_CONDITIONS_LOCATION_KEY_SELECTION,
-             new String[] { locationKey });
-    }
-    
-    /**
-     * Delete the Weather Values and Weather Conditions associated
-     * with a @a locationKey with a specific expiration time.
+     * with a @a locationKey and a specific @a expirationTime.
      */
     private void remove(String locationKey,
                         long expirationTime) {

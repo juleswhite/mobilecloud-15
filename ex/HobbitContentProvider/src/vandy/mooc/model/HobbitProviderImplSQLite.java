@@ -15,7 +15,8 @@ import android.util.Log;
  * Implementor" in the Bridge pattern and the "Concrete Class" in the
  * TemplateMethod pattern.
  */
-public class HobbitProviderSQLite extends HobbitProviderImpl  {
+public class HobbitProviderImplSQLite 
+       extends HobbitProviderImpl  {
     /**
      * Use HobbitDatabaseHelper to manage database creation and version
      * management.
@@ -25,7 +26,7 @@ public class HobbitProviderSQLite extends HobbitProviderImpl  {
     /**
      * Constructor initializes the super class.
      */
-    public HobbitProviderSQLite(Context context) {
+    public HobbitProviderImplSQLite(Context context) {
         super(context);
     }
 

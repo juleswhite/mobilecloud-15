@@ -16,7 +16,8 @@ import android.net.Uri;
  * Implementor" in the Bridge pattern and the "Concrete Class" in the
  * TemplateMethod pattern.
  */
-public class HobbitProviderHashMap extends HobbitProviderImpl  {
+public class HobbitProviderImplHashMap
+       extends HobbitProviderImpl  {
     /**
      * This implementation uses a simple HashMap to map IDs to
      * CharacterRecords.
@@ -27,7 +28,7 @@ public class HobbitProviderHashMap extends HobbitProviderImpl  {
     /**
      * Constructor initializes the super class.
      */
-    public HobbitProviderHashMap(Context context) {
+    public HobbitProviderImplHashMap(Context context) {
         super(context);
     }
 

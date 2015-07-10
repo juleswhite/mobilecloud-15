@@ -31,7 +31,7 @@ public class HobbitProvider extends ContentProvider {
      * Stores the concrete implementation used by the Hobbit
      * ContentProvider.
      */
-    private ContentProviderType mContentProviderType =
+    private ContentProviderType mContentProviderType = 
         ContentProviderType.SQLITE;
     // ContentProviderType.HASH_MAP;
 
@@ -123,10 +123,10 @@ public class HobbitProvider extends ContentProvider {
         switch(mContentProviderType) {
         case HASH_MAP:
             mImpl =
-                new HobbitProviderHashMap(getContext());
+                new HobbitProviderImplHashMap(getContext());
             break;
         case SQLITE:
-            mImpl = new HobbitProviderSQLite(getContext());
+            mImpl = new HobbitProviderImplSQLite(getContext());
             break;
         }
 

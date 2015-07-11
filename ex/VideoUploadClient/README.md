@@ -15,6 +15,7 @@ The following are instructions for running the client portion of the Video Uploa
 		-> Change the base_url to the IPV4 Address of your Computer where the server is running:
 		
 		    - Open your Android device and start up Mobile Wifi hotspot.
+		        - Make sure to check "Enable Data access over Mobile Network" on your device.
 			- Connect your Computer to your Android device by Wifi.
 			- Get IPV4 Address of your Computer:
 			
@@ -55,7 +56,7 @@ The following are instructions for running the client portion of the Video Uploa
 			SERVER_URL = "http://192.168.56.1:8080";
     
     
-	d) To get the Video from Gallery:
+	c) To get the Video from Gallery:
 	    -> Open DDMS Perspective.
 		-> Go to File Explorer.
 		-> Store the video in  /storage/Downloads.

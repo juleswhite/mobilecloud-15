@@ -18,8 +18,6 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.provider.MediaStore;
 import android.support.v4.content.LocalBroadcastManager;
-import android.util.DisplayMetrics;
-import android.view.Gravity;
 import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
@@ -98,8 +96,19 @@ public class VideoListActivity
         mVideosList =
             (ListView) findViewById(R.id.videoList);
 
-        // Show the Floating Action Button.
-        createPlusFabButton();
+        // Get reference to the Floating Action Button.
+        mUploadVideoButton =
+                    (FloatingActionButton) findViewById(R.id.fabButton);
+        
+        // Show the UploadVideoDialog Fragment when user clicks the
+        // button.
+        mUploadVideoButton.setOnClickListener(new OnClickListener() {
+                public void onClick(View v) {
+                    new UploadVideoDialogFragment()
+                         .show(getFragmentManager(),
+                               "uploadVideo");
+                }
+            });
 
         // Invoke the special onCreate() method in GenericActivity,
         // passing in the VideoOps class to instantiate/manage and
@@ -264,41 +273,6 @@ public class VideoListActivity
                             "Could not get video to upload");
     }
 
-    /**
-     * Show the Floating Action Button that will show a Dialog
-     * Fragment to upload Video when user clicks on it.
-     */
-    @SuppressWarnings("deprecation")
-    private void createPlusFabButton() {
-        final DisplayMetrics metrics =
-            getResources().getDisplayMetrics();
-        final int position =
-            (metrics.widthPixels / 4) + 5;
-
-        // Create Floating Action Button using the Builder pattern.
-        mUploadVideoButton =
-            new FloatingActionButton
-            .Builder(this)
-            .withDrawable(getResources()
-                          .getDrawable(R.drawable.ic_video))
-            .withButtonColor(getResources()
-                             .getColor(R.color.theme_primary))
-            .withGravity(Gravity.BOTTOM | Gravity.END)
-            .withMargins(0, 
-                         0,
-                         position,
-                         0)
-            .create();
-
-        // Show the UploadVideoDialog Fragment when user clicks the
-        // button.
-        mUploadVideoButton.setOnClickListener(new OnClickListener() {
-                public void onClick(View v) {
-                    new UploadVideoDialogFragment().show(getFragmentManager(),
-                                                         "uploadVideo");
-                }
-            });
-    }
 
     /**
      * Sets the Adapter that contains List of Videos to the ListView.

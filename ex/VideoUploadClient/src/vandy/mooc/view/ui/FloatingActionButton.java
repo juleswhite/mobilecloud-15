@@ -38,7 +38,6 @@ public class FloatingActionButton extends View {
      */
     final static AccelerateInterpolator accelerateInterpolator =
         new AccelerateInterpolator();
-
     
     /**
      * Paints used to draw the Button in Canvas.
@@ -58,7 +57,6 @@ public class FloatingActionButton extends View {
      */
     boolean mHidden = false;
  
-    
     /**
      * Constructor that initializes the Floating
      * Action Button from the layout.
@@ -82,7 +80,6 @@ public class FloatingActionButton extends View {
         
     }
 
-    
     /**
      * Sets the Color of FloatingActionButton.
      * 
@@ -208,6 +205,4 @@ public class FloatingActionButton extends View {
     public boolean isHidden() {
         return mHidden;
     }
-
-    
 }

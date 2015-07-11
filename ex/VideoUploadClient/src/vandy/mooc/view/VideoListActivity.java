@@ -150,11 +150,10 @@ public class VideoListActivity
                                  intentFilter);
     }
 
-    
     /**
      * Hook method that gives a final chance to release resources and
-     * stop spawned threads. onDestroy() may not always be called-when
-     * system kills hosting process
+     * stop spawned threads.  onDestroy() may not always be
+     * called-when system kills hosting process.
      */
     @Override
     protected void onPause() {

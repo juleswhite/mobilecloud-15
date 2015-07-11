@@ -1,4 +1,4 @@
-package vandy.mooc.model.cache;
+package vandy.mooc.common;
 
 /**
  * This is common interface for all caches.
@@ -31,11 +31,13 @@ public interface TimeoutCache<K, V> {
     void put(K key, V obj, int timeout);
 
     /**
-     * Removes the value associated with a key
+     * Removes the value associated with a key.
      * 
      * @param key
+     * @param expirationTime
      */
-    void remove(K key);
+    void remove(K key,
+                long expirationTime);
 
     /**
      * Get the size of the cache.

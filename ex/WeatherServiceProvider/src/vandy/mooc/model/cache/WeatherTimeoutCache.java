@@ -2,6 +2,7 @@ package vandy.mooc.model.cache;
 
 import java.util.ArrayList;
 
+import vandy.mooc.common.TimeoutCache;
 import vandy.mooc.model.provider.WeatherContract;
 import vandy.mooc.model.provider.WeatherContract.WeatherConditionsEntry;
 import vandy.mooc.model.provider.WeatherContract.WeatherValuesEntry;
@@ -57,6 +58,17 @@ public class WeatherTimeoutCache
     private static final String WEATHER_VALUES_LOCATION_KEY_SELECTION = 
         WeatherValuesEntry.COLUMN_LOCATION_KEY
         + " = ?";
+    
+    /**
+     * Defines the selection clause used to query for weather values
+     * that has a specific id and expiration time.
+     */
+    private static final String WEATHER_VALUES_LOCATION_TIME_KEY_SELECTION = 
+        WeatherValuesEntry.COLUMN_LOCATION_KEY
+        + " = ?" 
+        + " AND " 
+        + WeatherValuesEntry.COLUMN_EXPIRATION_TIME
+        + " = ?";
         
     /**
      * Defines the selection clause used to query for weather
@@ -64,6 +76,17 @@ public class WeatherTimeoutCache
      */
     private static final String WEATHER_CONDITIONS_LOCATION_KEY_SELECTION = 
         WeatherConditionsEntry.COLUMN_LOCATION_KEY
+        + " = ?";
+    
+    /**
+     * Defines the selection clause used to query for weather
+     * conditions that have a specific parent id and expiration time.
+     */
+    private static final String WEATHER_CONDITIONS_LOCATION_TIME_KEY_SELECTION = 
+        WeatherConditionsEntry.COLUMN_LOCATION_KEY
+        + " = ?"
+        + " AND " 
+        + WeatherConditionsEntry.COLUMN_EXPIRATION_TIME
         + " = ?";
     
     /**
@@ -101,7 +124,7 @@ public class WeatherTimeoutCache
      * WeatherData object.
      */
     private ContentValues makeWeatherDataContentValues(WeatherData wd,
-                                                       long timeout,
+                                                       long expirationTime,
                                                        String locationKey) {
 	ContentValues cvs = new ContentValues();
 
@@ -130,8 +153,7 @@ public class WeatherTimeoutCache
 	cvs.put(WeatherContract.WeatherValuesEntry.COLUMN_DEG,
                 wd.getWind().getDeg());
 	cvs.put(WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME,
-		System.currentTimeMillis() 
-                + timeout);
+	            expirationTime);
 	return cvs;
     }
 
@@ -141,6 +163,7 @@ public class WeatherTimeoutCache
      * given WeatherData object.
      */
     private ContentValues makeWeatherConditionsContentValues(Weather wo,
+                                                             long expirationTime,
                                                              String locationKey) {
 	ContentValues cvs = new ContentValues();
 
@@ -154,6 +177,8 @@ public class WeatherTimeoutCache
                 wo.getIcon());
 	cvs.put(WeatherContract.WeatherConditionsEntry.COLUMN_LOCATION_KEY,
                 locationKey);
+	cvs.put(WeatherContract.WeatherConditionsEntry.COLUMN_EXPIRATION_TIME, 
+	            expirationTime);
 	return cvs;
     }
 
@@ -191,11 +216,15 @@ public class WeatherTimeoutCache
     private void putImpl(String locationKey,
                          WeatherData wd,
                          long timeout) {
+    // Determine the data's expiration time
+    final long expirationTime =
+           System.currentTimeMillis() + timeout;    
+        
 	// Enter the main WeatherData into the WeatherValues table.
 	mContext.getContentResolver().insert
                 (WeatherContract.WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
                  makeWeatherDataContentValues(wd,
-                                              timeout,
+                                              expirationTime,
                                               locationKey));
 
         // Create an array of ContentValues to bulk insert into the
@@ -210,6 +239,7 @@ public class WeatherTimeoutCache
 	for (Weather weather : wd.getWeathers()) {
 	    cvsArray[i++] = 
                 makeWeatherConditionsContentValues(weather,
+                                                   expirationTime, 
                                                    locationKey);
 	}
 
@@ -245,16 +275,19 @@ public class WeatherTimeoutCache
 		// to the location, check to see if it has expired.
 		// If it has, delete it concurrently, else return the
 		// data.
-		if (wdCursor.getLong
+		final long expirationTime = wdCursor.getLong
                         (wdCursor.getColumnIndex
-                             (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME)) 
-                    < System.currentTimeMillis()) {
-
+                             (WeatherContract.WeatherValuesEntry.COLUMN_EXPIRATION_TIME));
+		
+		if (expirationTime < System.currentTimeMillis()) {
 		    // Concurrently delete the stale data from the db
 		    // in a new thread.
 		    new Thread(new Runnable() {
 			public void run() {
-			    remove(locationKey);
+                            // Remove the key that has the designated
+                            // expiration time.
+			    remove(locationKey,
+                                   expirationTime);
 			}
 		    }).start();
 
@@ -341,21 +374,27 @@ public class WeatherTimeoutCache
 
     /**
      * Delete the Weather Values and Weather Conditions associated
-     * with a @a locationKey.
+     * with a @a locationKey and a specific @a expirationTime.
      */
-    @Override
-    public void remove(String locationKey) {
+    public void remove(String locationKey,
+                        long expirationTime) {
         // Delete expired entries from the WeatherValues table.
-	mContext.getContentResolver().delete
+    mContext.getContentResolver().delete
             (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI,
-             WEATHER_VALUES_LOCATION_KEY_SELECTION,
-             new String[] { locationKey });
+             WEATHER_VALUES_LOCATION_TIME_KEY_SELECTION,
+             new String[] { 
+                locationKey,
+                Long.toString(expirationTime) 
+            });
 
         // Delete expired entries from the WeatherConditions table.
-	mContext.getContentResolver().delete
+    mContext.getContentResolver().delete
             (WeatherConditionsEntry.WEATHER_CONDITIONS_CONTENT_URI,
-             WEATHER_CONDITIONS_LOCATION_KEY_SELECTION,
-             new String[] { locationKey });
+             WEATHER_CONDITIONS_LOCATION_TIME_KEY_SELECTION,
+             new String[] { 
+                locationKey,
+                Long.toString(expirationTime) 
+            });
     }
 
     /**
@@ -395,7 +434,10 @@ public class WeatherTimeoutCache
 	try (Cursor expiredData =
              mContext.getContentResolver().query
                  (WeatherValuesEntry.WEATHER_VALUES_CONTENT_URI, 
-                  new String[] { WeatherValuesEntry.COLUMN_LOCATION_KEY },
+                  new String[] { 
+                     WeatherValuesEntry.COLUMN_LOCATION_KEY,
+                     WeatherValuesEntry.COLUMN_EXPIRATION_TIME
+                  },
                   EXPIRATION_SELECTION, 
                   new String[] {String.valueOf(System.currentTimeMillis())}, 
                   null)) { 
@@ -409,7 +451,12 @@ public class WeatherTimeoutCache
                         expiredData.getString
                             (expiredData.getColumnIndex
                         	    (WeatherValuesEntry.COLUMN_LOCATION_KEY));
-                    remove(deleteLocation);
+		    final long expirationTime = 
+		                expiredData.getLong
+                            (expiredData.getColumnIndex
+                                    (WeatherValuesEntry.COLUMN_EXPIRATION_TIME));
+                    remove(deleteLocation,
+                           expirationTime);
 		} while (expiredData.moveToNext());
 	    }
 	}

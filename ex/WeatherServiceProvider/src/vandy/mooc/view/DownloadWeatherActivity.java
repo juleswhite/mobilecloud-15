@@ -128,6 +128,7 @@ public class DownloadWeatherActivity
      * @param weatherList
      *            List of WeatherData to be displayed, which should not be null.
      */
+    @Override
     public void displayResults(WeatherData weatherData,
                                String errorMessage) {
         // Only display the results if we got valid WeatherData.

@@ -15,8 +15,9 @@
         android:icon="@drawable/ic_launcher"
         android:label="@string/app_name"
         android:theme="@style/AppTheme" >
+
         <activity
-            android:name=".activities.WeatherActivity"
+            android:name=".view.DownloadWeatherActivity"
             android:label="@string/app_name" >
             <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
@@ -24,8 +25,18 @@
             </intent-filter>
         </activity>
         
+        <activity
+            android:name=".view.DisplayWeatherActivity"
+            android:label="@string/app_name">
+            <intent-filter >
+                <action android:name="vandy.mooc.intent.action.DISPLAY_WEATHER" />
+                <category android:name="android.intent.category.DEFAULT" />
+                <data android:mimeType="parcelable/weather" /> 
+            </intent-filter>
+        </activity>
+        
         <provider
-           android:name=".provider.WeatherProvider"
+           android:name=".model.provider.WeatherProvider"
            android:authorities="@string/content_authority"
            android:exported="false"/>
     </application>

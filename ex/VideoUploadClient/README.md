@@ -15,6 +15,7 @@ The following are instructions for running the client portion of the Video Uploa
 		-> Change the base_url to the IPV4 Address of your Computer where the server is running:
 		
 		    - Open your Android device and start up Mobile Wifi hotspot.
+		        - Make sure to check "Enable Data access over Mobile Network" on your device.
 			- Connect your Computer to your Android device by Wifi.
 			- Get IPV4 Address of your Computer:
 			
@@ -34,11 +35,8 @@ The following are instructions for running the client portion of the Video Uploa
 	b) Change the constant SERVER_URL in vandy/mooc/utils/Constants.java in the client app:
 		    
 			SERVER_URL = "http://XXX.XXX.XXX.XXX:8080"; (where XXX.XXX.XXX.XXX is your IPV4 address.);
-    
-	c) There should be no problem with Recording videos in real Android device.
-	 
-	d) To get the Video from Gallery, store the Video in Internal Storage.
-	
+ 
+ 	
 2)  To test the app on an Android Emulator:
 
     a) No need to change the Server code of Assignment 2.  The code to getDataUrl of a Video should be this:
@@ -52,10 +50,13 @@ The following are instructions for running the client portion of the Video Uploa
 	b) Change the constant SERVER_URL in vandy/mooc/utils/Constants.java in the client app:
 		    
 			SERVER_URL = "http://10.0.2.2:8080";
+			
+	   For Genymotion/VirtualBox emulators:
+		
+			SERVER_URL = "http://192.168.56.1:8080";
     
-	c) Camera may or may not work in Emulator for recording videos. 
-	
-	d) To get the Video from Gallery:
+    
+	c) To get the Video from Gallery:
 	    -> Open DDMS Perspective.
 		-> Go to File Explorer.
 		-> Store the video in  /storage/Downloads.

@@ -13,7 +13,7 @@
      android:label="@string/app_name">
 
     <activity
-       android:name=".activities.HobbitActivity"
+       android:name=".view.HobbitActivity"
        android:label="@string/app_name">
       <intent-filter>
         <action android:name="android.intent.action.MAIN" />
@@ -21,7 +21,7 @@
       </intent-filter>
     </activity>
 
-    <provider android:name=".provider.HobbitProvider"
+    <provider android:name=".model.HobbitProvider"
               android:authorities="vandy.mooc.hobbitprovider"
               android:exported="false">
     </provider>

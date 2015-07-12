@@ -75,13 +75,13 @@ public class VideoDataMediator {
                               Uri videoUri) {
         // Get the path of video file from videoUri.
         String filePath =
-            VideoMediastoreUtils.getPath(context,
+            VideoMediaStoreUtils.getPath(context,
                                          videoUri);
 
         // Get the Video from Android Video Content Provider having
         // the given filePath.
         Video androidVideo =
-            VideoMediastoreUtils.getVideo(context,
+            VideoMediaStoreUtils.getVideo(context,
                                           filePath);
 
         // Check if any such Video exists in Android Video Content
@@ -117,7 +117,6 @@ public class VideoDataMediator {
                     // Check if the Status of the Video or not.
                     if (status.getState() == VideoState.READY) {
                         // Video successfully uploaded.
-                        mVideoCache.insert(receivedVideo);
                         return STATUS_UPLOAD_SUCCESSFUL;
                     }
                 }

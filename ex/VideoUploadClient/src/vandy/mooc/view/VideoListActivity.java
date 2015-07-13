@@ -217,8 +217,10 @@ public class VideoListActivity
                    VideoStorageUtils.getRecordedVideoUri
                                    (getApplicationContext());  
             
-            //Save the RecordedVideoUri in RetainedFragment.
-            saveData(KEY_RECORD_VIDEO_URI, mRecordVideoUri);
+            // Save the RecordedVideoUri in the
+            // RetainedFragmentManager.
+            getRetainedFragmentManager().put(KEY_RECORD_VIDEO_URI,
+                                             mRecordVideoUri);
             
             // Create an intent that will start an Activity to get
             // Record Video.
@@ -260,9 +262,9 @@ public class VideoListActivity
                 
             // Video is recorded.
             else if (requestCode == REQUEST_VIDEO_CAPTURE)
-                //Get the RecordedVideoUri from the RetainedFragment
-                videoUri = getSavedData(KEY_RECORD_VIDEO_URI);
-            
+                // Get the RecordedVideoUri from the RetainedFragment.
+                videoUri = 
+                    getRetainedFragmentManager().get(KEY_RECORD_VIDEO_URI);
             
             if (videoUri != null){
                 Utils.showToast(this,

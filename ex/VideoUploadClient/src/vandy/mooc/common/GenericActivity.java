@@ -155,23 +155,5 @@ public class GenericActivity<Interface, OpsType extends ConfigurableOps<Interfac
     public Context getApplicationContext() {
         return super.getApplicationContext();
     }
-    
-    /**
-     * Save the data using retained fragment manager.
-     */
-    public <T> void saveData(String key, T value){
-        mRetainedFragmentManager.put(key, value);
-    }
-    
-    /**
-     * Get the saved data from retained fragment manager.
-     * 
-     * @param key
-     * @return saved data
-     */
-    public <T> T getSavedData(String key){
-        return mRetainedFragmentManager.get(key);
-    }
-    
 }
 

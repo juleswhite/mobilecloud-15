@@ -18,7 +18,7 @@
 The purpose of this "mini-project" assignment is to give you
 experience using Android and Spring to develop a complete
 client/server Video Upload/Download app.  The client-side of this app
-runs on an Android device and uses Content Providers to store the
+runs on an Android device and uses Content Providers to persist the
 videos and associated meta-data on the device.  It also uses Retrofit
 to upload and download videos via an extension of the Web Service
 server you implemented in <A
@@ -122,8 +122,9 @@ meets the following server- and client-side requirements: </P>
              to access data from the Content Provider
              concurrently. </P>
 
-    <LI> <P> The client should implement its own Content Provider to
-             store Video meta-data, such as <U><CODE>id</CODE></U>,
+    <LI> <P> The client should implement its own Content Provider using
+             SQlite database to persist Video meta-data on the device, such as 
+             <U><CODE>id</CODE></U>,
              <U><CODE>title</CODE></U>, <U><CODE> duration</CODE></U>,
              <U><CODE> contentType</CODE></U>,
              <U><CODE>data_url</CODE></U>, and
@@ -156,7 +157,7 @@ project:
   <h4>Implementation Hints</h4>
   <p>  <UL> 
            <LI>
-             After recroding a video or after getting the Video from Gallery, you will get a Video Uri to that Video
+             After reoroding a video or after getting the Video from Gallery, you will get a Video Uri to that Video
              in the Android MediaStore Content Provider. Query that Uri to get the information you need like
              <STRONG>title, duration, contentType(which is stored as Mime_Type in Android).</STRONG>
              You can use this info and upload it to Server.

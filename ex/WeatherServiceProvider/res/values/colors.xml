@@ -8,5 +8,8 @@
     <color name="light_blue">#ff64c2f4</color>
     <color name="blue">#ff1ca8f4</color>
     <color name="dark_blue">#0288D1</color>
+    <color name="theme_primary">#127ef8</color>
+    <color name="fab">#33b5e5</color>
+    <color name="black_alpha">#99000000</color>
     
 </resources>

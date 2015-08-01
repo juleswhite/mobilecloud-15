@@ -6,13 +6,9 @@ import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
 import org.apache.commons.io.IOUtils;
 import retrofit.client.Response;
 
-import android.annotation.SuppressLint;
 import android.content.Context;
 import android.media.MediaScannerConnection;
 import android.net.Uri;
@@ -23,50 +19,6 @@ import android.os.Environment;
  * from Android Local Storage.
  */
 public class VideoStorageUtils {
-    /** 
-     * Create a file Uri for saving a recorded video
-     */ 
-    @SuppressLint("SimpleDateFormat")
-    public static Uri getRecordedVideoUri(Context context) {
-
-        // Check to see if external SDCard is mounted or not.
-        if (isExternalStorageWritable()) {
-            // Create a path where we will place our recorded video in
-            // the user's public DCIM directory. Note that you should
-            // be careful about what you place here, since the user
-            // often manages these files.
-            final File videoStorageDir =
-                Environment.getExternalStoragePublicDirectory
-                (Environment.DIRECTORY_DCIM);
-
-            // Create the storage directory if it does not exist
-            if (!videoStorageDir.exists()) {
-                if (!videoStorageDir.mkdirs()) {
-                    return null;
-                }
-            }
-
-            // Create a TimeStamp for the video file.
-            final String timeStamp =
-                new SimpleDateFormat("yyyyMMdd_HHmmss").format(new Date());
-            
-            // Create a video file name from the TimeStamp.
-            final File videoFile =
-                new File(videoStorageDir.getPath() + File.separator + "VID_"
-                         + timeStamp + ".mp4");
-
-            // Always notify the MediaScanners after storing
-            // the Video, so that it is immediately available to
-            // the user.
-            notifyMediaScanners(context, videoFile);
-            
-            //Return Uri from Video file.
-            return Uri.fromFile(videoFile);
-
-        } else 
-            //Return null if no SDCard is mounted.
-            return null;
-    } 
     
     /**
      * Stores the Video in External Downloads directory in Android.

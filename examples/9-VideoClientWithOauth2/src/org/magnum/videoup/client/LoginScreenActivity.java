@@ -61,7 +61,7 @@ public class LoginScreenActivity extends Activity {
 
 			@Override
 			public void success(Collection<Video> result) {
-				// OAuth 2.0 grant was successful and we
+				// OAuth 2.0 grant was successful and web
 				// can talk to the server, open up the video listing
 				startActivity(new Intent(
 						LoginScreenActivity.this,

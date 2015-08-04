@@ -1,0 +1,51 @@
+<PreferenceScreen xmlns:android="http://schemas.android.com/apk/res/android">
+    <PreferenceCategory 
+        android:title="@string/pref_server_title"
+        android:key="pref_key_server_settings">
+       
+        <ListPreference
+       	    android:key="pref_key_protocol"
+        	android:title="@string/pref_protocol_title"
+        	android:dialogTitle="@string/pref_protocol_dialog_title"
+       	    android:entries="@array/pref_protocolTypes"
+        	android:entryValues="@array/pref_protocolTypes"
+        	android:defaultValue="@string/pref_protocol_default"/>
+        
+        <EditTextPreference
+            android:key="pref_key_ip_address"
+            android:title="@string/pref_ip_title"
+            android:inputType="textWebEditText"
+            android:dialogTitle="@string/pref_ip_dialog_title" 
+            android:defaultValue="@string/pref_ip_default"/>
+        
+        <EditTextPreference
+            android:key="pref_key_port"
+            android:title="@string/pref_port_title"
+            android:inputType="number"
+            android:dialogTitle="@string/pref_port_dialog_title"
+            android:defaultValue="@string/pref_port_default"/>
+   
+        
+    </PreferenceCategory>
+    
+     <PreferenceCategory 
+        android:title="@string/pref_account_title"
+        android:key="pref_key_account_settings">
+        
+          <EditTextPreference
+            android:key="pref_key_username"
+            android:title="Username"
+            android:inputType="textEmailAddress"
+            android:dialogTitle="Username for VideoClient"
+            android:defaultValue="@string/pref_username_default" />
+   		
+          <EditTextPreference
+            android:key="pref_key_password"
+            android:title="Password"
+            android:inputType="textPassword"
+            android:dialogTitle="Password for VideoClient"
+            android:defaultValue="@string/pref_password_default" />
+    
+     </PreferenceCategory>
+   
+</PreferenceScreen>

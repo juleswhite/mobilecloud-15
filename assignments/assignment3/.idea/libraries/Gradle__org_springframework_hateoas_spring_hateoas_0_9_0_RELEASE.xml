@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: org.springframework.hateoas:spring-hateoas:0.9.0.RELEASE">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.hateoas/spring-hateoas/0.9.0.RELEASE/18872c263352a7d240d3dd3f6a0560f89a2fa2c5/spring-hateoas-0.9.0.RELEASE.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/org.springframework.hateoas/spring-hateoas/0.9.0.RELEASE/c9c521609a66a82a7cafd1939546b7d0df0063d1/spring-hateoas-0.9.0.RELEASE-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

@@ -1,0 +1,11 @@
+<component name="libraryTable">
+  <library name="Gradle: com.h2database:h2:1.3.175">
+    <CLASSES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.h2database/h2/1.3.175/408ed316edddbce6db031c6bdceee73a09647d9e/h2-1.3.175.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES>
+      <root url="jar://$USER_HOME$/.gradle/caches/modules-2/files-2.1/com.h2database/h2/1.3.175/fc4555925945f7fb3153a4ca3d94d34d3f33b713/h2-1.3.175-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

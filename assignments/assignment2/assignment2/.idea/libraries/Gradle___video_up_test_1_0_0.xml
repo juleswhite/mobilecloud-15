@@ -1,0 +1,9 @@
+<component name="libraryTable">
+  <library name="Gradle: :video.up.test:1.0.0">
+    <CLASSES>
+      <root url="jar://$PROJECT_DIR$/lib/video.up.test-1.0.0.jar!/" />
+    </CLASSES>
+    <JAVADOC />
+    <SOURCES />
+  </library>
+</component>

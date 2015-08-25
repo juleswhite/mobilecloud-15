@@ -50,10 +50,30 @@ public class InsertContactsCommand
     @Override
     public void execute(Iterator<String> contactsIter) {
         int totalContactsInserted =
-            insertAllContacts(contactsIter);
+            insertAllContacts(contactsIter); 
+        // Execute the GenericAsyncTask.
+		//this uses active object pattern and inversion control{DIP ie dependency injection } to execute in the context of InsertContactsCommand
+		//and in a background thread
+        asyncTask.execute(contactsIter);
+    }
 
-        Utils.showToast(mOps.getActivityContext(),
-                        totalContactsInserted
+    /** 
+     * Run in a background Thread to avoid blocking the UI Thread.
+     */
+    @SuppressWarnings("unchecked")
+    @Override
+    public Integer doInBackground(Iterator<String>... contactsIter) {
+        // Insert all the contacts designated by the Iterator.
+        return insertAllContacts(contactsIter[0]);
+    }
+
+     /**
+     * A count of the number of results in the query are displayed in
+     * the UI Thread.
+     */
+    @Override
+    public void onPostExecute(Integer count) { 
+        Utils.showToast(mOps.getActivity(), count
                         + " contact(s) inserted");
     }
 
@@ -69,7 +89,7 @@ public class InsertContactsCommand
         // ContentProvider.
         while (contactsIter.hasNext())
             addContact(contactsIter.next(),
-                       batchOperation);
+                       batchOperation);//pass batch operation by reference
 
         try {
             // Apply all the batched operations synchronously.

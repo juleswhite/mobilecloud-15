@@ -34,35 +34,44 @@ public class VideoMediaStoreUtils {
      * @return Video having the given filePath
      */
     public static Video getVideo(Context context,
+                                 Uri uri,
                                  String filePath) {
         // Get the MediaMetadataRetriever for retrieving
         // meta data from an input media file.
         final MediaMetadataRetriever retriever = new MediaMetadataRetriever();
-        
+
         //Set the dataSource to the video file path.
-        retriever.setDataSource(filePath);
-        
+        retriever.setDataSource(context, uri);
+
         // Get the video video file name.
-        final String title =
-            new File(filePath).getName();
-        
+        final String title = getVideoTitle(retriever, filePath);
+
         //Get the duration of the Video.
-        final long duration = 
-            Long.parseLong
-            (retriever.extractMetadata
-             (MediaMetadataRetriever.METADATA_KEY_DURATION));
-        
+        final long duration =
+                Long.parseLong
+                        (retriever.extractMetadata
+                                (MediaMetadataRetriever.METADATA_KEY_DURATION));
+
         // Get the MimeType of the Video.
         final String contentType =
-            retriever.extractMetadata
-            (MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
-       
+                retriever.extractMetadata
+                        (MediaMetadataRetriever.METADATA_KEY_MIMETYPE);
+
         // Create a new Video containing the meta-data.
-        return new Video(title,
-                         duration,
-                         contentType);
+        return new Video(title, duration, contentType);
+
     }
-    
+
+    private static String getVideoTitle(MediaMetadataRetriever retriever, String filePath) {
+        final String title = retriever.extractMetadata(MediaMetadataRetriever.METADATA_KEY_TITLE);
+        if (title != null && !title.equals(""))
+            return title;
+        else if (filePath != null)
+            return new File(filePath).getName();
+        else
+            return null;
+    }
+
     /** 
      * Get a Video file path from a Uri. This will get the the path
      * for Storage Access Framework Documents, as well as the _data
